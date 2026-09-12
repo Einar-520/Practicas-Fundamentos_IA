@@ -23,3 +23,5 @@ En las prácticas interactivas se aceptan s, si, sí, n y no. Las entradas invá
 La práctica 3 mantiene la lista oficial como condición obligatoria. La práctica 5 recupera el reporte extenso del proyecto: incluye datos técnicos, daños físicos, comprobaciones de consistencia, diagnóstico principal, observaciones, folio y fecha/hora. El reporte se muestra en consola.
 
 Las versiones anteriores se conservan fuera de esta carpeta, en el respaldo creado al instalar. La tarea de tablas de verdad permanece en tareas junto con su enunciado.
+# Practicas-Fundamentos_IA
+# Practicas-Fundamentos_IA

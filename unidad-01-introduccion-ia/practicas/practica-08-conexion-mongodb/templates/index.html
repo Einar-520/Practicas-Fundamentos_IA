@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prácticas | Fundamentos de IA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="marca"><span class="icono">IA</span> FUNDAMENTOS DE IA</div>
+      <span class="etiqueta">PRÁCTICA 08</span>
+    </header>
+    <section class="introduccion">
+      <p class="subtitulo">PYTHON + MONGODB</p>
+      <h1>Mis prácticas</h1>
+      <p>Registra una práctica y consulta la información guardada.</p>
+      <span class="estado {{ 'activo' if conectado else 'inactivo' }}">
+        {{ 'MongoDB conectado' if conectado else 'MongoDB no disponible' }}
+      </span>
+    </section>
+    {% for mensaje in get_flashed_messages() %}
+      <div class="aviso exito" role="status">{{ mensaje }}</div>
+    {% endfor %}
+    {% if error %}<div class="aviso error" role="alert">{{ error }}</div>{% endif %}
+    <div class="paneles">
+      <section class="tarjeta">
+        <p class="subtitulo">01 / REGISTRO</p>
+        <h2>Guardar una práctica</h2>
+        <p class="ayuda">Si usas un número existente, actualizarás esa práctica.</p>
+        <form action="{{ url_for('guardar') }}" method="post">
+          <input type="hidden" name="csrf" value="{{ session['csrf'] }}">
+          <label for="numero">Número de práctica</label>
+          <input id="numero" name="numero" inputmode="numeric" pattern="[0-9]+"
+                 maxlength="19" required value="{{ datos.numero }}">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" maxlength="120" required value="{{ datos.nombre }}">
+          <label for="lenguaje">Lenguaje</label>
+          <input id="lenguaje" name="lenguaje" maxlength="40" required value="{{ datos.lenguaje }}">
+          <button type="submit">Guardar práctica <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+      <section class="tarjeta listado">
+        <div class="cabecera-listado">
+          <div><p class="subtitulo">02 / CONSULTA</p><h2>Prácticas guardadas</h2></div>
+          <a class="actualizar" href="{{ url_for('inicio') }}">Actualizar</a>
+        </div>
+        <p class="ayuda">Hasta 100 registros, ordenados por número.</p>
+        {% if registros %}
+          <div class="tabla-contenedor">
+            <table>
+              <caption class="solo-lectores">Prácticas guardadas en MongoDB</caption>
+              <thead><tr><th scope="col">N.º</th><th scope="col">Nombre</th><th scope="col">Lenguaje</th></tr></thead>
+              <tbody>{% for registro in registros %}
+                <tr><td>{{ registro['_id'] }}</td><td>{{ registro.get('nombre', 'Sin nombre') }}</td><td>{{ registro.get('lenguaje', 'Sin especificar') }}</td></tr>
+              {% endfor %}</tbody>
+            </table>
+          </div>
+        {% elif conectado %}
+          <div class="vacio"><strong>Tu primer registro empieza aquí</strong><p>Completa el formulario y pulsa «Guardar práctica».</p></div>
+        {% else %}
+          <div class="vacio"><strong>No se pudieron cargar los registros</strong><p>Cuando el servidor esté disponible, pulsa «Actualizar».</p></div>
+        {% endif %}
+      </section>
+    </div>
+    <footer>Práctica 08 · Conexión, registro y consulta</footer>
+  </main>
+</body>
+</html>

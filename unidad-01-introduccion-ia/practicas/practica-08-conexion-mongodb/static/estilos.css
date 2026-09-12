@@ -1,0 +1,268 @@
+:root {
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:#17352e;
+  background:#f4f7f4;
+  font-synthesis:none;
+  line-height:1.5;
+}
+* {
+  box-sizing:border-box;
+}
+body {
+  margin:0;
+}
+main {
+  max-width:1160px;
+  padding:28px 30px 20px;
+  margin:auto;
+}
+header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #d9e2dc;
+  padding-bottom:22px;
+  gap:16px;
+}
+.marca {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:12px;
+  font-weight:750;
+  letter-spacing:1.6px;
+}
+.icono {
+  background:#174d3d;
+  color:#fff;
+  border-radius:10px;
+  padding:9px;
+  letter-spacing:0;
+}
+.etiqueta {
+  font-size:11px;
+  letter-spacing:1px;
+  border:1px solid #c9d7ce;
+  border-radius:30px;
+  padding:7px 12px;
+}
+.introduccion {
+  padding:36px 0 28px;
+  position:relative;
+}
+.subtitulo {
+  color:#517161;
+  font-size:11px;
+  font-weight:750;
+  letter-spacing:1.8px;
+  margin:0 0 8px;
+}
+h1 {
+  font-size:44px;
+  letter-spacing:-1.8px;
+  margin:0 0 6px;
+  line-height:1.2;
+}
+h2 {
+  font-size:21px;
+  letter-spacing:-.5px;
+  margin:0 0 10px;
+}
+.introduccion>p:not(.subtitulo) {
+  color:#576c60;
+  margin:0;
+}
+.estado {
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  border-radius:30px;
+  padding:7px 13px;
+  font-size:12px;
+  font-weight:650;
+  margin-top:18px;
+}
+.estado:before {
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+}
+.activo {
+  background:#e1efdf;
+  color:#245b34;
+}
+.inactivo {
+  background:#f8e6df;
+  color:#8b392c;
+}
+.paneles {
+  display:grid;
+  grid-template-columns:minmax(260px,.85fr) minmax(0,1.35fr);
+  gap:24px;
+  align-items:start;
+}
+.tarjeta {
+  background:#fff;
+  border:1px solid #dbe4dd;
+  border-radius:17px;
+  padding:28px;
+  box-shadow:0 4px 15px #183a2510;
+}
+.ayuda {
+  font-size:13px;
+  color:#647568;
+  margin:0 0 24px;
+}
+label {
+  display:block;
+  font-size:13px;
+  font-weight:650;
+  margin:18px 0 7px;
+}
+input {
+  display:block;
+  width:100%;
+  font:inherit;
+  font-size:14px;
+  color:#18392d;
+  border:1px solid #bdcdc1;
+  border-radius:8px;
+  background:#fbfcfa;
+  padding:11px 12px;
+}
+input:focus-visible,button:focus-visible,a:focus-visible {
+  outline:3px solid #8eae38;
+  outline-offset:3px;
+}
+button {
+  margin-top:25px;
+  width:100%;
+  border:0;
+  background:#184f3d;
+  color:#fff;
+  border-radius:9px;
+  padding:13px 16px;
+  font:inherit;
+  font-weight:650;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+button:hover {
+  background:#0d3d2d;
+}
+.cabecera-listado {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.actualizar {
+  color:#245943;
+  font-size:12px;
+  font-weight:650;
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+.tabla-contenedor {
+  overflow-x:auto;
+}
+table {
+  width:100%;
+  border-collapse:collapse;
+  text-align:left;
+  font-size:13px;
+}
+th {
+  background:#f0f5ef;
+  color:#506a57;
+  font-size:11px;
+  letter-spacing:.5px;
+  padding:12px;
+}
+td {
+  padding:16px 12px;
+  border-bottom:1px solid #e7ede7;
+  overflow-wrap:anywhere;
+}
+td:first-child {
+  font-weight:750;
+}
+td:last-child {
+  color:#58725e;
+}
+.vacio {
+  border:1px dashed #b7cbbd;
+  background:#f8faf6;
+  border-radius:12px;
+  text-align:center;
+  padding:48px 22px;
+  margin-top:8px;
+}
+.vacio strong {
+  font-size:15px;
+}
+.vacio p {
+  font-size:13px;
+  color:#657467;
+  margin:8px 0 0;
+}
+.aviso {
+  padding:14px 18px;
+  border-radius:10px;
+  font-size:14px;
+  margin:0 0 20px;
+}
+.exito {
+  background:#e2efd9;
+  border:1px solid #baceac;
+  color:#31532a;
+}
+.error {
+  background:#fbeae4;
+  border:1px solid #e2b6a7;
+  color:#852c1e;
+}
+footer {
+  text-align:center;
+  font-size:11px;
+  color:#69806d;
+  padding:28px 0 0;
+}
+.solo-lectores {
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip-path:inset(50%);
+}
+@media(max-width:760px) {
+  main {
+    padding:20px 16px;
+  }
+  .paneles {
+    grid-template-columns:1fr;
+  }
+  .tarjeta {
+    padding:22px;
+  }
+  h1 {
+    font-size:36px;
+  }
+  .introduccion {
+    padding:28px 0;
+  }
+  .marca {
+    font-size:10px;
+    letter-spacing:.8px;
+  }
+  .etiqueta {
+    font-size:9px;
+  }
+  .cabecera-listado {
+    flex-wrap:wrap;
+  }
+}
