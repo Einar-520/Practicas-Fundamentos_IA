@@ -43,26 +43,15 @@ def crear_app(coleccion=None):
         coleccion = cliente[BASE_DATOS][COLECCION]
 
         # --- INYECCIÓN EN EL BACKEND ---
-        # Se insertará automáticamente el dato en cuanto el servidor levante
         try:
             coleccion.update_one(
-                {"_id": 999}, # Usamos el número 999 de práctica para el ejemplo
+                {"_id": 1}, 
                 {"$set": {"nombre": "Wazaaaaaaa", "lenguaje": "Desconocido"}},
                 upsert=True
             )
             print("¡Dato 'Wazaaaaaaa' validado/insertado correctamente en MongoDB al iniciar!")
         except PyMongoError as e:
             print(f"No se pudo insertar el dato inicial: {e}")
-
-         try:
-                        coleccion.update_one(
-                            {"_id": 999}, # Usamos el número 999 de práctica para el ejemplo
-                            {"$set": {"nombre": "Einar", "lenguaje": "Desconocido"}},
-                            upsert=True
-                        )
-                        print("¡Dato 'Einar' validado/insertado correctamente en MongoDB al iniciar!")
-        except PyMongoError as e:
-                        print(f"No se pudo insertar el dato inicial: {e}")
         # -------------------------------
 
     def pagina(datos=None, error=None, estado=200):
