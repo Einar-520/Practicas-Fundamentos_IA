@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titulo }} · Práctica {{ numero }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+<main data-numero="{{ numero }}">
+  <header><a class="marca" href="{{ url_for('inicio') }}"><span>IA</span> Fundamentos de IA</a><span class="etiqueta">PRÁCTICA {{ '%02d'|format(numero) }}</span></header>
+  <section class="introduccion"><p class="supertitulo">APRENDER HACIENDO</p><h1>{{ titulo }}</h1><p>{{ descripcion }}</p></section>
+  <div class="paneles">
+    <section class="tarjeta captura"><div class="titulo-panel"><span class="paso">01</span><h2>{{ 'Explorar' if not grupos else 'Ingresa los datos' }}</h2></div>
+      <form id="formulario" action="{{ url_for('procesar') }}" method="post">
+        <input type="hidden" name="csrf" value="{{ session['csrf'] }}">
+        {% for grupo in grupos %}<fieldset><legend>{{ grupo.titulo }}</legend><div class="campos">
+          {% for campo in grupo.campos %}<div class="campo"><label for="{{ campo.clave }}">{{ campo.etiqueta }}</label>
+            {% if campo.tipo == 'booleano' %}
+            <select id="{{ campo.clave }}" name="{{ campo.clave }}" required><option value="">Selecciona una respuesta</option><option value="si">Sí</option><option value="no">No</option></select>
+            {% elif campo.tipo == 'opcion' %}
+            <select id="{{ campo.clave }}" name="{{ campo.clave }}" required><option value="">Selecciona una opción</option>{% for clave, etiqueta in campo.opciones.items() %}<option value="{{ clave }}">{{ etiqueta }}</option>{% endfor %}</select>
+            {% else %}
+            <input id="{{ campo.clave }}" name="{{ campo.clave }}" type="text" {% if campo.tipo == 'numero' %}inputmode="decimal"{% endif %} required autocomplete="off">
+            {% endif %}
+          </div>{% endfor %}
+        </div></fieldset>{% else %}<p class="ayuda">Compara las cuatro combinaciones de P y Q y el resultado de cada operación lógica.</p>{% endfor %}
+        <div class="acciones"><button type="submit" id="evaluar">{{ boton }} <span aria-hidden="true">→</span></button>{% if grupos %}<button type="reset" class="secundario">Limpiar</button>{% endif %}</div>
+      </form>
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+    <section class="tarjeta salida" aria-labelledby="titulo-resultado">
+      <div class="titulo-panel"><span class="paso">02</span><h2 id="titulo-resultado">Resultado</h2></div>
+      <p id="espera" class="vacio">{{ 'La tabla se mostrará aquí.' if not grupos else 'Completa el formulario para ver el resultado.' }}</p>
+      <div id="resultado" aria-live="polite" hidden><p id="nota-edicion" class="aviso" hidden>Modificaste el formulario. Vuelve a evaluar para actualizar este resultado.</p><h3 id="diagnostico"></h3><div id="mensajes"></div><div id="tablas"></div><button id="descargar" class="secundario" type="button" hidden>Descargar reporte TXT</button></div>
+    </section>
+  </div>
+  <footer>Práctica {{ numero }} · Python y una interfaz para aprender</footer>
+</main>
+</body>
+</html>

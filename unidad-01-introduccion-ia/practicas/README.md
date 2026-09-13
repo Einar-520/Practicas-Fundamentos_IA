@@ -1,27 +1,63 @@
 # Prácticas de la unidad 1
 
-Cada carpeta contiene un único programa independiente. Python 3.9 o superior; sin dependencias externas.
+Las prácticas 1 a 7 tienen interfaz web en español con **Python, Flask, HTML,
+CSS y JavaScript**. Cada carpeta contiene un programa independiente con sus
+propias reglas, plantillas, estilos y JavaScript.
 
-| N.º | Práctica | Archivo |
+| N.º | Práctica e instrucciones | Dirección |
 | --- | --- | --- |
-| 1 | Tablas de Verdad | [01_tablas_de_verdad.py](practica-01-tablas-de-verdad/01_tablas_de_verdad.py) |
-| 2 | Sistema de Examen | [02_sistema_examen.py](practica-02-sistema-examen/02_sistema_examen.py) |
-| 3 | Sistema de Examen con Lista Oficial Obligatoria | [03_sistema_examen_lista_oficial.py](practica-03-sistema-examen-lista-oficial/03_sistema_examen_lista_oficial.py) |
-| 4 | Diagnóstico de Equipo | [04_diagnostico_equipo.py](practica-04-diagnostico-equipo/04_diagnostico_equipo.py) |
-| 5 | Diagnóstico de Equipo con Reporte | [05_diagnostico_equipo_reporte.py](practica-05-diagnostico-equipo-reporte/05_diagnostico_equipo_reporte.py) |
-| 6 | Sistema Experto de Salud | [06_sistema_experto_salud.py](practica-06-sistema-experto-salud/06_sistema_experto_salud.py) |
-| 7 | Sistema Experto de Salud Mejorado | [07_sistema_experto_salud_mejorado.py](practica-07-sistema-experto-salud-mejorado/07_sistema_experto_salud_mejorado.py) |
+| 1 | [Tablas de verdad](practica-01-tablas-de-verdad/README.md) | http://localhost:5101 |
+| 2 | [Sistema de examen](practica-02-sistema-examen/README.md) | http://localhost:5102 |
+| 3 | [Examen con lista oficial](practica-03-sistema-examen-lista-oficial/README.md) | http://localhost:5103 |
+| 4 | [Diagnóstico de equipo](practica-04-diagnostico-equipo/README.md) | http://localhost:5104 |
+| 5 | [Diagnóstico con reporte](practica-05-diagnostico-equipo-reporte/README.md) | http://localhost:5105 |
+| 6 | [Sistema experto de salud](practica-06-sistema-experto-salud/README.md) | http://localhost:5106 |
+| 7 | [Sistema experto de salud mejorado](practica-07-sistema-experto-salud-mejorado/README.md) | http://localhost:5107 |
 
-Desde la raíz de fundamentos-ia, ejecuta por ejemplo:
+## Preparar el entorno
+
+En la terminal WSL, desde la raíz del proyecto:
 
 ```bash
-python3 unidad-01-introduccion-ia/practicas/practica-01-tablas-de-verdad/01_tablas_de_verdad.py
+python3 -m venv .venv
+.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-01-tablas-de-verdad/requirements.txt
+bash iniciar_practica_web.sh 1
 ```
 
-En las prácticas interactivas se aceptan s, si, sí, n y no. Las entradas inválidas se vuelven a solicitar; Ctrl+C o fin de entrada cancelan la captura.
+Las siete prácticas usan la misma dependencia, Flask; basta instalarla una vez
+en ese entorno. Selecciona `.venv/bin/python` como intérprete en VS Code.
+Abre la dirección de la práctica que iniciaste. Para cambiar de práctica, detén
+el servidor con Ctrl+C y cambia el número del último comando. Para abrir varias
+a la vez, inicia cada una en una terminal distinta. No necesitas Live Server.
 
-La práctica 3 mantiene la lista oficial como condición obligatoria. La práctica 5 recupera el reporte extenso del proyecto: incluye datos técnicos, daños físicos, comprobaciones de consistencia, diagnóstico principal, observaciones, folio y fecha/hora. El reporte se muestra en consola.
+También puedes ejecutar el archivo ejecutar.sh dentro de cada carpeta. El
+lanzador de la raíz solo elige qué programa iniciar; no mezcla las prácticas.
 
-Las versiones anteriores se conservan fuera de esta carpeta, en el respaldo creado al instalar. La tarea de tablas de verdad permanece en tareas junto con su enunciado.
-# Practicas-Fundamentos_IA
-# Practicas-Fundamentos_IA
+## Funcionalidad conservada
+
+1. **Tablas de verdad:** cuatro combinaciones de P y Q con negación, conjunción,
+   disyunción, implicación y equivalencia.
+2. **Examen:** asistencia mínima de 80, promedio mínimo de 8, proyecto entregado
+   y sin adeudos; la autorización especial es una alternativa.
+3. **Lista oficial:** además de las reglas del examen, aparecer en la lista es
+   obligatorio incluso con autorización especial.
+4. **Diagnóstico:** electricidad, encendido e imagen, en ese orden; los daños
+   físicos se informan como resultado adicional.
+5. **Reporte:** datos del usuario y del equipo, folio, fecha, diagnóstico,
+   consistencia de respuestas, proposiciones, observaciones y descarga TXT.
+6. **Salud:** tres síntomas evaluados con las reglas originales.
+7. **Salud mejorado:** siete síntomas y selección de la primera regla aplicable,
+   con explicación y recomendación. Los ejercicios de salud son académicos.
+
+Los campos vacíos, las opciones inválidas y los números no finitos se rechazan
+en Python. El servidor conserva las funciones originales que deciden los
+resultados. El navegador recibe JSON y muestra los resultados sin recargar la
+página. Las sesiones se separan por práctica para poder utilizarlas a la vez.
+
+## Prácticas con MongoDB
+
+- [Práctica 8: conexión local](practica-08-conexion-mongodb/README.md).
+- [Práctica 9: conexión con Atlas](practica-09-conexion-mongodb-atlas/README.md).
+
+Cada una tiene sus propias dependencias e instrucciones. Las prácticas 1 a 7
+pueden ejecutarse sin tener MongoDB instalado ni conectado.
