@@ -13,6 +13,8 @@ propias reglas, plantillas, estilos y JavaScript.
 | 5 | [Diagnóstico con reporte](practica-05-diagnostico-equipo-reporte/README.md) | http://localhost:5105 |
 | 6 | [Sistema experto de salud](practica-06-sistema-experto-salud/README.md) | http://localhost:5106 |
 | 7 | [Sistema experto de salud mejorado](practica-07-sistema-experto-salud-mejorado/README.md) | http://localhost:5107 |
+| 8 | [MongoDB local](practica-08-conexion-mongodb/README.md) | http://localhost:5000 |
+| 9 | [MongoDB Atlas](practica-09-conexion-mongodb-atlas/README.md) | http://localhost:5001 |
 
 ## Preparar el entorno
 
@@ -61,3 +63,6 @@ página. Las sesiones se separan por práctica para poder utilizarlas a la vez.
 
 Cada una tiene sus propias dependencias e instrucciones. Las prácticas 1 a 7
 pueden ejecutarse sin tener MongoDB instalado ni conectado.
+
+Las prácticas 8 y 9 también tienen interfaz web. El lanzador acepta números del 1 al 9.
+Se conserva una sola implementación por carpeta; las anteriores están en el historial de Git.

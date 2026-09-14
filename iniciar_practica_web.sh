@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Inicia una práctica independiente; no combina sus servidores ni sus reglas.
 set -euo pipefail
-if [[ $# != 1 || ! "$1" =~ ^0?[1-7]$ ]]; then
+if [[ $# != 1 || ! "$1" =~ ^0?[1-9]$ ]]; then
   echo "Uso: bash iniciar_practica_web.sh NUMERO"
-  echo "Elige una práctica del 1 al 7. Ejemplo: bash iniciar_practica_web.sh 1"
+  echo "Elige una práctica del 1 al 9. Ejemplo: bash iniciar_practica_web.sh 1"
   exit 2
 fi
 raiz="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"

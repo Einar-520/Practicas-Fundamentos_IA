@@ -15,7 +15,7 @@
     <section class="introduccion">
       <p class="subtitulo">PYTHON + MONGODB</p>
       <h1>Mis prácticas</h1>
-      <p>Registra una práctica y consulta la información guardada.</p>
+      <p>Escribe un dato, guárdalo en MongoDB y consulta el resultado.</p>
       <span class="estado {{ 'activo' if conectado else 'inactivo' }}">
         {{ 'MongoDB conectado' if conectado else 'MongoDB no disponible' }}
       </span>
@@ -38,7 +38,11 @@
           <input id="nombre" name="nombre" maxlength="120" required value="{{ datos.nombre }}">
           <label for="lenguaje">Lenguaje</label>
           <input id="lenguaje" name="lenguaje" maxlength="40" required value="{{ datos.lenguaje }}">
-          <button type="submit">Guardar práctica <span aria-hidden="true">→</span></button>
+          <label for="dato">Dato que deseas guardar</label>
+          <textarea id="dato" name="dato" rows="4" required aria-describedby="ayuda-dato"
+                    placeholder="Estoy aprendiendo a guardar datos en MongoDB.">{{ datos.dato }}</textarea>
+          <p id="ayuda-dato" class="ayuda">Escribe de 1 a 1000 caracteres.</p>
+          <button type="submit">Guardar dato <span aria-hidden="true">→</span></button>
         </form>
       </section>
       <section class="tarjeta listado">
@@ -51,14 +55,14 @@
           <div class="tabla-contenedor">
             <table>
               <caption class="solo-lectores">Prácticas guardadas en MongoDB</caption>
-              <thead><tr><th scope="col">N.º</th><th scope="col">Nombre</th><th scope="col">Lenguaje</th></tr></thead>
+              <thead><tr><th scope="col">N.º</th><th scope="col">Nombre</th><th scope="col">Lenguaje</th><th scope="col">Dato guardado</th></tr></thead>
               <tbody>{% for registro in registros %}
-                <tr><td>{{ registro['_id'] }}</td><td>{{ registro.get('nombre', 'Sin nombre') }}</td><td>{{ registro.get('lenguaje', 'Sin especificar') }}</td></tr>
+                <tr><td>{{ registro['_id'] }}</td><td>{{ registro.get('nombre', 'Sin nombre') }}</td><td>{{ registro.get('lenguaje', 'Sin especificar') }}</td><td class="dato-guardado">{{ registro.get('dato', 'Sin dato registrado') }}</td></tr>
               {% endfor %}</tbody>
             </table>
           </div>
         {% elif conectado %}
-          <div class="vacio"><strong>Tu primer registro empieza aquí</strong><p>Completa el formulario y pulsa «Guardar práctica».</p></div>
+          <div class="vacio"><strong>Tu primer registro empieza aquí</strong><p>Completa el formulario y pulsa «Guardar dato».</p></div>
         {% else %}
           <div class="vacio"><strong>No se pudieron cargar los registros</strong><p>Cuando el servidor esté disponible, pulsa «Actualizar».</p></div>
         {% endif %}

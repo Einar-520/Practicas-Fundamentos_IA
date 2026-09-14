@@ -27,13 +27,16 @@ def validar(datos):
         raise ValueError("Escribe un nombre de entre 1 y 120 caracteres.")
     if not 1 <= len(datos["lenguaje"]) <= 40:
         raise ValueError("Escribe un lenguaje de entre 1 y 40 caracteres.")
-    return numero, {"nombre": datos["nombre"], "lenguaje": datos["lenguaje"]}
+    if not 1 <= len(datos["dato"]) <= 1000:
+        raise ValueError("Escribe un dato de entre 1 y 1000 caracteres.")
+    return numero, {campo: datos[campo] for campo in ("nombre", "lenguaje", "dato")}
 
 
 def crear_app(coleccion=None):
     app = Flask(__name__, template_folder=str(DIRECTORIO / "templates"),
                 static_folder=str(DIRECTORIO / "static"))
     app.config.update(SECRET_KEY=secrets.token_hex(32), MAX_CONTENT_LENGTH=16384,
+                      SESSION_COOKIE_NAME="practica_8_sesion",
                       SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
 
     if coleccion is None:
@@ -42,22 +45,10 @@ def crear_app(coleccion=None):
         atexit.register(cliente.close)
         coleccion = cliente[BASE_DATOS][COLECCION]
 
-        # --- INYECCIÓN EN EL BACKEND ---
-        try:
-            coleccion.update_one(
-                {"_id": 1}, 
-                {"$set": {"nombre": "Wazaaaaaaa", "lenguaje": "Desconocido"}},
-                upsert=True
-            )
-            print("¡Dato 'Wazaaaaaaa' validado/insertado correctamente en MongoDB al iniciar!")
-        except PyMongoError as e:
-            print(f"No se pudo insertar el dato inicial: {e}")
-        # -------------------------------
-
     def pagina(datos=None, error=None, estado=200):
         session.setdefault("csrf", secrets.token_hex(32))
         try:
-            registros = list(coleccion.find({}, {"nombre": 1, "lenguaje": 1})
+            registros = list(coleccion.find({}, {"nombre": 1, "lenguaje": 1, "dato": 1})
                              .sort("_id", 1).limit(100))
             conectado = True
         except PyMongoError:
@@ -65,7 +56,7 @@ def crear_app(coleccion=None):
             error = error or "No se pudo consultar MongoDB. Comprueba el servidor y los permisos."
             estado = 503
         return render_template("index.html", registros=registros, conectado=conectado,
-                               error=error, datos=datos or {"numero": "8", "nombre": "Conexión con MongoDB", "lenguaje": "Python"}), estado
+                               error=error, datos=datos or {"numero": "8", "nombre": "Conexión con MongoDB", "lenguaje": "Python", "dato": ""}), estado
 
     @app.get("/")
     def inicio():
@@ -74,7 +65,7 @@ def crear_app(coleccion=None):
     @app.post("/guardar")
     def guardar():
         datos = {campo: request.form.get(campo, "").strip()
-                 for campo in ("numero", "nombre", "lenguaje")}
+                 for campo in ("numero", "nombre", "lenguaje", "dato")}
         token = request.form.get("csrf", "")
         if not token or not secrets.compare_digest(token.encode(), session.get("csrf", "").encode()):
             return pagina(datos, "El formulario expiró. Vuelve a enviarlo desde esta página.", 400)

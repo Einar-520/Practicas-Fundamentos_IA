@@ -5,6 +5,8 @@
   font-synthesis:none;
   line-height:1.5;
 }
+textarea { resize: vertical; }
+.dato-guardado { white-space: pre-wrap; min-width: 140px; }
 * {
   box-sizing:border-box;
 }
@@ -121,7 +123,7 @@ label {
   font-weight:650;
   margin:18px 0 7px;
 }
-input {
+input, textarea {
   display:block;
   width:100%;
   font:inherit;
@@ -132,7 +134,7 @@ input {
   background:#fbfcfa;
   padding:11px 12px;
 }
-input:focus-visible,button:focus-visible,a:focus-visible {
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible {
   outline:3px solid #8eae38;
   outline-offset:3px;
 }

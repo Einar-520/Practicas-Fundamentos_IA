@@ -31,14 +31,16 @@ Si `launch.json` define `python`, debe utilizar ese mismo intérprete.
 ## Guardar y consultar
 
 El formulario comienza con número `8`, nombre `Conexión con MongoDB` y lenguaje `Python`.
-Pulsa Guardar práctica. MongoDB crea la base y la colección en la primera escritura
+Escribe en «Dato que deseas guardar» un texto como «Estoy aprendiendo MongoDB».
+Pulsa Guardar dato. MongoDB crea la base y la colección en la primera escritura
 si aún no existen. El número se guarda como `_id`: volver a usarlo actualiza ese
-documento, conservando campos adicionales. Para crear otro documento, usa otro número.
+documento, conservando campos adicionales. El texto se guarda en el campo `dato`.
+Para crear otro documento, usa otro número. La tabla muestra también «Dato guardado».
 Abrir la página no inserta datos. La tabla consulta hasta 100 documentos ordenados
 por número; Actualizar vuelve a consultar. No hay operaciones de borrado.
 
 Los datos se conservan en MongoDB al cerrar la página. Se validan el número positivo
-y las longitudes de nombre (1–120) y lenguaje (1–40), también desde Python.
+y las longitudes de nombre (1–120), lenguaje (1–40) y dato (1–1000), también desde Python.
 Las plantillas escapan HTML. El formulario usa un token de sesión y el cliente de
 MongoDB se reutiliza y se cierra al terminar el proceso normalmente.
 

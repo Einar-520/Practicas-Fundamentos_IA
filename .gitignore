@@ -1,4 +1,3 @@
-
 # Configuración local y archivos generados
 .env*
 !.env.example
@@ -6,3 +5,14 @@
 venv/
 __pycache__/
 *.py[cod]
+*:Zone.Identifier
+
+# Entregas anteriores: las versiones se conservan en el historial de Git
+/practicas_revision.zip
+/practicas_con_interfaz.zip
+/instalar_practica_08_web.sh
+/instalar_practica_09_atlas.sh
+/instalar_interfaces_practicas.sh
+/unidad-01-introduccion-ia/practicas_respaldo/
+/CLAUDE.md
+/.claude/

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi espacio en Atlas · Práctica 09</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+  <div class="aplicacion">
+    <aside class="lateral">
+      <a class="marca" href="{{ url_for('inicio') }}"><span class="marca-icono" aria-hidden="true">a.</span><span>atlas<span class="marca-subtitulo">CUADERNO DE PRÁCTICAS</span></span></a>
+      <div class="lateral-contenido">
+        <p class="etiqueta">FUNDAMENTOS DE IA</p>
+        <div class="seleccion"><span class="numero">09</span><div>Mi espacio en Atlas<small>Conexión con la nube</small></div></div>
+        <div class="destino">
+          <span class="etiqueta">DESTINO DE TUS DATOS</span>
+          <p>Base de datos<strong>{{ base or 'Pendiente de configurar' }}</strong></p>
+          <p>Colección<strong>{{ coleccion or 'Pendiente de configurar' }}</strong></p>
+        </div>
+      </div>
+      <div class="perfil"><span class="avatar">EL</span><div>Einar Lazcano<small>Estudiante</small></div></div>
+    </aside>
+    <main>
+      <div class="barra-superior"><span>Mis prácticas <span class="separador">/</span> <strong>Práctica 09</strong></span><span class="local">ENTORNO LOCAL</span></div>
+      <section class="encabezado">
+        <p class="etiqueta">TU PRIMER DATO EN LA NUBE</p>
+        <h1>Mi espacio en Atlas<span>.</span></h1>
+        <p>Escribe, guarda y consulta. Tus datos, conectados desde Python.</p>
+        <span id="conexion" class="estado esperando" role="status">Comprobando conexión…</span>
+      </section>
+      <div id="aviso" class="aviso" role="status" aria-live="polite" tabindex="-1" hidden></div>
+      <noscript><p class="aviso error">Activa JavaScript para guardar y consultar desde esta página.</p></noscript>
+      <div class="columnas">
+        <section class="tarjeta editor" aria-labelledby="titulo-editor">
+          <div class="titulo-tarjeta"><span class="paso">01</span><div><h2 id="titulo-editor">Escribe tu dato</h2><p>Una idea, un aprendizaje o una nota.</p></div></div>
+          <form id="formulario" action="{{ url_for('guardar') }}" method="post">
+            <input type="hidden" name="csrf" value="{{ session['csrf'] }}">
+            <label for="dato">¿Qué quieres guardar?</label>
+            <textarea id="dato" name="dato" rows="7" required aria-describedby="contador pista" placeholder="Hoy aprendí a conectar Python con MongoDB Atlas…"></textarea>
+            <div class="bajo-campo"><span>Máximo 1000 caracteres</span><span id="contador">0 / 1000</span></div>
+            <button id="guardar" class="boton-principal" type="submit">Guardar en Atlas <span aria-hidden="true">↗</span></button>
+            <p id="pista" class="nota">Cada guardado actualiza el documento de esta práctica.</p>
+          </form>
+        </section>
+        <section class="tarjeta consulta" aria-labelledby="titulo-consulta" data-url="{{ url_for('consultar') }}">
+          <div class="titulo-tarjeta"><span class="paso">02</span><div><h2 id="titulo-consulta">Tu dato guardado</h2><p>Consultado directamente desde Atlas.</p></div><button id="actualizar" class="boton-secundario" type="button" aria-label="Actualizar documento">Actualizar</button></div>
+          <p id="consulta-estado" class="consulta-estado">Consultando tu documento…</p>
+          <div id="vacio" class="vacio" hidden><div class="vacio-icono" aria-hidden="true">↗</div><h3>Aquí empieza tu colección</h3><p>Guarda tu primer dato y aparecerá en este espacio.</p></div>
+          <article id="documento" hidden>
+            <div class="documento-cabecera"><span class="insignia">PRÁCTICA 09</span><span class="confirmado">Guardado</span></div>
+            <p id="dato-guardado" class="dato-guardado"></p>
+            <dl class="metadatos"><div><dt>Autor</dt><dd id="autor"></dd></div><div><dt>Última actualización</dt><dd><time id="fecha"></time></dd></div></dl>
+            <details><summary>Ver documento JSON</summary><pre id="json"></pre></details>
+          </article>
+        </section>
+      </div>
+      <footer><span class="pie-punto" aria-hidden="true"></span> Python · MongoDB Atlas <span class="pie-derecho">Aprender haciendo.</span></footer>
+    </main>
+  </div>
+</body>
+</html>
