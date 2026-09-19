@@ -1,6 +1,60 @@
-# Práctica 9: HTML, CSS, JavaScript, Python y MongoDB Atlas
+# Práctica 9: Tkinter, interfaz web y MongoDB Atlas
 
 Programa independiente de la práctica 8. Aquí la conexión es al clúster del profesor.
+Puedes usar una ventana de escritorio con Tkinter o la página web existente.
+Ambas interfaces pertenecen a la misma práctica y utilizan servicio_atlas.py para
+validar, guardar y consultar el mismo documento; no hay copias de las reglas.
+
+## Abrir la ventana Tkinter en WSL
+
+Guarda los archivos abiertos en VS Code. Desde la raíz del proyecto:
+
+```bash
+cd ~/universidad/fundamentos-ia
+git pull --ff-only origin main
+sudo apt update
+sudo apt install -y python3-tk
+.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/requirements.txt
+bash unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/ejecutar_tkinter.sh
+```
+
+El lanzador utiliza el intérprete .venv/bin/python del proyecto. Si todavía no
+existe, créalo con python3 -m venv .venv antes de instalar las dependencias.
+También puedes abrir interfaz_tkinter.py en VS Code y ejecutarlo seleccionando
+ese intérprete. Se abre una ventana de escritorio; esta opción no necesita un
+servidor Flask ni una dirección localhost.
+
+La aplicación lee el mismo .env junto a configuracion.py. Si no existe, créalo
+con preparar_env.py siguiendo el apartado de variables; no reemplaces uno existente.
+Tkinter es un componente de Python instalado mediante el paquete del sistema,
+no una dependencia de pip. Si utilizas otra versión de Python, instala el paquete
+Tk correspondiente a ese intérprete.
+
+WSL necesita soporte para aplicaciones gráficas (WSLg). Microsoft lo documenta
+para WSL 2 en Windows 10 build 19044 o posterior y Windows 11. Para verificar la
+ventana de prueba ejecuta .venv/bin/python -m tkinter. Si aparece un error de
+pantalla, revisa WSLg; en PowerShell puedes comprobar wsl --status y actualizar
+WSL con wsl --update. Guarda el trabajo antes de reiniciar WSL.
+
+## Uso de la ventana
+
+1. Al abrir, se consulta el documento existente; no se escribe automáticamente.
+2. Escribe de 1 a 1000 caracteres y pulsa **Guardar en Atlas** o **Ctrl + Enter**.
+3. El panel derecho muestra el documento consultado después del guardado.
+4. **Actualizar consulta** vuelve a leer Atlas sin borrar el texto del formulario.
+5. **Limpiar formulario** vacía únicamente el cuadro de entrada; no borra la base.
+
+Cada guardado actualiza el documento _id: practica_09 y conserva los campos
+ajenos al ejercicio. Las credenciales permanecen en el .env. La ventana muestra
+solamente los nombres de la base y colección y los campos públicos del documento.
+
+Las operaciones se ejecutan en un hilo de trabajo. La interfaz recibe los
+resultados mediante una cola y after, siempre en el hilo principal de Tkinter.
+Mientras hay una operación, se deshabilita otro envío. Si cierras la ventana
+mientras guarda o consulta, espera a que termine para cerrar la conexión.
+Los errores no borran lo escrito y marcan la última consulta como posiblemente
+antigua. Un guardado confirmado cuya consulta posterior falla se indica
+explícitamente; pulsa Actualizar antes de volver a guardar.
 
 ## Archivos
 
@@ -9,7 +63,11 @@ Programa independiente de la práctica 8. Aquí la conexión es al clúster del 
 | `.env` | Usuario, contraseña, dominio, base y colección. Se crea únicamente en tu laptop. |
 | `.env.example` | Ejemplo de configuración sin contraseña. |
 | `configuracion.py` | Lee el .env y construye `mongo_url`. |
-| `09_conexion_mongodb_atlas.py` | Servidor Flask, conexión y API para guardar y consultar. |
+| `09_conexion_mongodb_atlas.py` | Servidor Flask y API web. |
+| `interfaz_tkinter.py` | Ventana de escritorio, formulario y consulta del documento. |
+| `servicio_atlas.py` | Conexión y reglas de guardado compartidas por ambas interfaces. |
+| `ejecutar_tkinter.sh` | Abre la ventana con el Python del entorno .venv. |
+| `tests/test_practica09.py` | Pruebas del servicio, API y flujo de la ventana con Atlas simulado. |
 | `templates/index.html` | Estructura de la página y formulario. |
 | `static/estilos.css` | Diseño adaptable a escritorio y móvil. |
 | `static/app.js` | Guardado y consulta con fetch sin recargar, contador y estados. |
@@ -33,7 +91,7 @@ MongoDB no permite espacios en los nombres de bases: por eso se usan guiones baj
 El documento mantiene el nombre completo con espacios.
 La colección es un contenedor llamado `datos`; el dato es el contenido del documento.
 
-## Ejecutar en WSL
+## Abrir la versión web en WSL
 
 Desde `~/universidad/fundamentos-ia`:
 
@@ -119,6 +177,17 @@ JavaScript. El navegador del entorno de preparación bloquea las direcciones loc
 por lo que no se ha confirmado visualmente el diseño en ese navegador.
 La ejecución en tu laptop confirma los permisos y la creación real de la base.
 
+Para Tkinter se verificaron 11 pruebas del servicio, API y controlador: inserción,
+actualización sin duplicados, validación, errores, reintento tras corregir la
+configuración, cierre de conexión y trabajo de fondo sin envíos simultáneos.
+La prueba de widgets reales se omite automáticamente si falta un servidor gráfico;
+en el entorno de preparación no se pudo verificar visualmente la ventana.
+Ejecuta las pruebas desde WSLg o un escritorio para incluir esa comprobación:
+
+```bash
+.venv/bin/python -m unittest discover -s unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/tests -v
+```
+
 ## Referencias
 
 - https://www.mongodb.com/docs/manual/reference/limits/
@@ -126,3 +195,6 @@ La ejecución en tu laptop confirma los permisos y la creación real de la base.
 - https://www.mongodb.com/docs/languages/python/pymongo-driver/current/databases-collections/
 - https://bbc2.github.io/python-dotenv/
 - https://flask.palletsprojects.com/en/stable/patterns/javascript/
+
+- https://docs.python.org/3/library/tkinter.html
+- https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps

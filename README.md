@@ -3,6 +3,7 @@
 Ejercicios de Einar Ivan Lazcano Luna. Las prácticas **1 a 9** se ejecutan como
 aplicaciones web independientes en el navegador, con Python y Flask para las
 reglas y HTML/CSS para la interfaz; las prácticas 1 a 7 y 9 también usan JavaScript.
+La práctica 9 también incluye una ventana de escritorio con Tkinter.
 
 ## Inicio en WSL
 
@@ -28,7 +29,7 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 6 | [Sistema experto de salud](unidad-01-introduccion-ia/practicas/practica-06-sistema-experto-salud/README.md) | 5106 |
 | 7 | [Sistema experto de salud mejorado](unidad-01-introduccion-ia/practicas/practica-07-sistema-experto-salud-mejorado/README.md) | 5107 |
 | 8 | [Guardar un dato en MongoDB local](unidad-01-introduccion-ia/practicas/practica-08-conexion-mongodb/README.md) | 5000 |
-| 9 | [Guardar un dato en MongoDB Atlas](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md) | 5001 |
+| 9 | [MongoDB Atlas: web o Tkinter](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md) | Web: 5001; Tkinter: ventana |
 
 Cada carpeta incluye el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
@@ -84,3 +85,15 @@ bash iniciar_practica_web.sh 1
 Cambia el último número por cualquiera del 1 al 9. MongoDB local debe estar
 iniciado para la 8; la 9 utiliza el .env de Atlas. Si todavía no existe, créalo con
 el preparar_env.py de esa práctica siguiendo sus instrucciones.
+
+## Ventana Tkinter de la práctica 9
+
+Desde WSL, instala Tkinter y abre la ventana:
+
+```bash
+sudo apt install -y python3-tk
+bash unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/ejecutar_tkinter.sh
+```
+
+Se utiliza el mismo .env de Atlas y las mismas reglas que en la interfaz web.
+[Consulta la instalación completa, el uso y los requisitos de WSLg](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md).
