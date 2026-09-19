@@ -4,6 +4,7 @@ Ejercicios de Einar Ivan Lazcano Luna. Las prácticas **1 a 9** se ejecutan como
 aplicaciones web independientes en el navegador, con Python y Flask para las
 reglas y HTML/CSS para la interfaz; las prácticas 1 a 7 y 9 también usan JavaScript.
 La práctica 9 también incluye una ventana de escritorio con Tkinter.
+La práctica 10 implementa un agente de climatización con Tkinter e inserción en Atlas.
 
 ## Inicio en WSL
 
@@ -30,8 +31,9 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 7 | [Sistema experto de salud mejorado](unidad-01-introduccion-ia/practicas/practica-07-sistema-experto-salud-mejorado/README.md) | 5107 |
 | 8 | [Guardar un dato en MongoDB local](unidad-01-introduccion-ia/practicas/practica-08-conexion-mongodb/README.md) | 5000 |
 | 9 | [MongoDB Atlas: web o Tkinter](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md) | Web: 5001; Tkinter: ventana |
+| 10 | [Agente de climatización](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
 
-Cada carpeta incluye el programa Python, templates/index.html, static/estilos.css,
+Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
 permite descargar el reporte en TXT. Las respuestas y resultados están en español.
 
@@ -49,9 +51,9 @@ selecciona el intérprete .venv/bin/python del proyecto.
 
 ## Una versión por práctica
 
-Las nueve carpetas contienen las interfaces web vigentes. Las versiones anteriores
+Las diez carpetas contienen las prácticas vigentes con interfaz gráfica. Las versiones anteriores
 se consultan en el historial de Git; los ZIP e instaladores antiguos se retiraron.
-El archivo Python de cada carpeta es el servidor de su interfaz web y se conserva.
+Los archivos Python contienen el programa de cada práctica y se conservan.
 
 Para actualizar una copia anterior abierta en VS Code, guarda los archivos del
 editor y detén los servidores. Ejecuta desde WSL:
@@ -74,7 +76,7 @@ los apuntes y las tareas locales quedan fuera de la limpieza. No reescribe el
 historial ni envía cambios a GitHub. Si Git detecta un conflicto con otros archivos,
 restaura el contenido respaldado y detiene la actualización.
 
-Instala las dependencias de las nueve prácticas en el intérprete del proyecto:
+Instala las dependencias de las diez prácticas en el intérprete del proyecto:
 
 ```bash
 python3 -m venv .venv
@@ -97,3 +99,18 @@ bash unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/ejec
 
 Se utiliza el mismo .env de Atlas y las mismas reglas que en la interfaz web.
 [Consulta la instalación completa, el uso y los requisitos de WSLg](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md).
+
+
+## Práctica 10: agente de climatización
+
+La ventana recibe temperatura y humedad, aplica las reglas del profesor e inserta
+un registro en Atlas por evaluación. Usa la colección climatizacion de tu base
+personal y un .env propio. El lanzador prepara ese archivo reutilizando el acceso
+local de la práctica 9, si existe, y conserva cualquier .env existente de la 10.
+
+```bash
+bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh
+```
+
+[Consulta la instalación, las reglas, la estructura y el documento insertado](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md).
+El lanzador iniciar_practica_web.sh sigue correspondiendo a las interfaces web 1 a 9.

@@ -19,6 +19,7 @@ CARPETAS = (
     'practica-07-sistema-experto-salud-mejorado',
     'practica-08-conexion-mongodb',
     'practica-09-conexion-mongodb-atlas',
+    'practica-10-agente-climatizacion',
 )
 ANTIGUOS = (
     'practicas_revision.zip', 'practicas_con_interfaz.zip',
@@ -76,9 +77,10 @@ def comprobar_proyecto(raiz):
     if git(raiz, 'merge-base', '--is-ancestor', anterior, destino, comprobar=False).returncode:
         raise RuntimeError('Hay commits locales que no están en origin/main. Consérvalos e intégralos antes de actualizar; no se ha borrado nada.')
     archivos = set(git(raiz, 'ls-tree', '-r', '--name-only', destino, '--', PRACTICAS).stdout.splitlines())
-    esperados = {f'{PRACTICAS}/{carpeta}/templates/index.html' for carpeta in CARPETAS}
+    esperados = {f'{PRACTICAS}/{carpeta}/templates/index.html' for carpeta in CARPETAS[:9]}
+    esperados.add(f'{PRACTICAS}/practica-10-agente-climatizacion/10_agente_climatizacion.py')
     if not esperados.issubset(archivos):
-        raise RuntimeError('origin/main no contiene las nueve interfaces web completas. Ejecuta git fetch origin main.')
+        raise RuntimeError('origin/main no contiene las diez prácticas completas. Ejecuta git fetch origin main.')
     if any(Path(ruta).name == '.env' for ruta in archivos):
         raise RuntimeError('La versión remota contiene un .env versionado. No se reemplazará tu configuración.')
     for relativo in ALCANCE:
@@ -167,9 +169,10 @@ def sincronizar(raiz):
         else:
             print('Git avanzó, pero faltó completar la configuración local. Tu respaldo permanece en:', respaldo)
         raise
-    print(f'Actualizado a {destino[:12]}. Las nueve prácticas web ya están en las carpetas de VS Code.')
+    print(f'Actualizado a {destino[:12]}. Las diez prácticas ya están en las carpetas de VS Code.')
     print('Tu configuración .env se conserva. Las copias anteriores están en el respaldo externo y en el historial de Git.')
     print('Para ejecutar: bash iniciar_practica_web.sh 1 (puedes elegir del 1 al 9).')
+    print('Práctica 10: bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh')
     return respaldo
 
 
@@ -190,3 +193,4 @@ def main():
 
 if __name__ == '__main__':
     raise SystemExit(main())
+

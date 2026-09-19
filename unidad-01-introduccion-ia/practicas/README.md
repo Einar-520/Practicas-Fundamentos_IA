@@ -14,7 +14,8 @@ propias reglas, plantillas, estilos y JavaScript.
 | 6 | [Sistema experto de salud](practica-06-sistema-experto-salud/README.md) | http://localhost:5106 |
 | 7 | [Sistema experto de salud mejorado](practica-07-sistema-experto-salud-mejorado/README.md) | http://localhost:5107 |
 | 8 | [MongoDB local](practica-08-conexion-mongodb/README.md) | http://localhost:5000 |
-| 9 | [MongoDB Atlas](practica-09-conexion-mongodb-atlas/README.md) | http://localhost:5001 |
+| 9 | [MongoDB Atlas](practica-09-conexion-mongodb-atlas/README.md) | http://localhost:5001 o ventana Tkinter |
+| 10 | [Agente de climatización](practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
 
 ## Preparar el entorno
 
@@ -66,3 +67,11 @@ pueden ejecutarse sin tener MongoDB instalado ni conectado.
 
 Las prácticas 8 y 9 también tienen interfaz web. El lanzador acepta números del 1 al 9.
 Se conserva una sola implementación por carpeta; las anteriores están en el historial de Git.
+
+
+## Práctica 10: agente reactivo simple
+
+El agente captura temperatura y humedad, conserva las reglas condición-acción del
+profesor e inserta en Atlas la percepción, la acción y la fecha. Se ejecuta de forma
+independiente con ejecutar.sh dentro de practica-10-agente-climatizacion. Su .env
+apunta por defecto a la colección climatizacion de Einar_Ivan_Lazcano_Luna.
