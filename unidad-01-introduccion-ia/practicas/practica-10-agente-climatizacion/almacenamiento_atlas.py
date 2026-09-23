@@ -1,14 +1,18 @@
-"""Inserción y consulta exclusivas de los registros de la práctica 10."""
+"""CRUD de los registros personales de la práctica 10 en MongoDB Atlas."""
 
 from datetime import datetime, timezone
 
+from bson import ObjectId
 from pymongo import MongoClient
 from pymongo.errors import ConfigurationError, ConnectionFailure, OperationFailure, PyMongoError
 
+from agente_climatizacion import ALUMNO
 from configuracion import cargar_configuracion
 
 CAMPOS = ('practica', 'alumno', 'agente', 'temperatura', 'humedad', 'accion', 'fecha')
-PROYECCION = {campo: 1 for campo in CAMPOS}
+PROYECCION = {campo: 1 for campo in (*CAMPOS, 'actualizado_en')}
+FILTRO_BASE = {'practica': 10, 'alumno': ALUMNO}
+TAMANO_PAGINA = 50
 
 
 class ErrorAtlas(Exception):
@@ -34,12 +38,22 @@ def serializar(documento):
         return None
     resultado = {campo: documento.get(campo) for campo in CAMPOS}
     resultado['_id'] = str(documento['_id'])
-    fecha = resultado['fecha']
-    if isinstance(fecha, datetime):
-        if fecha.tzinfo is None:
-            fecha = fecha.replace(tzinfo=timezone.utc)
-        resultado['fecha'] = fecha.isoformat()
+    if 'actualizado_en' in documento:
+        resultado['actualizado_en'] = documento['actualizado_en']
+    for campo in ('fecha', 'actualizado_en'):
+        fecha = resultado.get(campo)
+        if isinstance(fecha, datetime):
+            if fecha.tzinfo is None:
+                fecha = fecha.replace(tzinfo=timezone.utc)
+            resultado[campo] = fecha.isoformat()
     return resultado
+
+
+def filtro_registro(identificador):
+    # Validar antes de conectar: nunca aceptar un filtro enviado como diccionario.
+    if not isinstance(identificador, str) or not ObjectId.is_valid(identificador):
+        raise ValueError('Selecciona un registro con un identificador válido de MongoDB.')
+    return {**FILTRO_BASE, '_id': ObjectId(identificador)}
 
 
 class AlmacenamientoAtlas:
@@ -70,27 +84,77 @@ class AlmacenamientoAtlas:
             raise ErrorAtlas(mensaje_error(error)) from None
 
     def insertar(self, documento):
-        """Crear un documento nuevo por evaluación, sin actualizar otros registros."""
+        """Crear un documento nuevo por evaluación."""
         self.abrir()
         copia = {campo: documento[campo] for campo in CAMPOS}
         try:
             resultado = self._coleccion.insert_one(copia)
         except PyMongoError as error:
             raise ErrorAtlas(mensaje_error(error) +
-                             ' El guardado no se confirmó. Consulta el último registro antes de reintentar.') from None
+                             ' La creación no se confirmó. Actualiza la lista antes de reintentar.') from None
         if not resultado.acknowledged:
-            raise ErrorAtlas('El guardado no se confirmó. Consulta el último registro antes de reintentar.')
+            raise ErrorAtlas('La creación no se confirmó. Actualiza la lista antes de reintentar.')
         copia['_id'] = resultado.inserted_id
         return serializar(copia)
 
+    def listar(self, pagina=0):
+        """Leer una página y comprobar si hay más resultados, sin contar toda la colección."""
+        if type(pagina) is not int or pagina < 0:
+            raise ValueError('La página debe ser un entero no negativo.')
+        self.abrir()
+        try:
+            cursor = (self._coleccion.find(FILTRO_BASE, PROYECCION)
+                      .sort([('fecha', -1), ('_id', -1)])
+                      .skip(pagina * TAMANO_PAGINA).limit(TAMANO_PAGINA + 1))
+            documentos = list(cursor)
+            return {'registros': [serializar(d) for d in documentos[:TAMANO_PAGINA]],
+                    'hay_siguiente': len(documentos) > TAMANO_PAGINA, 'pagina': pagina}
+        except PyMongoError as error:
+            raise ErrorAtlas(mensaje_error(error)) from None
+
     def consultar_ultimo(self):
+        """Mantener disponible la consulta individual de la versión anterior."""
         self.abrir()
         try:
             documento = self._coleccion.find_one(
-                {'practica': 10}, PROYECCION, sort=[('fecha', -1), ('_id', -1)])
+                FILTRO_BASE, PROYECCION, sort=[('fecha', -1), ('_id', -1)])
             return serializar(documento)
         except PyMongoError as error:
             raise ErrorAtlas(mensaje_error(error)) from None
+
+    def actualizar(self, identificador, documento):
+        """Editar solo los valores del agente; conservar fecha inicial y campos ajenos."""
+        filtro = filtro_registro(identificador)
+        cambios = {campo: documento[campo] for campo in ('temperatura', 'humedad', 'accion')}
+        cambios['actualizado_en'] = datetime.now(timezone.utc)
+        self.abrir()
+        try:
+            resultado = self._coleccion.update_one(filtro, {'$set': cambios}, upsert=False)
+        except PyMongoError as error:
+            raise ErrorAtlas(mensaje_error(error) +
+                             ' La actualización no se confirmó. Actualiza la lista antes de reintentar.') from None
+        if not resultado.acknowledged:
+            raise ErrorAtlas('La actualización no se confirmó. Actualiza la lista antes de reintentar.')
+        if resultado.matched_count == 0:
+            raise ErrorAtlas('El registro ya no existe o no pertenece a esta práctica y alumno. Actualiza la lista.')
+        # La lectura posterior se hace por separado para no confundir un fallo
+        # de consulta con una actualización que Atlas ya confirmó.
+        return {'_id': identificador}
+
+    def eliminar(self, identificador):
+        """Eliminar exactamente el registro seleccionado de esta práctica y alumno."""
+        filtro = filtro_registro(identificador)
+        self.abrir()
+        try:
+            resultado = self._coleccion.delete_one(filtro)
+        except PyMongoError as error:
+            raise ErrorAtlas(mensaje_error(error) +
+                             ' La eliminación no se confirmó. Actualiza la lista antes de reintentar.') from None
+        if not resultado.acknowledged:
+            raise ErrorAtlas('La eliminación no se confirmó. Actualiza la lista antes de reintentar.')
+        if resultado.deleted_count == 0:
+            raise ErrorAtlas('El registro ya no existe o no pertenece a esta práctica y alumno. Actualiza la lista.')
+        return {'_id': identificador}
 
     def cerrar(self):
         if self._cliente is not None:

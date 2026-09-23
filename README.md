@@ -4,7 +4,7 @@ Ejercicios de Einar Ivan Lazcano Luna. Las prácticas **1 a 9** se ejecutan como
 aplicaciones web independientes en el navegador, con Python y Flask para las
 reglas y HTML/CSS para la interfaz; las prácticas 1 a 7 y 9 también usan JavaScript.
 La práctica 9 también incluye una ventana de escritorio con Tkinter.
-La práctica 10 implementa un agente de climatización con Tkinter e inserción en Atlas.
+La práctica 10 implementa un agente de climatización con Tkinter y CRUD en Atlas.
 
 ## Inicio en WSL
 
@@ -103,9 +103,11 @@ Se utiliza el mismo .env de Atlas y las mismas reglas que en la interfaz web.
 
 ## Práctica 10: agente de climatización
 
-La ventana recibe temperatura y humedad, aplica las reglas del profesor e inserta
-un registro en Atlas por evaluación. Usa la colección climatizacion de tu base
-personal y un .env propio. El lanzador prepara ese archivo reutilizando el acceso
+La ventana recibe temperatura y humedad y aplica las reglas del profesor. Su CRUD
+permite crear registros en Atlas, consultarlos en una tabla con páginas, editar
+el seleccionado recalculando la acción y eliminarlo con confirmación. Usa la
+colección climatizacion de tu base personal y un .env propio. Las operaciones se
+limitan a tus registros de la práctica 10. El lanzador prepara ese archivo reutilizando el acceso
 local de la práctica 9, si existe, y conserva cualquier .env existente de la 10.
 
 ```bash

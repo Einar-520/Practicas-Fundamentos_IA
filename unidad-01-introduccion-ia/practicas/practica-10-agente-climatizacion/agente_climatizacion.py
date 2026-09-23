@@ -4,6 +4,9 @@ from datetime import datetime, timezone
 from math import isfinite
 
 
+ALUMNO = 'Einar Ivan Lazcano Luna'
+
+
 class AgenteClimatizacion:
     def __init__(self):
         self.temperatura = 0.0
@@ -43,18 +46,20 @@ class AgenteClimatizacion:
         return (f'Percepción → Temp: {self.temperatura:g} °C | Humedad: {self.humedad:g} %\n'
                 f'Acción → {self.accion}')
 
-    def ejecutar(self, almacenamiento):
-        """El propio agente registra en Atlas sus percepciones y su decisión."""
+    def ejecutar(self, almacenamiento, identificador=None):
+        """Crear o actualizar el registro con la acción recalculada por el agente."""
         self.tomar_decision()
         documento = {
             'practica': 10,
-            'alumno': 'Einar Ivan Lazcano Luna',
+            'alumno': ALUMNO,
             'agente': type(self).__name__,
             'temperatura': self.temperatura,
             'humedad': self.humedad,
             'accion': self.accion,
             'fecha': datetime.now(timezone.utc),
         }
+        if identificador is not None:
+            return almacenamiento.actualizar(identificador, documento)
         return almacenamiento.insertar(documento)
 
     @staticmethod

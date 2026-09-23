@@ -1,6 +1,7 @@
 """Validar reglas y persistencia con Atlas simulado; nunca leer credenciales reales."""
 
 import contextlib
+from copy import deepcopy
 from datetime import timezone
 import io
 from pathlib import Path
@@ -36,32 +37,80 @@ def regla_original(temperatura, humedad):
     return 'Mantener sistema apagado'
 
 
+class CursorSimulado(list):
+    def sort(self, orden):
+        resultado = list(self)
+        for campo, direccion in reversed(orden):
+            resultado.sort(key=lambda d: d[campo], reverse=direccion < 0)
+        return CursorSimulado(resultado)
+
+    def skip(self, cantidad):
+        return CursorSimulado(self[cantidad:])
+
+    def limit(self, cantidad):
+        return CursorSimulado(self[:cantidad])
+
+
 class ColeccionSimulada:
     def __init__(self):
         self.registros = []
         self.llamadas = 0
         self.fallo = None
+        self.fallo_lectura = False
         self.fallo_despues_de_insertar = False
         self.confirmar = True
+        self.modificados_cero = False
+
+    @staticmethod
+    def coincide(documento, filtro):
+        return all(documento.get(k) == v for k, v in filtro.items())
 
     def insert_one(self, documento):
         self.llamadas += 1
         if self.fallo:
             raise self.fallo
         documento['_id'] = ObjectId()
-        self.registros.append(dict(documento))
+        self.registros.append(deepcopy(documento))
         if self.fallo_despues_de_insertar:
             raise ConnectionFailure('CREDENCIAL_PRIVADA_FICTICIA')
         return SimpleNamespace(acknowledged=self.confirmar, inserted_id=documento['_id'])
 
-    def find_one(self, filtro, proyeccion, sort):
-        assert filtro == {'practica': 10}
+    def find(self, filtro, proyeccion):
+        assert filtro == atlas.FILTRO_BASE
         assert proyeccion == atlas.PROYECCION
-        assert sort == [('fecha', -1), ('_id', -1)]
         if self.fallo:
             raise self.fallo
-        candidatos = [d for d in self.registros if d['practica'] == 10]
-        return max(candidatos, key=lambda d: (d['fecha'], d['_id'])) if candidatos else None
+        if self.fallo_lectura:
+            raise ConnectionFailure('CREDENCIAL_PRIVADA_FICTICIA')
+        return CursorSimulado(deepcopy(d) for d in self.registros if self.coincide(d, filtro))
+
+    def find_one(self, filtro, proyeccion, sort):
+        documentos = self.find(filtro, proyeccion).sort(sort)
+        return documentos[0] if documentos else None
+
+    def update_one(self, filtro, cambio, upsert):
+        assert upsert is False
+        assert set(filtro) == {'_id', 'practica', 'alumno'}
+        assert filtro['practica'] == 10 and filtro['alumno'] == atlas.ALUMNO
+        if self.fallo:
+            raise self.fallo
+        for documento in self.registros:
+            if self.coincide(documento, filtro):
+                documento.update(deepcopy(cambio['$set']))
+                return SimpleNamespace(acknowledged=self.confirmar, matched_count=1,
+                                       modified_count=0 if self.modificados_cero else 1)
+        return SimpleNamespace(acknowledged=self.confirmar, matched_count=0, modified_count=0)
+
+    def delete_one(self, filtro):
+        assert set(filtro) == {'_id', 'practica', 'alumno'}
+        assert filtro['practica'] == 10 and filtro['alumno'] == atlas.ALUMNO
+        if self.fallo:
+            raise self.fallo
+        for indice, documento in enumerate(self.registros):
+            if self.coincide(documento, filtro):
+                del self.registros[indice]
+                return SimpleNamespace(acknowledged=self.confirmar, deleted_count=1)
+        return SimpleNamespace(acknowledged=self.confirmar, deleted_count=0)
 
 
 class AgenteTest(unittest.TestCase):
@@ -218,46 +267,190 @@ class ConfiguracionTest(unittest.TestCase):
         self.assertFalse(self.destino.exists())
 
 
+class CrudTest(unittest.TestCase):
+    def setUp(self):
+        self.coleccion = ColeccionSimulada()
+        self.almacenamiento = atlas.AlmacenamientoAtlas(self.coleccion)
+        self.agente = AgenteClimatizacion()
+        self.agente.percibir(35, 80)
+        self.creado = self.agente.ejecutar(self.almacenamiento)
+
+    def test_crud_completo_recalcula_y_conserva_fecha_y_campos_ajenos(self):
+        fecha = self.coleccion.registros[0]['fecha']
+        self.coleccion.registros[0]['nota_del_profesor'] = 'Conservar'
+        self.agente.percibir(16, 50)
+        actualizado = self.agente.ejecutar(self.almacenamiento, self.creado['_id'])
+        self.assertEqual(actualizado['_id'], self.creado['_id'])
+        listado = self.almacenamiento.listar()
+        self.assertEqual(len(listado['registros']), 1)
+        self.assertEqual(listado['registros'][0]['accion'], 'Encender calefacción')
+        self.assertIn('actualizado_en', listado['registros'][0])
+        self.assertEqual(self.coleccion.registros[0]['fecha'], fecha)
+        self.assertEqual(self.coleccion.registros[0]['nota_del_profesor'], 'Conservar')
+        self.assertNotIn('nota_del_profesor', listado['registros'][0])
+        self.almacenamiento.eliminar(self.creado['_id'])
+        self.assertEqual(self.almacenamiento.listar()['registros'], [])
+
+    def test_no_consulta_edita_ni_borra_otras_practicas_o_alumnos(self):
+        registro = self.coleccion.registros[0]
+        ajenos = [{**registro, '_id': ObjectId(), 'practica': 9},
+                  {**registro, '_id': ObjectId(), 'alumno': 'Otro alumno'}]
+        self.coleccion.registros.extend(deepcopy(ajenos))
+        self.assertEqual(len(self.almacenamiento.listar()['registros']), 1)
+        for ajeno in ajenos:
+            with self.assertRaises(atlas.ErrorAtlas):
+                self.agente.ejecutar(self.almacenamiento, str(ajeno['_id']))
+            with self.assertRaises(atlas.ErrorAtlas):
+                self.almacenamiento.eliminar(str(ajeno['_id']))
+        self.almacenamiento.eliminar(self.creado['_id'])
+        self.assertEqual(self.coleccion.registros, ajenos)
+
+    def test_ids_invalidos_se_rechazan_antes_de_conectar(self):
+        almacenamiento = atlas.AlmacenamientoAtlas()
+        for identificador in ['', 'no-es-un-id', None, {'$ne': None}]:
+            with self.subTest(identificador=identificador), patch.object(almacenamiento, 'abrir') as abrir:
+                with self.assertRaises(ValueError):
+                    almacenamiento.actualizar(identificador, {})
+                with self.assertRaises(ValueError):
+                    almacenamiento.eliminar(identificador)
+                abrir.assert_not_called()
+
+    def test_inexistente_no_crea_un_registro_al_editar(self):
+        for operacion in [lambda: self.agente.ejecutar(self.almacenamiento, str(ObjectId())),
+                          lambda: self.almacenamiento.eliminar(str(ObjectId()))]:
+            with self.assertRaisesRegex(atlas.ErrorAtlas, 'ya no existe'):
+                operacion()
+        self.assertEqual(len(self.coleccion.registros), 1)
+        self.assertEqual(self.coleccion.llamadas, 1)
+
+    def test_matched_count_permita_guardado_sin_cambios_y_ack_es_obligatorio(self):
+        self.coleccion.modificados_cero = True
+        self.agente.ejecutar(self.almacenamiento, self.creado['_id'])
+        self.coleccion.confirmar = False
+        with self.assertRaisesRegex(atlas.ErrorAtlas, 'no se confirmó'):
+            self.agente.ejecutar(self.almacenamiento, self.creado['_id'])
+        with self.assertRaisesRegex(atlas.ErrorAtlas, 'no se confirmó'):
+            self.almacenamiento.eliminar(self.creado['_id'])
+
+    def test_paginacion_permite_recuperar_todos_los_registros(self):
+        for _ in range(atlas.TAMANO_PAGINA + 2):
+            self.agente.ejecutar(self.almacenamiento)
+        primera, segunda = self.almacenamiento.listar(0), self.almacenamiento.listar(1)
+        self.assertEqual(len(primera['registros']), atlas.TAMANO_PAGINA)
+        self.assertTrue(primera['hay_siguiente'])
+        self.assertEqual(len(segunda['registros']), 3)
+        self.assertFalse(segunda['hay_siguiente'])
+        ids = [d['_id'] for d in primera['registros'] + segunda['registros']]
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertEqual(len(ids), len(self.coleccion.registros))
+        for pagina in [-1, '1', True]:
+            with self.assertRaises(ValueError):
+                self.almacenamiento.listar(pagina)
+
+    def test_errores_de_edicion_y_eliminacion_no_exponen_detalles(self):
+        self.coleccion.fallo = ConnectionFailure('CREDENCIAL_PRIVADA_FICTICIA')
+        for operacion in [lambda: self.agente.ejecutar(self.almacenamiento, self.creado['_id']),
+                          lambda: self.almacenamiento.eliminar(self.creado['_id'])]:
+            with self.assertRaises(atlas.ErrorAtlas) as error:
+                operacion()
+            self.assertNotIn('CREDENCIAL', str(error.exception))
+        self.assertEqual(len(self.coleccion.registros), 1)
+
+    def test_crear_editar_y_borrar_confirmados_con_refresco_fallido(self):
+        self.coleccion.fallo_lectura = True
+        for operacion in ['crear', 'actualizar', 'eliminar']:
+            resultados = Queue()
+            interfaz.trabajar(self.almacenamiento, operacion, self.agente, resultados,
+                              identificador=self.creado['_id'])
+            respuesta = resultados.get_nowait()
+            self.assertFalse(respuesta['ok'])
+            self.assertTrue(respuesta['confirmado'])
+            self.assertIn('confirmado', respuesta['mensaje'])
+            self.assertIn('Actualizar lista', respuesta['mensaje'])
+            self.assertNotIn('CREDENCIAL', respuesta['mensaje'])
+        self.assertEqual(len(self.coleccion.registros), 1)
+
+
 class ControladorTest(unittest.TestCase):
     def crear_controlador(self, almacenamiento):
         app = interfaz.VentanaClimatizacion.__new__(interfaz.VentanaClimatizacion)
         app.ventana = Mock()
         app.almacenamiento = almacenamiento
         app.resultados = Queue()
-        app.ocupado = app.cerrando = app.cerrada = False
+        app.ocupado = app.cerrando = app.cerrada = app.renderizando = False
         app.sondeo = None
-        for nombre in ['temperatura','humedad','resumen','documento','vigencia','destino','estado','etiqueta_estado','progreso','entrada_temperatura','entrada_humedad']:
+        app.registros = {}
+        app.seleccionado = app.pendiente_seleccion = None
+        app.pagina = 0
+        app.hay_siguiente = False
+        app.lista_vigente = True
+        for nombre in ['temperatura','humedad','resumen','documento','vigencia','destino','estado',
+                       'etiqueta_estado','progreso','entrada_temperatura','entrada_humedad',
+                       'modo','tabla','paginacion','boton_guardar','boton_actualizar','boton_eliminar',
+                       'boton_limpiar','boton_consultar','boton_anterior','boton_siguiente']:
             setattr(app, nombre, Mock())
+        app.tabla.selection.return_value = ()
+        app.tabla.get_children.return_value = ()
         app.temperatura.get.return_value = '35'
         app.humedad.get.return_value = '80'
-        app.botones = (Mock(), Mock(), Mock())
+        app.botones = (app.boton_guardar, app.boton_actualizar, app.boton_eliminar,
+                       app.boton_limpiar, app.boton_consultar)
         app.entradas = (app.entrada_temperatura, app.entrada_humedad)
         return app
 
-    def test_muestra_decision_y_entrega_agente_a_la_insercion(self):
+    def seleccionar(self, app):
+        identificador = str(ObjectId())
+        app.registros = {identificador: {'_id': identificador, 'temperatura': 35,
+                                       'humedad': 80, 'accion': regla_original(35,80)}}
+        app.tabla.selection.return_value = (identificador,)
+        app.seleccionar_registro()
+        return identificador
+
+    def test_crear_y_editar_utilizan_el_agente_y_la_seleccion_correcta(self):
         app = self.crear_controlador(Mock())
         app._enviar = Mock()
         app.evaluar_y_guardar()
         self.assertIn('Modo Deshumidificador', app.resumen.set.call_args.args[0])
-        operacion, agente = app._enviar.call_args.args
-        self.assertEqual(operacion, 'guardar')
-        self.assertIsInstance(agente, AgenteClimatizacion)
-        self.assertEqual(agente.temperatura, 35)
+        self.assertEqual(app._enviar.call_args.args[0], 'crear')
+        identificador = self.seleccionar(app)
+        app.temperatura.get.return_value = '16'
+        app.guardar_cambios()
+        operacion, agente, seleccionado = app._enviar.call_args.args
+        self.assertEqual((operacion,seleccionado), ('actualizar',identificador))
+        self.assertEqual(agente.accion, 'Encender calefacción')
+        app._enviar.reset_mock()
+        app.evaluar_y_guardar()
+        app._enviar.assert_not_called()
 
-    def test_validacion_y_limpiar_no_acceden_a_atlas(self):
-        almacenamiento = Mock()
-        app = self.crear_controlador(almacenamiento)
+    def test_cancelar_eliminacion_no_escribe_y_confirmar_borra_solo_seleccionado(self):
+        app = self.crear_controlador(Mock())
+        app._enviar = Mock()
+        identificador = self.seleccionar(app)
+        with patch.object(interfaz.messagebox, 'askyesno', return_value=False) as preguntar:
+            app.eliminar_seleccionado()
+            self.assertIn(identificador, preguntar.call_args.args[1])
+            self.assertEqual(preguntar.call_args.kwargs['default'], 'no')
+        app._enviar.assert_not_called()
+        with patch.object(interfaz.messagebox, 'askyesno', return_value=True):
+            app.eliminar_seleccionado()
+        app._enviar.assert_called_once_with('eliminar', identificador=identificador)
+
+    def test_validacion_limpiar_y_falta_de_seleccion_no_escriben(self):
+        app = self.crear_controlador(Mock())
         app._enviar = Mock()
         app.humedad.get.return_value = '101'
         app.evaluar_y_guardar()
+        app.guardar_cambios()
+        with patch.object(interfaz.messagebox, 'askyesno') as preguntar:
+            app.eliminar_seleccionado()
+            preguntar.assert_not_called()
         app._enviar.assert_not_called()
         app.limpiar()
         app.temperatura.set.assert_called_with('')
         app.humedad.set.assert_called_with('')
-        almacenamiento.insertar.assert_not_called()
-        almacenamiento.consultar_ultimo.assert_not_called()
+        self.assertIsNone(app.seleccionado)
 
-    def test_guardado_lento_no_bloquea_ni_se_duplica_y_espera_al_cerrar(self):
+    def test_trabajo_lento_no_duplica_y_espera_al_cerrar(self):
         iniciado, liberar = Event(), Event()
         self.addCleanup(liberar.set)
         almacenamiento = Mock(base='base_de_prueba', coleccion='climatizacion')
@@ -265,12 +458,12 @@ class ControladorTest(unittest.TestCase):
             iniciado.set()
             if not liberar.wait(5):
                 raise RuntimeError('Trabajo no liberado por la prueba')
-            return {'_id': 'id_simulado', 'accion': documento['accion']}
+            return {'_id': str(ObjectId()), **documento}
         almacenamiento.insertar.side_effect = insertar
+        almacenamiento.listar.return_value = {'registros': [], 'pagina': 0, 'hay_siguiente': False}
         app = self.crear_controlador(almacenamiento)
         app.evaluar_y_guardar()
         self.assertTrue(iniciado.wait(2))
-        self.assertTrue(app.ocupado)
         app.evaluar_y_guardar()
         self.assertEqual(almacenamiento.insertar.call_count, 1)
         app.cerrar()
@@ -282,18 +475,72 @@ class ControladorTest(unittest.TestCase):
         app.ventana.destroy.assert_called_once()
         almacenamiento.cerrar.assert_called_once()
 
-    def test_fallo_conserva_lecturas_y_no_presenta_guardado_exitoso(self):
+    def test_fallo_conserva_campos_y_bloquea_escrituras_hasta_refrescar(self):
         app = self.crear_controlador(Mock())
         app.ocupado = True
-        app.resultados.put({'ok': False, 'mensaje': 'No se confirmó el guardado.', 'base': '', 'coleccion': '', 'operacion': 'guardar'})
+        app.resultados.put({'ok': False, 'confirmado': False, 'mensaje': 'No se confirmó el guardado.',
+                           'base': '', 'coleccion': '', 'operacion': 'crear'})
         app._recibir()
         self.assertIn('No se confirmó', app.estado.set.call_args.args[0])
         app.temperatura.set.assert_not_called()
         app.humedad.set.assert_not_called()
         app.documento.delete.assert_not_called()
-        self.assertFalse(app.ocupado)
-        for control in (*app.botones, *app.entradas):
-            control.state.assert_called_with(['!disabled'])
+        self.assertFalse(app.lista_vigente)
+        app.boton_guardar.state.assert_called_with(['disabled'])
+        app.boton_actualizar.state.assert_called_with(['disabled'])
+        app.boton_eliminar.state.assert_called_with(['disabled'])
+        app.boton_consultar.state.assert_called_with(['!disabled'])
+
+    def test_refrescar_preserva_edicion_sin_cambiar_su_destinatario(self):
+        app = self.crear_controlador(Mock())
+        identificador = self.seleccionar(app)
+        registro = app.registros[identificador]
+        app.temperatura.set.reset_mock()
+        app.humedad.set.reset_mock()
+        app.ocupado = True
+        app.resultados.put({'ok': True, 'confirmado': False, 'mensaje': 'Consulta completada.',
+                           'base': '', 'coleccion': '', 'operacion': 'listar',
+                           'listado': {'registros': [registro], 'pagina': 0, 'hay_siguiente': False}})
+        app._recibir()
+        app.seleccionar_registro()
+        self.assertEqual(app.seleccionado, identificador)
+        app.temperatura.set.assert_not_called()
+        app.humedad.set.assert_not_called()
+
+    def test_creacion_confirmada_vuelve_a_primera_pagina_tras_fallo_de_consulta(self):
+        app = self.crear_controlador(Mock())
+        app.pagina = 3
+        identificador = str(ObjectId())
+        app.resultados.put({'ok': False, 'confirmado': True, 'identificador': identificador,
+                           'mensaje': 'Creación confirmada. Actualiza la lista.', 'operacion': 'crear',
+                           'base': '', 'coleccion': ''})
+        app._recibir()
+        self.assertEqual(app.pagina, 0)
+        self.assertEqual(app.pendiente_seleccion, identificador)
+        app._enviar = Mock()
+        app.consultar()
+        app._enviar.assert_called_with('listar', pagina=0)
+
+    def test_flujo_gui_crud_con_atlas_simulado(self):
+        almacenamiento = atlas.AlmacenamientoAtlas(ColeccionSimulada())
+        app = self.crear_controlador(almacenamiento)
+        def recibir():
+            respuesta = app.resultados.get(timeout=2)
+            app.resultados.put(respuesta)
+            app._recibir()
+        app.evaluar_y_guardar()
+        recibir()
+        identificador = app.seleccionado
+        self.assertIn(identificador, app.registros)
+        app.temperatura.get.return_value = '16'
+        app.guardar_cambios()
+        recibir()
+        self.assertEqual(app.registros[identificador]['accion'], 'Encender calefacción')
+        with patch.object(interfaz.messagebox, 'askyesno', return_value=True):
+            app.eliminar_seleccionado()
+        recibir()
+        self.assertEqual(app.registros, {})
+        self.assertIsNone(app.seleccionado)
 
 
 class VentanaRealTest(unittest.TestCase):
@@ -303,7 +550,9 @@ class VentanaRealTest(unittest.TestCase):
         except interfaz.tk.TclError:
             self.skipTest('Se necesita un escritorio o WSLg para esta prueba visual.')
         self.addCleanup(ventana.destroy)
-        app = interfaz.VentanaClimatizacion(ventana, atlas.AlmacenamientoAtlas(ColeccionSimulada()))
+        with patch.object(interfaz.VentanaClimatizacion, 'consultar'):
+            app = interfaz.VentanaClimatizacion(ventana, atlas.AlmacenamientoAtlas(ColeccionSimulada()))
+        app.lista_vigente = True
         ventana.update_idletasks()
         app.temperatura.set('32,5')
         app.humedad.set('80')

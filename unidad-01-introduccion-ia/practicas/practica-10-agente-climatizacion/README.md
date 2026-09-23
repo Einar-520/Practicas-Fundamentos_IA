@@ -1,8 +1,9 @@
-# Práctica 10: agente de climatización con Tkinter y MongoDB Atlas
+# Práctica 10: CRUD del agente de climatización con Tkinter y MongoDB Atlas
 
 Programa independiente que implementa el agente reactivo simple del profesor.
 La ventana captura temperatura y humedad, el agente decide qué acción corresponde
-y el propio agente registra la percepción y la acción en el clúster de Atlas.
+y el propio agente registra la percepción y la acción en el clúster del profesor.
+La interfaz permite crear, consultar, actualizar y eliminar esos registros.
 
 ## Reglas originales
 
@@ -79,26 +80,41 @@ authSource=admin. PyMongo usa esa variable para crear el cliente; el enlace
 completo nunca se muestra en la ventana ni se imprime en la terminal.
 
 El profesor debe tener autorizada tu IP pública en Atlas y conceder al usuario
-permisos de escritura y consulta sobre tu base. El programa utiliza la base y
+permisos de consulta, inserción, actualización y eliminación sobre tu base.
+El programa utiliza la base y
 colección indicadas en el .env; no modifica usuarios ni permisos del clúster.
 
 ## Funcionamiento de la ventana
 
-- **Evaluar y guardar:** valida las entradas, muestra la decisión y envía un
-  registro nuevo a Atlas. También puedes usar Ctrl + Enter.
-- **Consultar último registro:** lee el registro más reciente de la práctica 10
-  en la colección configurada, sin insertar datos.
-- **Limpiar:** vacía temperatura y humedad; los registros de Atlas se conservan.
+| Operación | Cómo usarla | Operación en Atlas |
+| --- | --- | --- |
+| Crear | Escribe temperatura y humedad y pulsa **Crear registro**. | El agente calcula la acción e inserta un documento con `insert_one`. |
+| Consultar | Pulsa **Actualizar lista** y selecciona una fila para ver su detalle. Usa **Anterior** y **Siguiente** para recorrer páginas de 50 registros. | `find` obtiene tus registros de la práctica 10, ordenados del más reciente al más antiguo. |
+| Actualizar | Selecciona una fila, cambia temperatura o humedad y pulsa **Guardar cambios**. | El agente recalcula la acción y `update_one` modifica ese mismo documento. |
+| Eliminar | Selecciona una fila y pulsa **Eliminar seleccionado**. Confirma en el cuadro que muestra el identificador y la lectura. | `delete_one` elimina únicamente el documento seleccionado. |
 
-Abrir la ventana no inserta datos. Cada pulsación válida de Evaluar y guardar
-crea un documento nuevo. La inserción utiliza insert_one; MongoDB asigna un _id.
-La colección se crea con la primera inserción si todavía no existe.
+**Nuevo / limpiar** vacía el formulario y deja de editar la fila seleccionada.
+Úsalo antes de crear otro registro. **Ctrl + Enter** crea un registro en modo nuevo
+o guarda los cambios del seleccionado en modo edición. La pestaña **Detalle del
+seleccionado** muestra el documento completo, incluido su `_id`.
+
+Al abrir la ventana se consulta la lista; no se generan ni se insertan lecturas
+automáticas. Después de una consulta correcta se habilitan las operaciones.
+Cada creación válida genera un documento nuevo; MongoDB asigna su `_id` y crea
+la colección con la primera inserción si todavía no existe.
+
+Las consultas, actualizaciones y eliminaciones se limitan a
+`{ practica: 10, alumno: "Einar Ivan Lazcano Luna" }`. Para modificar o eliminar
+se añade el `_id` seleccionado al filtro. La edición no crea documentos cuando
+el seleccionado ya no existe. Este filtro delimita los registros de la práctica;
+los permisos efectivos siguen siendo los del usuario configurado en Atlas.
 
 La ventana muestra la decisión calculada aunque la conexión falle y distingue
-el cálculo de un guardado confirmado por Atlas. No se realizan reintentos
-automáticos desde la interfaz. Si la conexión se interrumpe y no se confirma el
-guardado, consulta el último registro antes de reenviar; pudo haberse insertado.
-La última consulta visible se marca como posiblemente antigua tras un error.
+el cálculo de una escritura confirmada por Atlas. Si la escritura se confirma
+pero falla la consulta posterior, informa que el cambio se guardó y solicita
+**Actualizar lista**. Si la escritura no pudo confirmarse, revisa la lista antes
+de reenviar porque pudo haberse aplicado. La interfaz no reenvía escrituras
+automáticamente; después de un error bloquea cambios hasta refrescar la lista.
 
 Durante las operaciones de red, los botones y campos se deshabilitan para evitar
 envíos simultáneos. El hilo de trabajo no accede a widgets: los resultados vuelven
@@ -122,10 +138,14 @@ Ejemplo de una lectura de 35 °C y 80 % de humedad:
 }
 ```
 
-La fecha se guarda en UTC como fecha BSON. La ventana muestra su representación
-ISO y el identificador devuelto por MongoDB. Para comprobarlo en Atlas o Compass,
+La fecha de creación se guarda en UTC como fecha BSON. Al editar se conserva
+`fecha` y se añade o renueva `actualizado_en`, también en UTC. La acción siempre
+se recalcula a partir de la temperatura y la humedad actualizadas.
+
+La ventana muestra las fechas en representación ISO y el identificador devuelto
+por MongoDB. Para comprobarlo en Atlas o Compass,
 abre la base Einar_Ivan_Lazcano_Luna, colección climatizacion, y filtra por
-`{ practica: 10 }`. Las inserciones nuevas conservan los registros anteriores.
+`{ practica: 10, alumno: "Einar Ivan Lazcano Luna" }`.
 
 ## Estructura y conceptos para explicar al profesor
 
@@ -134,7 +154,7 @@ abre la base Einar_Ivan_Lazcano_Luna, colección climatizacion, y filtra por
 | 10_agente_climatizacion.py | Punto de entrada del programa. |
 | agente_climatizacion.py | Clase AgenteClimatizacion, validación y reglas originales. |
 | interfaz.py | Ventana Tkinter, controles y trabajo en segundo plano. |
-| almacenamiento_atlas.py | Conexión, insert_one, consulta y cierre del cliente. |
+| almacenamiento_atlas.py | Conexión y CRUD: insert_one, find, update_one y delete_one. |
 | configuracion.py | Lee el .env y construye mongo_url. |
 | preparar_env.py | Prepara el .env local sin exponer credenciales. |
 | ejecutar.sh | Inicia la práctica usando el entorno .venv del proyecto. |
@@ -147,8 +167,8 @@ El registro histórico no modifica las reglas del profesor. La separación es:
 1. percibir(): recibe los valores de la interfaz y valida las dos entradas.
 2. tomar_decision(): aplica las reglas condición-acción en el orden original.
 3. mostrar_resultado(): entrega el resumen para mostrarlo en la ventana.
-4. ejecutar(): el propio agente crea el documento con sus datos y llama al
-   almacenamiento para insertarlo en Atlas.
+4. ejecutar(): el propio agente construye el documento con sus datos y llama al
+   almacenamiento para insertarlo o actualizar el registro seleccionado en Atlas.
 
 La ejecución de esta práctica consiste en registrar la acción elegida en Atlas.
 La clase recibe el almacenamiento como argumento para poder probar el mismo
@@ -160,16 +180,26 @@ agente con una colección simulada, sin cambiar su lógica ni usar credenciales 
 .venv/bin/python -m unittest discover -s unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/tests -v
 ```
 
-Pasaron 17 pruebas, incluyendo 50 combinaciones de temperatura y humedad comparadas
-con las reglas originales, validación, inserciones nuevas, consulta, errores,
-configuración privada, cierre de conexión y operaciones de fondo sin envíos
-simultáneos. La prueba de widgets reales se omite cuando falta un escritorio.
-En el entorno de preparación no hay pantalla gráfica, por lo que la apertura
-visual queda por comprobar en tu WSLg. Las pruebas usan Atlas simulado; la primera
-inserción real se verifica en tu laptop al pulsar Evaluar y guardar.
+Pasaron 29 pruebas y se omitió una prueba de widgets reales por falta de pantalla
+gráfica. Se verificaron 50 combinaciones de temperatura y humedad contra las
+reglas originales, entradas inválidas, el flujo completo del CRUD, paginación,
+conservación de la fecha de creación, filtros por alumno y práctica, cancelación
+de la eliminación, errores de conexión y escrituras confirmadas cuyo refresco
+posterior falla. También se comprobó que una operación pendiente impide envíos
+simultáneos y que el cierre espera antes de desconectar el cliente.
+
+Estas pruebas usan una colección simulada y no alteran datos del profesor.
+La apertura visual y la conexión real se comprueban en tu laptop con WSLg y tu
+`.env`. Para verificar el CRUD, crea una lectura de 35 °C y 80 %: debe guardarse
+la acción de aire acondicionado. Selecciónala, cambia a 25 °C y guarda: debe
+conservar su `_id` y cambiar la acción a mantener el sistema apagado. Consulta
+el resultado y, si ya no necesitas ese registro de prueba, elimínalo desde la
+interfaz y comprueba que desaparece de la lista y de Atlas.
 
 ## Referencias
 
 - [Tkinter y su modelo de eventos](https://docs.python.org/3/library/tkinter.html).
 - [Inserción de documentos con PyMongo](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/insert/).
+- [Actualización de documentos con PyMongo](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/update/).
+- [Eliminación de documentos con PyMongo](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/delete/).
 - [Aplicaciones gráficas en WSL](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).

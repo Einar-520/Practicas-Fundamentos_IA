@@ -71,7 +71,10 @@ Se conserva una sola implementación por carpeta; las anteriores están en el hi
 
 ## Práctica 10: agente reactivo simple
 
-El agente captura temperatura y humedad, conserva las reglas condición-acción del
-profesor e inserta en Atlas la percepción, la acción y la fecha. Se ejecuta de forma
+El agente captura temperatura y humedad y conserva las reglas condición-acción
+del profesor. La ventana Tkinter permite crear, consultar, actualizar y eliminar
+sus registros en Atlas. Al editar una lectura, el agente recalcula la acción;
+la eliminación requiere seleccionar y confirmar un registro. Se ejecuta de forma
 independiente con ejecutar.sh dentro de practica-10-agente-climatizacion. Su .env
-apunta por defecto a la colección climatizacion de Einar_Ivan_Lazcano_Luna.
+apunta por defecto a la colección climatizacion de Einar_Ivan_Lazcano_Luna en el
+clúster del profesor. Las consultas y los cambios se limitan al alumno y práctica.
