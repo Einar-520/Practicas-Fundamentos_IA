@@ -4,7 +4,7 @@ Ejercicios de Einar Ivan Lazcano Luna. Las prácticas **1 a 9** se ejecutan como
 aplicaciones web independientes en el navegador, con Python y Flask para las
 reglas y HTML/CSS para la interfaz; las prácticas 1 a 7 y 9 también usan JavaScript.
 La práctica 9 también incluye una ventana de escritorio con Tkinter.
-La práctica 10 implementa un agente de climatización con Tkinter y CRUD en Atlas.
+La práctica 10 usa Streamlit: consultas por acción, gráficas de climatización y CRUD en Atlas.
 
 ## Inicio en WSL
 
@@ -31,7 +31,7 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 7 | [Sistema experto de salud mejorado](unidad-01-introduccion-ia/practicas/practica-07-sistema-experto-salud-mejorado/README.md) | 5107 |
 | 8 | [Guardar un dato en MongoDB local](unidad-01-introduccion-ia/practicas/practica-08-conexion-mongodb/README.md) | 5000 |
 | 9 | [MongoDB Atlas: web o Tkinter](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md) | Web: 5001; Tkinter: ventana |
-| 10 | [Agente de climatización](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
+| 10 | [Agente de climatización con Streamlit](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md) | 8510 |
 
 Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
@@ -76,7 +76,7 @@ los apuntes y las tareas locales quedan fuera de la limpieza. No reescribe el
 historial ni envía cambios a GitHub. Si Git detecta un conflicto con otros archivos,
 restaura el contenido respaldado y detiene la actualización.
 
-Instala las dependencias de las diez prácticas en el intérprete del proyecto:
+Instala las dependencias de las prácticas web en el intérprete del proyecto:
 
 ```bash
 python3 -m venv .venv
@@ -101,18 +101,21 @@ Se utiliza el mismo .env de Atlas y las mismas reglas que en la interfaz web.
 [Consulta la instalación completa, el uso y los requisitos de WSLg](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md).
 
 
-## Práctica 10: agente de climatización
+## Práctica 10: agente de climatización con Streamlit
 
-La ventana recibe temperatura y humedad y aplica las reglas del profesor. Su CRUD
-permite crear registros en Atlas, consultarlos en una tabla con páginas, editar
-el seleccionado recalculando la acción y eliminarlo con confirmación. Usa la
-colección climatizacion de tu base personal y un .env propio. Las operaciones se
-limitan a tus registros de la práctica 10. El lanzador prepara ese archivo reutilizando el acceso
-local de la práctica 9, si existe, y conserva cualquier .env existente de la 10.
+La interfaz se abre en **http://localhost:8510**: selector de acción arriba,
+registros al centro y gráficas de temperatura y humedad abajo. El CRUD está en
+el panel lateral. Se conservan las reglas del profesor y la colección
+climatizacion de tu base personal en Atlas, configurada en su propio .env.
 
 ```bash
+.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/requirements.txt
 bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh
 ```
 
-[Consulta la instalación, las reglas, la estructura y el documento insertado](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md).
+Las consultas se filtran por acción en MongoDB. La tabla y las gráficas muestran
+los mismos registros de la página seleccionada. El agente recalcula la acción
+al editar una lectura; la eliminación exige confirmación.
+
+[Consulta la instalación, las reglas y el uso del CRUD y las gráficas](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md).
 El lanzador iniciar_practica_web.sh sigue correspondiendo a las interfaces web 1 a 9.

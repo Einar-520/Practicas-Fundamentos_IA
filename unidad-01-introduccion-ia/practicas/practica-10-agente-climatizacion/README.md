@@ -1,13 +1,49 @@
-# Práctica 10: CRUD del agente de climatización con Tkinter y MongoDB Atlas
+# Práctica 10: agente de climatización con consultas, gráficas y CRUD
 
-Programa independiente que implementa el agente reactivo simple del profesor.
-La ventana captura temperatura y humedad, el agente decide qué acción corresponde
-y el propio agente registra la percepción y la acción en el clúster del profesor.
-La interfaz permite crear, consultar, actualizar y eliminar esos registros.
+Aplicación independiente de Python con **Streamlit** y MongoDB Atlas. Conserva
+el agente reactivo simple y las reglas del profesor. La interfaz vigente se abre
+en el navegador y permite decidir qué información consultar:
 
-## Reglas originales
+1. **Arriba:** selecciona una acción del agente o Todas las acciones.
+2. **En medio:** consulta los registros que cumplen la selección.
+3. **Abajo:** observa las gráficas de temperatura y humedad de esos registros.
 
-Se conserva el orden de evaluación y las comparaciones estrictas del enunciado:
+El panel lateral permite crear, editar y eliminar lecturas. La interfaz anterior
+con Tkinter queda en el historial de Git; esta carpeta contiene la versión actual.
+
+## Ejecutar en VS Code con WSL
+
+Desde la terminal WSL, guarda los archivos abiertos y ejecuta:
+
+```bash
+cd ~/universidad/fundamentos-ia &&
+git pull --ff-only origin main &&
+.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/requirements.txt &&
+bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh
+```
+
+Si aún no tienes el entorno virtual, créalo antes de instalar dependencias con
+`python3 -m venv .venv` desde la raíz del proyecto. Selecciona `.venv/bin/python`
+como intérprete de VS Code.
+
+Abre **http://localhost:8510** en el navegador. Mantén abierta la terminal;
+**Ctrl+C** detiene la aplicación. No necesita WSLg ni instalar Tkinter.
+El lanzador prepara el `.env`, conserva su contenido si ya existe y abre
+Streamlit escuchando únicamente en `127.0.0.1`.
+
+Para volver a abrir la práctica después de instalar las dependencias:
+
+```bash
+bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh
+```
+
+También se puede iniciar directamente, una vez preparado el `.env`:
+
+```bash
+.venv/bin/python -m streamlit run unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/10_agente_climatizacion.py --server.address 127.0.0.1 --server.port 8510
+```
+
+## Reglas conservadas
 
 | Condición | Acción |
 | --- | --- |
@@ -16,38 +52,64 @@ Se conserva el orden de evaluación y las comparaciones estrictas del enunciado:
 | Temperatura < 18 °C | Encender calefacción |
 | Temperatura entre 18 y 30 °C, incluidos ambos límites | Mantener sistema apagado |
 
-A 30 °C se mantiene apagado aunque la humedad sea alta. A 18 °C también permanece
-apagado. Con temperatura mayor de 30 °C y humedad exactamente de 70 %, se enciende
-el ventilador. La humedad debe estar entre 0 y 100 %. Se aceptan punto y coma
-decimal, y se rechazan campos vacíos, texto, infinito y NaN.
+Se mantiene el orden original de evaluación. A 18 o 30 °C, el sistema permanece
+apagado; con temperatura mayor de 30 °C y humedad exactamente de 70 %, se elige
+el ventilador. La humedad debe estar entre 0 y 100 %. Los campos aceptan punto o
+coma decimal y rechazan entradas vacías, texto, infinito y NaN.
 
-## Ejecutar desde VS Code con WSL
+## Consultar una acción y ver sus gráficas
 
-Guarda los archivos abiertos y ejecuta desde la raíz del proyecto:
+Por ejemplo, selecciona **Encender ventilador** en el selector superior. MongoDB
+consulta tus registros cuya acción guardada coincide exactamente con esa opción.
+El filtro se aplica antes de paginar, por lo que también encuentra coincidencias
+que no estaban en la primera página de Todas las acciones.
 
-```bash
-cd ~/universidad/fundamentos-ia &&
-git pull --ff-only origin main &&
-sudo apt update &&
-sudo apt install -y python3-tk &&
-.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/requirements.txt &&
-bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh
-```
+La tabla muestra hasta 50 registros por página, del más reciente al más antiguo.
+Usa **Anterior** y **Siguiente** para recorrerlos. Al cambiar de acción se vuelve
+a la primera página y se descarta cualquier selección de edición o eliminación.
+**Actualizar registros** repite la consulta de la página actual.
 
-Si todavía no tienes el entorno del proyecto, créalo con python3 -m venv .venv
-antes de instalar las dependencias. Selecciona .venv/bin/python como intérprete
-en VS Code. Se abre una ventana Tkinter. Para probar el soporte gráfico ejecuta
-.venv/bin/python -m tkinter; WSL necesita soporte WSLg. Tkinter se instala mediante
-el paquete del sistema correspondiente al intérprete, no con pip.
+Las dos gráficas y sus promedios usan los registros de la página visible, no el
+historial completo de la colección. Cambian junto con el filtro y la página.
+Las líneas se ordenan cronológicamente y muestran puntos incluso cuando solo hay
+una lectura. Las fechas, los ejes y el detalle al pasar el cursor se muestran en
+UTC. La tabla conserva el orden de consulta; ordenar una columna en el navegador
+no cambia los registros usados por las gráficas.
 
-También puedes ejecutar 10_agente_climatizacion.py desde VS Code una vez que hayas
-preparado el entorno y el .env. El archivo ejecutar.sh hace las comprobaciones y
-prepara la configuración antes de abrir la ventana.
+Si no hay coincidencias, se informa sin inventar datos. Si hay registros antiguos
+con fechas o valores inválidos, permanecen en la tabla y se indica cuántos no se
+pueden graficar. Un error de consulta retira la tabla y las gráficas anteriores
+para evitar que parezcan corresponder a una selección nueva.
+
+## CRUD en el panel lateral
+
+| Operación | Pasos |
+| --- | --- |
+| Crear | Elige Crear, escribe temperatura y humedad y pulsa Crear registro. El agente decide la acción y la guarda en Atlas. |
+| Consultar | Utiliza el selector de acción, la tabla y los botones de página del panel principal. |
+| Editar | Elige Editar, selecciona un registro de la página visible, cambia sus valores y pulsa Guardar cambios. El agente recalcula la acción. |
+| Eliminar | Elige Eliminar, selecciona un registro, verifica su ID y lectura, marca la confirmación y pulsa Eliminar registro. |
+
+Al editar se conserva el `_id` y la fecha de creación, y se actualiza
+`actualizado_en`. Si la acción recalculada ya no coincide con el filtro activo,
+el registro sale de esa consulta; el mensaje indica qué acción seleccionar para
+verlo. Lo mismo se aplica al crear una lectura con una acción diferente del filtro.
+
+Solo se escribe al enviar un formulario. Cambiar de acción, de página o refrescar
+la consulta no inserta lecturas. Streamlit vuelve a ejecutar la interfaz al
+interactuar; los formularios y el estado de la sesión separan esas consultas de
+los envíos del CRUD. Cada operación cierra su cliente de MongoDB al finalizar.
+
+Una escritura confirmada se informa por separado de la consulta posterior.
+Si falla ese refresco, el guardado sigue confirmado. Cuando no se puede confirmar
+una escritura, el programa pide actualizar los registros antes de reenviar:
+pudo haberse aplicado. Los errores de consulta bloquean nuevas escrituras hasta
+que se complete una consulta correcta.
 
 ## Configuración del clúster del profesor
 
-El archivo .env pertenece únicamente a la práctica 10. Se lee junto a
-configuracion.py independientemente de la carpeta desde la que ejecutes Python.
+El `.env` pertenece únicamente a la práctica 10 y se lee junto a
+`configuracion.py`, independientemente de la carpeta de ejecución:
 
 ```dotenv
 Mongo_User='hector1985'
@@ -57,73 +119,27 @@ Mongo_DB='Einar_Ivan_Lazcano_Luna'
 Mongo_Collection='climatizacion'
 ```
 
-La contraseña real se conserva exclusivamente en tu .env local. Se mantiene
-Mongo_Closter con la escritura del enunciado. Los guiones bajos en Mongo_DB
-permiten utilizar tu nombre sin espacios en el nombre de la base.
+La contraseña real va solo en tu archivo local. Se conserva el nombre de variable
+`Mongo_Closter` del enunciado. El nombre de la base utiliza guiones bajos porque
+MongoDB no admite espacios en nombres de bases de datos.
 
-Al ejecutar preparar_env.py o ejecutar.sh:
+`preparar_env.py` conserva y valida un `.env` existente. Si falta, reutiliza
+localmente usuario, contraseña y clúster de la práctica 9 cuando están disponibles,
+y crea la configuración propia de la 10 para tu base y la colección
+`climatizacion`. Si no existe ese acceso local, pide la contraseña oculta en la
+terminal. No cambia el archivo de la práctica 9.
 
-1. Si el .env de la práctica 10 ya existe, se valida y se conserva.
-2. Si no existe y tienes el .env de la práctica 9, se reutilizan localmente su
-   usuario, contraseña y clúster, conservando intacto el archivo de la 9.
-3. Se crea un .env propio para Einar_Ivan_Lazcano_Luna y la colección climatizacion.
-4. Si tampoco existe la configuración de la 9, se solicita la contraseña en la
-   terminal de forma oculta. El archivo nuevo se crea con permisos 600.
+`configuracion.py` construye `mongo_url` con `mongodb+srv`, codifica las credenciales
+y utiliza `retryWrites=true`, `w=majority` y `authSource=admin`. La URL completa
+no se muestra en pantalla. El profesor debe autorizar tu IP y conceder permisos
+de lectura y escritura sobre tu base en Atlas.
 
-Después de crear su configuración, la práctica 10 funciona sin importar módulos
-ni leer archivos de otras prácticas. No se publica ninguna contraseña ni el
-archivo .env; .env.example es la plantilla sin contraseña.
+Las consultas usan `{ practica: 10, alumno: "Einar Ivan Lazcano Luna" }` y agregan
+`accion` si seleccionas una. Las actualizaciones y eliminaciones añaden el `_id`
+al filtro por alumno y práctica. Son límites de esta aplicación; los permisos
+reales son los que el profesor haya asignado al usuario de Atlas.
 
-configuracion.py construye mongo_url con el protocolo mongodb+srv, codifica las
-credenciales con quote_plus y configura retryWrites=true, w=majority y
-authSource=admin. PyMongo usa esa variable para crear el cliente; el enlace
-completo nunca se muestra en la ventana ni se imprime en la terminal.
-
-El profesor debe tener autorizada tu IP pública en Atlas y conceder al usuario
-permisos de consulta, inserción, actualización y eliminación sobre tu base.
-El programa utiliza la base y
-colección indicadas en el .env; no modifica usuarios ni permisos del clúster.
-
-## Funcionamiento de la ventana
-
-| Operación | Cómo usarla | Operación en Atlas |
-| --- | --- | --- |
-| Crear | Escribe temperatura y humedad y pulsa **Crear registro**. | El agente calcula la acción e inserta un documento con `insert_one`. |
-| Consultar | Pulsa **Actualizar lista** y selecciona una fila para ver su detalle. Usa **Anterior** y **Siguiente** para recorrer páginas de 50 registros. | `find` obtiene tus registros de la práctica 10, ordenados del más reciente al más antiguo. |
-| Actualizar | Selecciona una fila, cambia temperatura o humedad y pulsa **Guardar cambios**. | El agente recalcula la acción y `update_one` modifica ese mismo documento. |
-| Eliminar | Selecciona una fila y pulsa **Eliminar seleccionado**. Confirma en el cuadro que muestra el identificador y la lectura. | `delete_one` elimina únicamente el documento seleccionado. |
-
-**Nuevo / limpiar** vacía el formulario y deja de editar la fila seleccionada.
-Úsalo antes de crear otro registro. **Ctrl + Enter** crea un registro en modo nuevo
-o guarda los cambios del seleccionado en modo edición. La pestaña **Detalle del
-seleccionado** muestra el documento completo, incluido su `_id`.
-
-Al abrir la ventana se consulta la lista; no se generan ni se insertan lecturas
-automáticas. Después de una consulta correcta se habilitan las operaciones.
-Cada creación válida genera un documento nuevo; MongoDB asigna su `_id` y crea
-la colección con la primera inserción si todavía no existe.
-
-Las consultas, actualizaciones y eliminaciones se limitan a
-`{ practica: 10, alumno: "Einar Ivan Lazcano Luna" }`. Para modificar o eliminar
-se añade el `_id` seleccionado al filtro. La edición no crea documentos cuando
-el seleccionado ya no existe. Este filtro delimita los registros de la práctica;
-los permisos efectivos siguen siendo los del usuario configurado en Atlas.
-
-La ventana muestra la decisión calculada aunque la conexión falle y distingue
-el cálculo de una escritura confirmada por Atlas. Si la escritura se confirma
-pero falla la consulta posterior, informa que el cambio se guardó y solicita
-**Actualizar lista**. Si la escritura no pudo confirmarse, revisa la lista antes
-de reenviar porque pudo haberse aplicado. La interfaz no reenvía escrituras
-automáticamente; después de un error bloquea cambios hasta refrescar la lista.
-
-Durante las operaciones de red, los botones y campos se deshabilitan para evitar
-envíos simultáneos. El hilo de trabajo no accede a widgets: los resultados vuelven
-mediante una cola y after. Si cierras la ventana con una operación pendiente,
-espera a que termine y cierra el cliente MongoDB.
-
-## Documento insertado
-
-Ejemplo de una lectura de 35 °C y 80 % de humedad:
+## Documento guardado
 
 ```javascript
 {
@@ -131,48 +147,36 @@ Ejemplo de una lectura de 35 °C y 80 % de humedad:
   practica: 10,
   alumno: "Einar Ivan Lazcano Luna",
   agente: "AgenteClimatizacion",
-  temperatura: 35.0,
-  humedad: 80.0,
-  accion: "Encender aire acondicionado (Modo Deshumidificador)",
+  temperatura: 32.5,
+  humedad: 60.0,
+  accion: "Encender ventilador",
   fecha: ISODate("...")
 }
 ```
 
-La fecha de creación se guarda en UTC como fecha BSON. Al editar se conserva
-`fecha` y se añade o renueva `actualizado_en`, también en UTC. La acción siempre
-se recalcula a partir de la temperatura y la humedad actualizadas.
+La primera inserción crea la colección si no existe. La edición agrega
+`actualizado_en` sin alterar `fecha`; ambas se guardan como fechas BSON en UTC.
+El agente registra su decisión: no controla físicamente dispositivos.
 
-La ventana muestra las fechas en representación ISO y el identificador devuelto
-por MongoDB. Para comprobarlo en Atlas o Compass,
-abre la base Einar_Ivan_Lazcano_Luna, colección climatizacion, y filtra por
-`{ practica: 10, alumno: "Einar Ivan Lazcano Luna" }`.
-
-## Estructura y conceptos para explicar al profesor
+## Archivos y conceptos
 
 | Archivo | Responsabilidad |
 | --- | --- |
-| 10_agente_climatizacion.py | Punto de entrada del programa. |
-| agente_climatizacion.py | Clase AgenteClimatizacion, validación y reglas originales. |
-| interfaz.py | Ventana Tkinter, controles y trabajo en segundo plano. |
-| almacenamiento_atlas.py | Conexión y CRUD: insert_one, find, update_one y delete_one. |
-| configuracion.py | Lee el .env y construye mongo_url. |
-| preparar_env.py | Prepara el .env local sin exponer credenciales. |
-| ejecutar.sh | Inicia la práctica usando el entorno .venv del proyecto. |
-| requirements.txt | PyMongo y python-dotenv. |
-| tests/test_practica10.py | Pruebas con Atlas simulado y prueba gráfica opcional. |
+| `10_agente_climatizacion.py` | Punto de entrada de Streamlit. |
+| `agente_climatizacion.py` | Percepción, validación, reglas y ejecución del agente. Comparte las cuatro acciones con el filtro. |
+| `almacenamiento_atlas.py` | CRUD y consulta por acción antes de paginar. |
+| `interfaz.py` | Selector, tabla, formularios del CRUD y gráficas. |
+| `configuracion.py` | Lee el `.env` y construye `mongo_url`. |
+| `preparar_env.py` | Prepara la configuración local sin sobrescribirla. |
+| `ejecutar.sh` | Inicia Streamlit con el intérprete del proyecto. |
+| `requirements.txt` | PyMongo, python-dotenv, Streamlit, pandas y Altair. |
+| `tests/` | Reglas, filtros, CRUD, configuración y flujos de Streamlit con Atlas simulado. |
 
-El agente es **reactivo simple** porque decide únicamente con la percepción actual.
-El registro histórico no modifica las reglas del profesor. La separación es:
-
-1. percibir(): recibe los valores de la interfaz y valida las dos entradas.
-2. tomar_decision(): aplica las reglas condición-acción en el orden original.
-3. mostrar_resultado(): entrega el resumen para mostrarlo en la ventana.
-4. ejecutar(): el propio agente construye el documento con sus datos y llama al
-   almacenamiento para insertarlo o actualizar el registro seleccionado en Atlas.
-
-La ejecución de esta práctica consiste en registrar la acción elegida en Atlas.
-La clase recibe el almacenamiento como argumento para poder probar el mismo
-agente con una colección simulada, sin cambiar su lógica ni usar credenciales reales.
+**pandas** organiza los datos de la consulta en una tabla y normaliza fechas y
+números. **Altair**, integrado mediante `st.altair_chart`, describe las gráficas
+con ejes, unidades, puntos y detalle al pasar el cursor. La tabla y las gráficas
+comparten los mismos datos consultados; no hay una segunda consulta que pueda
+mezclar otra acción o página.
 
 ## Verificación
 
@@ -180,26 +184,25 @@ agente con una colección simulada, sin cambiar su lógica ni usar credenciales 
 .venv/bin/python -m unittest discover -s unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/tests -v
 ```
 
-Pasaron 29 pruebas y se omitió una prueba de widgets reales por falta de pantalla
-gráfica. Se verificaron 50 combinaciones de temperatura y humedad contra las
-reglas originales, entradas inválidas, el flujo completo del CRUD, paginación,
-conservación de la fecha de creación, filtros por alumno y práctica, cancelación
-de la eliminación, errores de conexión y escrituras confirmadas cuyo refresco
-posterior falla. También se comprobó que una operación pendiente impide envíos
-simultáneos y que el cierre espera antes de desconectar el cliente.
+Pasaron 34 pruebas, incluidas las 50 combinaciones de las reglas originales.
+Se verificaron las cuatro acciones, paginación filtrada, registros de otros
+alumnos, entradas inválidas, CRUD completo, confirmación de eliminación, cambio
+de acción al editar, resultados vacíos y fallos de conexión. Las pruebas de
+Streamlit comprueban también que los IDs y valores enviados a ambas gráficas
+coinciden con los de la tabla y que consultar no duplica inserciones.
 
-Estas pruebas usan una colección simulada y no alteran datos del profesor.
-La apertura visual y la conexión real se comprueban en tu laptop con WSLg y tu
-`.env`. Para verificar el CRUD, crea una lectura de 35 °C y 80 %: debe guardarse
-la acción de aire acondicionado. Selecciónala, cambia a 25 °C y guarda: debe
-conservar su `_id` y cambiar la acción a mantener el sistema apagado. Consulta
-el resultado y, si ya no necesitas ese registro de prueba, elimínalo desde la
-interfaz y comprueba que desaparece de la lista y de Atlas.
+Las pruebas usan una colección simulada y no modifican datos del profesor.
+El servidor Streamlit arrancó y respondió correctamente al control HTTP de salud.
+La revisión visual en navegador queda pendiente; los controles y los datos de
+las gráficas sí se verificaron mediante AppTest.
+La conexión real depende del `.env`, los permisos y la IP autorizada de tu laptop.
+Para comprobarla, crea una lectura de 32 °C y 60 %, selecciona Encender ventilador
+y verifica que aparece en la tabla y en las dos gráficas. Al editarla a 25 °C,
+debe pasar a Mantener sistema apagado conservando su ID.
 
 ## Referencias
 
-- [Tkinter y su modelo de eventos](https://docs.python.org/3/library/tkinter.html).
-- [Inserción de documentos con PyMongo](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/insert/).
-- [Actualización de documentos con PyMongo](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/update/).
-- [Eliminación de documentos con PyMongo](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/delete/).
-- [Aplicaciones gráficas en WSL](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
+- [Formularios de Streamlit](https://docs.streamlit.io/develop/api-reference/execution-flow/st.form).
+- [Gráficas de Altair en Streamlit](https://docs.streamlit.io/develop/api-reference/charts/st.altair_chart).
+- [Pruebas de aplicaciones Streamlit](https://docs.streamlit.io/develop/api-reference/app-testing).
+- [Actualizaciones con PyMongo](https://www.mongodb.com/docs/languages/python/pymongo-driver/current/crud/update/).

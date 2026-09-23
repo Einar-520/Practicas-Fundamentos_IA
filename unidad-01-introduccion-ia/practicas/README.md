@@ -15,7 +15,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 7 | [Sistema experto de salud mejorado](practica-07-sistema-experto-salud-mejorado/README.md) | http://localhost:5107 |
 | 8 | [MongoDB local](practica-08-conexion-mongodb/README.md) | http://localhost:5000 |
 | 9 | [MongoDB Atlas](practica-09-conexion-mongodb-atlas/README.md) | http://localhost:5001 o ventana Tkinter |
-| 10 | [Agente de climatización](practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
+| 10 | [Agente de climatización con Streamlit](practica-10-agente-climatizacion/README.md) | http://localhost:8510 |
 
 ## Preparar el entorno
 
@@ -72,9 +72,12 @@ Se conserva una sola implementación por carpeta; las anteriores están en el hi
 ## Práctica 10: agente reactivo simple
 
 El agente captura temperatura y humedad y conserva las reglas condición-acción
-del profesor. La ventana Tkinter permite crear, consultar, actualizar y eliminar
-sus registros en Atlas. Al editar una lectura, el agente recalcula la acción;
-la eliminación requiere seleccionar y confirmar un registro. Se ejecuta de forma
-independiente con ejecutar.sh dentro de practica-10-agente-climatizacion. Su .env
+del profesor. Streamlit muestra el selector de acción arriba, los registros al
+centro y sus gráficas abajo. El panel lateral permite crear, editar y eliminar
+lecturas. El filtro se aplica en MongoDB antes de paginar; la tabla y las gráficas
+usan los mismos registros de la página consultada.
+
+Se ejecuta de forma independiente con ejecutar.sh dentro de
+practica-10-agente-climatizacion y se abre en http://localhost:8510. Su .env
 apunta por defecto a la colección climatizacion de Einar_Ivan_Lazcano_Luna en el
 clúster del profesor. Las consultas y los cambios se limitan al alumno y práctica.

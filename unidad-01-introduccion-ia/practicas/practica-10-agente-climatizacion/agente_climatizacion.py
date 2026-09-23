@@ -5,6 +5,11 @@ from math import isfinite
 
 
 ALUMNO = 'Einar Ivan Lazcano Luna'
+AIRE_ACONDICIONADO = 'Encender aire acondicionado (Modo Deshumidificador)'
+VENTILADOR = 'Encender ventilador'
+CALEFACCION = 'Encender calefacción'
+APAGADO = 'Mantener sistema apagado'
+ACCIONES = (AIRE_ACONDICIONADO, VENTILADOR, CALEFACCION, APAGADO)
 
 
 class AgenteClimatizacion:
@@ -30,13 +35,13 @@ class AgenteClimatizacion:
         if not self._percibido:
             raise ValueError('Primero ingresa una temperatura y una humedad válidas.')
         if self.temperatura > 30 and self.humedad > 70:
-            self.accion = 'Encender aire acondicionado (Modo Deshumidificador)'
+            self.accion = AIRE_ACONDICIONADO
         elif self.temperatura > 30:
-            self.accion = 'Encender ventilador'
+            self.accion = VENTILADOR
         elif self.temperatura < 18:
-            self.accion = 'Encender calefacción'
+            self.accion = CALEFACCION
         else:
-            self.accion = 'Mantener sistema apagado'
+            self.accion = APAGADO
         return self.accion
 
     def mostrar_resultado(self):

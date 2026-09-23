@@ -6,7 +6,7 @@ from bson import ObjectId
 from pymongo import MongoClient
 from pymongo.errors import ConfigurationError, ConnectionFailure, OperationFailure, PyMongoError
 
-from agente_climatizacion import ALUMNO
+from agente_climatizacion import ACCIONES, ALUMNO
 from configuracion import cargar_configuracion
 
 CAMPOS = ('practica', 'alumno', 'agente', 'temperatura', 'humedad', 'accion', 'fecha')
@@ -56,6 +56,16 @@ def filtro_registro(identificador):
     return {**FILTRO_BASE, '_id': ObjectId(identificador)}
 
 
+def filtro_consulta(accion=None):
+    """Consultar una acción exacta sin aceptar filtros arbitrarios del usuario."""
+    filtro = dict(FILTRO_BASE)
+    if accion is not None:
+        if not isinstance(accion, str) or accion not in ACCIONES:
+            raise ValueError('Selecciona una de las cuatro acciones del agente.')
+        filtro['accion'] = accion
+    return filtro
+
+
 class AlmacenamientoAtlas:
     def __init__(self, coleccion=None):
         self._coleccion = coleccion
@@ -97,13 +107,14 @@ class AlmacenamientoAtlas:
         copia['_id'] = resultado.inserted_id
         return serializar(copia)
 
-    def listar(self, pagina=0):
+    def listar(self, pagina=0, accion=None):
         """Leer una página y comprobar si hay más resultados, sin contar toda la colección."""
         if type(pagina) is not int or pagina < 0:
             raise ValueError('La página debe ser un entero no negativo.')
+        filtro = filtro_consulta(accion)
         self.abrir()
         try:
-            cursor = (self._coleccion.find(FILTRO_BASE, PROYECCION)
+            cursor = (self._coleccion.find(filtro, PROYECCION)
                       .sort([('fecha', -1), ('_id', -1)])
                       .skip(pagina * TAMANO_PAGINA).limit(TAMANO_PAGINA + 1))
             documentos = list(cursor)
