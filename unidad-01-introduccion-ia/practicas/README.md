@@ -16,7 +16,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 8 | [MongoDB local](practica-08-conexion-mongodb/README.md) | http://localhost:5000 |
 | 9 | [MongoDB Atlas](practica-09-conexion-mongodb-atlas/README.md) | http://localhost:5001 o ventana Tkinter |
 | 10 | [Agente de climatización con Tkinter y Matplotlib](practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
-| 11 | [Árbol binario: rutas de A a F](practica-11-arbol-binario/README.md) | Terminal |
+| 11 | [Árbol binario: rutas de A a F](practica-11-arbol-binario/README.md) | Ventana Tkinter o terminal |
 
 ## Preparar el entorno
 
@@ -88,4 +88,6 @@ clúster del profesor. Las consultas y los cambios se limitan al alumno y práct
 A es la raíz; B y D forman la rama izquierda, y C, E y F la derecha.
 La búsqueda en profundidad muestra A → B → D, A → C → E y A → C → F.
 La única ruta de A hasta F es A → C → F. Ejecuta el archivo ejecutar.sh de
-practica-11-arbol-binario para ver los resultados en terminal.
+practica-11-arbol-binario para abrir la ventana Tkinter: dibuja el árbol, muestra
+las rutas y permite resaltar el camino a F. Añade --terminal para ver únicamente
+la salida de terminal. Requiere Tkinter y soporte gráfico para abrir la ventana.

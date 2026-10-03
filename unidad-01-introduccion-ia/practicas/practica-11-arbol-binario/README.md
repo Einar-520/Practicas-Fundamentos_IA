@@ -1,7 +1,8 @@
 # Práctica 11: rutas en un árbol binario
 
-Programa independiente de terminal que explora un árbol binario desde A hasta F.
-Usa únicamente la biblioteca estándar de Python 3.10 o posterior.
+Programa independiente con una interfaz sencilla de **Tkinter** que explora un
+árbol binario desde A hasta F. Conserva la salida en terminal y la misma búsqueda
+en profundidad (DFS). Usa Python 3.10 o posterior; no necesita paquetes de pip.
 
 ## Estructura del árbol
 
@@ -20,6 +21,19 @@ flowchart TD
 
 Cada nodo tiene como máximo dos hijos. D, E y F son hojas: no tienen hijos.
 No se añaden conexiones entre ramas.
+
+## Interfaz gráfica
+
+Al ejecutar el programa aparece una ventana con el árbol y sus tres rutas a hojas.
+
+- **Buscar A → F:** muestra la única ruta hasta F y resalta en verde los nodos
+  A, C y F y las conexiones de ese camino.
+- **Ver todas las rutas:** muestra de nuevo los tres caminos a las hojas D, E y F,
+  su cantidad y el árbol sin resaltar.
+
+La ventana se puede redimensionar y el dibujo se ajusta al espacio disponible.
+No se modifican nodos ni conexiones. Los resultados se calculan con la misma
+función `buscar_rutas()` que utiliza la terminal.
 
 ## Resultado en terminal
 
@@ -40,6 +54,16 @@ listadas terminan en hojas diferentes y solamente A → C → F llega a F.
 
 ## Ejecutar en VS Code con WSL
 
+La ventana requiere Tkinter y una sesión gráfica (WSLg en WSL). Si ya usas
+Tkinter en las prácticas 9 o 10, puedes utilizar el mismo entorno. Si falta
+Tkinter, instálalo en Ubuntu/WSL:
+
+```bash
+sudo apt install -y python3-tk
+```
+
+Después, descarga la actualización y abre la ventana:
+
 ```bash
 cd ~/universidad/fundamentos-ia &&
 git pull --ff-only origin main &&
@@ -53,6 +77,18 @@ caso utiliza `python3`. También puedes ejecutar directamente:
 python3 unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/11_arbol_binario.py
 ```
 
+Los resultados también se imprimen en la terminal al abrir la ventana. Para
+mostrar únicamente la salida de terminal, sin requerir Tkinter ni pantalla:
+
+```bash
+bash unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/ejecutar.sh --terminal
+```
+
+Si Tkinter no está disponible o no se puede abrir la ventana, el programa muestra
+un mensaje en español con la alternativa `--terminal`. Puedes comprobar el soporte
+gráfico ejecutando `.venv/bin/python -m tkinter` (o `python3 -m tkinter` si no usas
+el entorno virtual).
+
 ## Cómo funciona
 
 - `Nodo` representa un valor y sus dos hijos posibles. `dataclass` evita repetir
@@ -62,7 +98,16 @@ python3 unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/11_arbol_b
   y luego la derecha, conservando una copia del camino para cada rama.
 - Con destino `'F'` obtiene las rutas que llegan a F. Sin destino obtiene todas
   las rutas desde la raíz hasta las hojas.
-- `main()` muestra ambos resultados sin solicitar datos adicionales.
+- `abrir_interfaz()` dibuja el árbol en un `Canvas` y conecta los dos botones con
+  la búsqueda existente; el color verde identifica la ruta seleccionada.
+- `main()` muestra ambos resultados y abre Tkinter, salvo que se indique `--terminal`.
 
-Se verificaron las tres rutas a hojas, la ruta a F, la búsqueda de la raíz, un
-destino inexistente, el árbol vacío y que búsquedas repetidas no alteren el árbol.
+## Verificación
+
+Se conserva la búsqueda original, ya verificada con las tres rutas a hojas, la
+ruta a F, la búsqueda de la raíz, un destino inexistente y el árbol vacío.
+La actualización se comprueba con el lanzador en modo `--terminal`, la sintaxis
+y el mensaje para una sesión sin pantalla. Este entorno no dispone de pantalla
+gráfica; queda pendiente comprobar visualmente la ventana en WSLg.
+
+Referencia: [documentación oficial de Tkinter](https://docs.python.org/3/library/tkinter.html).

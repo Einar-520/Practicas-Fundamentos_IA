@@ -5,7 +5,7 @@ aplicaciones web independientes en el navegador, con Python y Flask para las
 reglas y HTML/CSS para la interfaz; las prácticas 1 a 7 y 9 también usan JavaScript.
 La práctica 9 también incluye una ventana de escritorio con Tkinter.
 La práctica 10 usa Tkinter y Matplotlib: consultas por acción, gráficas y CRUD en Atlas.
-La práctica 11 busca rutas en un árbol binario y muestra los resultados en terminal.
+La práctica 11 dibuja un árbol binario con Tkinter, resalta la ruta a F y conserva la salida en terminal.
 
 ## Inicio en WSL
 
@@ -33,7 +33,7 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 8 | [Guardar un dato en MongoDB local](unidad-01-introduccion-ia/practicas/practica-08-conexion-mongodb/README.md) | 5000 |
 | 9 | [MongoDB Atlas: web o Tkinter](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md) | Web: 5001; Tkinter: ventana |
 | 10 | [Agente de climatización con Tkinter y Matplotlib](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
-| 11 | [Árbol binario: rutas de A a F](unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/README.md) | Terminal |
+| 11 | [Árbol binario: rutas de A a F](unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/README.md) | Ventana Tkinter o terminal |
 
 Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
@@ -53,7 +53,7 @@ selecciona el intérprete .venv/bin/python del proyecto.
 
 ## Una versión por práctica
 
-Las once carpetas contienen las prácticas vigentes; la 11 se ejecuta en terminal. Las versiones anteriores
+Las once carpetas contienen las prácticas vigentes. Las versiones anteriores
 se consultan en el historial de Git; los ZIP e instaladores antiguos se retiraron.
 Los archivos Python contienen el programa de cada práctica y se conservan.
 
@@ -121,9 +121,12 @@ El lanzador iniciar_practica_web.sh corresponde a las interfaces web 1 a 9.
 
 ## Práctica 11: árbol binario
 
-Busca la ruta A → C → F y muestra las tres rutas desde A hasta las hojas D, E y F.
-Se ejecuta en terminal, sin dependencias externas:
+La ventana Tkinter muestra el árbol y las tres rutas desde A hasta las hojas D, E y F.
+El botón «Buscar A → F» resalta ese camino. Requiere Tkinter y soporte gráfico WSLg:
 
 ```bash
 bash unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/ejecutar.sh
 ```
+
+Añade `--terminal` al comando para ver las rutas sin abrir la ventana.
+[Consulta la instalación y el uso](unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/README.md).

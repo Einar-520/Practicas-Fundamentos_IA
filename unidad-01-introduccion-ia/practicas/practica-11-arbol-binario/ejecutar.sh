@@ -6,4 +6,4 @@ interprete="$proyecto/.venv/bin/python"
 if [[ ! -x "$interprete" ]]; then
   interprete="python3"
 fi
-exec "$interprete" "$directorio/11_arbol_binario.py"
+exec "$interprete" "$directorio/11_arbol_binario.py" "$@"
