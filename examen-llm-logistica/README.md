@@ -2,7 +2,9 @@
 
 Desarrollo de los dos ejercicios entregados por el profesor, en el orden solicitado.
 Alumno: **Einar Ivan Lazcano Luna**. Ambos programas se ejecutan de forma independiente
-y tienen interfaz de escritorio con **Tkinter**. Las gráficas usan **Matplotlib**.
+y tienen una interfaz web con **HTML, CSS y JavaScript**, servida localmente por
+**Flask**. Las gráficas SVG se dibujan a partir de los registros consultados, sin
+servicios externos ni dependencias de Node para ejecutar la aplicación.
 
 1. **p02primertutor_llm.py:** tutor de SQL para principiantes, con Ollama, chat,
    historial local y resumen breve.
@@ -31,13 +33,19 @@ python3 -m venv .venv
 Instala las dependencias en ese intérprete:
 
 ```bash
-sudo apt install -y python3-tk
 .venv/bin/python -m pip install -r examen-llm-logistica/requirements.txt
 ```
 
-En VS Code selecciona `.venv/bin/python`. Las ventanas requieren soporte gráfico
-en WSLg. Compruébalo con `.venv/bin/python -m tkinter`. Tkinter se instala con el
-gestor del sistema; no con `pip install tkinter`.
+En VS Code selecciona `.venv/bin/python`. Abre las direcciones indicadas en el
+navegador de Windows; no se requiere WSLg ni una ventana de Tkinter.
+
+| Ejercicio | Dirección predeterminada |
+| --- | --- |
+| Tutor SQL | http://localhost:8011 |
+| LogiSmart | http://localhost:8012 |
+
+Los dos servidores se ejecutan de forma independiente. Mantén su terminal abierta
+y usa `Ctrl+C` para detenerlos. Puedes cambiar el puerto agregando `--puerto 8020`.
 
 ## 2. Preparar Ollama
 
@@ -75,7 +83,7 @@ historial o comenzar una conversación nueva.
 
 El historial completo se guarda en `.datos/tutor_historial.json`; el contexto del
 chat y del resumen se limita a las últimas seis interacciones y se informa en la
-ventana. Si Ollama falla, la pregunta fallida no se agrega al historial. El resumen
+página. Si Ollama falla, la pregunta fallida no se agrega al historial. El resumen
 local de respaldo muestra el número de consultas y las últimas preguntas, sin
 simular una respuesta del modelo.
 
@@ -145,31 +153,36 @@ La aplicación no cambia silenciosamente a almacenamiento local si falla MongoDB
 | Control de acceso | Crear una decisión, buscar por placa para cargar P/S, confirmar Q/R/H/T y observar semáforo y explicación. Las correcciones exigen motivo. |
 | Tablas de verdad | Cambiar seis interruptores y ver A/E/B/F en vivo; consultar las tablas completas. No guarda accesos. |
 | Incidentes | Pegar correo y clasificar; editar categoría, prioridad, entidades y estado; consultar historial. |
-| Asistente con fuentes | Preguntar por CAM-102 o una placa; ver explicación y registros citados. Cargar historial persistido. |
+| Asistente con fuentes | Preguntar por CAM-102 o una placa; ver explicación y registros citados. El historial persistido se carga al entrar. |
 | Riesgos éticos | CRUD, evidencia, probabilidad/impacto iniciales y residuales, gráfica comparativa. |
 | Evaluaciones LLM | Ver prompts, respuestas, intentos, modelo, latencia y coincidencia; las altas o correcciones manuales se identifican como tales. |
 | Experimento | Revisar etiquetas una a una, ejecutar comparación y exportar métricas. |
 | Reportes | Exportar los registros consultados, con historial, a PDF/CSV/JSON. |
 | Configuración | Elegir modelo, tiempos de espera, operador, umbral de riesgo, horario y simulación de correo. |
 
-En las tablas pulsa **Actualizar** para cargar datos. **Detalle e historial**
-permite inspeccionar la evidencia. Las bajas se ocultan de las listas activas,
+Las tablas se cargan al entrar a cada pantalla. Usa la búsqueda, el filtro de
+estado o prioridad y la paginación. El botón del ojo abre el detalle y el historial;
+el lápiz permite editar y la papelera realiza una baja con confirmación. Las bajas se ocultan de las listas activas,
 pero quedan almacenadas para auditoría. No existe un borrado físico desde la GUI.
 Si otro operador modificó el registro, actualiza la lista antes de corregirlo.
 
 Las notificaciones de soporte son simuladas por defecto. Desactivar la simulación
 no envía nada automáticamente: se necesitan variables SMTP en `.env`, pulsar
-**Notificar soporte** y confirmar el envío. El programa no controla una barrera real.
+**Notificar a soporte** y confirmar el envío. El programa no controla una barrera real.
 
 ## 7. Evaluación de al menos 30 correos
 
 Se incluyen 30 correos sintéticos, con etiquetas propuestas **aún no confirmadas
 por una persona**. No se presentan como correos operativos ni como etiquetado humano
-ya realizado. En **Experimento → Revisar etiquetas manualmente**, lee cada mensaje,
-corrige categoría/prioridad si corresponde, marca la confirmación y guarda el conjunto.
-La GUI usa el archivo revisado en la siguiente ejecución.
+ya realizado. En **Experimento → Revisar correos**, lee cada mensaje,
+corrige categoría/prioridad si corresponde, marca la confirmación y pulsa
+**Guardar y siguiente**. La copia revisada se conserva en `.datos/correos_revisados.json`
+y se usa en las siguientes evaluaciones. Exportar permite conservar una copia.
+También puedes importar otro conjunto JSON con el mismo esquema.
 
-Para la evaluación final activa el LLM real y pulsa **Ejecutar comparación**.
+Para la evaluación final activa **Incluir Ollama local** y pulsa **Ejecutar comparación**.
+El último resultado se conserva en `.datos/ultimo_experimento.json` y se puede
+descargar como PDF o JSON desde la pantalla.
 Se calculan exactitud de categoría y prioridad, matriz de confusión y latencia
 media/mediana/p95 para reglas, LLM e híbrido. El informe distingue ausencia de
 respuesta, reintentos, respaldo por reglas y diferencias formal/informal.
@@ -198,7 +211,21 @@ El resultado incluido en `docs/resultados_reglas.json` fue medido con el LLM
 deshabilitado. Sus campos de métricas LLM son `null`; la salida híbrida en esa
 ejecución corresponde exclusivamente al respaldo por reglas.
 
-## 8. Pruebas
+## 8. Interfaz local y seguridad
+
+La aplicación está pensada para un operador en su equipo. Escucha únicamente en
+`127.0.0.1`, con depuración desactivada; no se debe exponer en una red pública.
+Las solicitudes de la interfaz llevan un token local; se comprueban el host y
+el origen, se limita el tamaño de entrada y los textos se escapan antes de
+mostrarlos. Los datos del correo y las respuestas del modelo nunca se ejecutan
+como HTML o JavaScript. No hay autenticación multiusuario ni despliegue público.
+
+Las operaciones lentas se ejecutan como trabajos y la página consulta su estado.
+Se muestra el tiempo transcurrido; puedes navegar mientras el modelo responde.
+Solo se permite una escritura o trabajo lento a la vez. El historial y las
+versiones del repositorio siguen protegiendo las correcciones de registros.
+
+## 9. Pruebas
 
 ```bash
 .venv/bin/python -m pip install -r examen-llm-logistica/requirements-dev.txt
@@ -210,3 +237,23 @@ Las pruebas de MongoDB usan un sustituto en memoria; no escriben en el clúster 
 profesor. Los dobles del LLM comprueban contratos y errores, no su calidad lingüística.
 Consulta el informe técnico para distinguir las verificaciones realizadas de las
 pruebas que requieren tu instancia real de MongoDB y Ollama.
+
+### Pruebas opcionales en navegador
+
+En una terminal, desde `examen-llm-logistica`:
+
+```bash
+../.venv/bin/python tests/servidores_web.py
+```
+
+Ese servidor utiliza datos temporales y un sustituto explícito del LLM. En otra
+terminal, desde la misma carpeta, con Node.js instalado:
+
+```bash
+npm install --prefix tests --no-save playwright
+npx --prefix tests playwright install chromium
+node tests/navegador.mjs
+```
+
+Estas dependencias se usan solo para pruebas. La aplicación normal no necesita npm.
+Las capturas se generan en `tests/capturas`; no contienen credenciales reales.

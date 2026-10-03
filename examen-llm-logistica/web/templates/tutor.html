@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% set script = 'tutor.js' %}
+{% set inicio = 'chat' %}
+{% block title %}Tutor de SQL{% endblock %}
+{% block mark %}<span data-icon="code"></span>{% endblock %}
+{% block brand %}Tutor SQL<small>APRENDE A TU RITMO</small>{% endblock %}
+{% block section %}Tutor de SQL{% endblock %}
+{% block footer %}Historial local{% endblock %}
+{% block sidebar %}
+<div class="nav-label">TU ESPACIO</div>
+<nav aria-label="Acciones del tutor">
+  <a href="#chat" class="active"><span data-icon="chat"></span>Conversación</a>
+  <button id="summary-action"><span data-icon="spark"></span>Resumen del historial</button>
+  <button id="export-action"><span data-icon="download"></span>Exportar conversación</button>
+  <button id="new-action"><span data-icon="plus"></span>Nueva conversación</button>
+</nav>
+<div class="tutor-side-card"><span class="eyebrow">EJERCICIO 01</span><h3>De la pregunta<br>a la consulta.</h3><p>Explora SQL con ejemplos de una biblioteca escolar.</p><div class="side-tags"><span>SELECT</span><span>JOIN</span><span>GROUP BY</span></div></div>
+<div class="sidebar-note"><span data-icon="lock"></span><p>Tu modelo, en tu equipo.<small>Conversaciones guardadas localmente.</small></p></div>
+{% endblock %}

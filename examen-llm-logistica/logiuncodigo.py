@@ -1,4 +1,4 @@
-"""Ejercicio 2: LogiSmart modular, MongoDB, Ollama y GUI."""
+"""Ejercicio 2: LogiSmart modular, MongoDB, Ollama e interfaz web local."""
 import argparse
 from pathlib import Path
 
@@ -21,6 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description='LogiSmart: examen de reglas, MongoDB y LLM local.')
     parser.add_argument('--demo', action='store_true', help='usar almacenamiento JSON local, sin MongoDB')
     parser.add_argument('--cargar-demo', action='store_true', help='agregar datos ficticios sin reemplazar los existentes')
+    parser.add_argument('--puerto', type=int, default=8012, help='puerto local de la interfaz web (8012)')
     parser.add_argument('--evaluar', type=Path, metavar='CORPUS', help='ejecutar la evaluación sin abrir la GUI')
     parser.add_argument('--solo-reglas', action='store_true', help='evaluar sin consultar Ollama')
     parser.add_argument('--salida', type=Path, default=Path(__file__).parent / '.datos/evaluacion.json')
@@ -42,8 +43,9 @@ def main():
                 from logismart.servicios.demostracion import cargar_demo
                 servicio.repo.comprobar()
                 print(cargar_demo(servicio))
-            from logismart.presentacion.app import VentanaLogiSmart
-            VentanaLogiSmart(servicio).ejecutar()
+            from web.logistica import crear_app
+            from web.base import servir
+            servir(crear_app(servicio), args.puerto)
     finally:
         servicio.repo.cerrar()
 
@@ -52,8 +54,6 @@ if __name__ == '__main__':
     try:
         main()
     except ImportError as error:
-        raise SystemExit(f'Falta una dependencia: {error.name}. Instala requirements.txt; para Tkinter usa sudo apt install python3-tk.') from None
+        raise SystemExit(f'Falta una dependencia: {error.name}. Instala requirements.txt.') from None
     except Exception as error:
-        if error.__class__.__name__ == 'TclError':
-            raise SystemExit('No se pudo abrir la ventana. Comprueba el soporte gráfico de WSLg.') from None
         raise SystemExit(str(error)) from None

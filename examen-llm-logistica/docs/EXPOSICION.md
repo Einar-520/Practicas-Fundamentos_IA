@@ -2,7 +2,7 @@
 
 ## Preparación previa
 
-Descarga los cambios; instala dependencias; comprueba Tkinter/WSLg, MongoDB y
+Descarga los cambios; instala dependencias; comprueba el navegador, MongoDB y
 Ollama; descarga el modelo. Revisa manualmente el corpus y ejecuta la evaluación
 real antes de clase. Conserva su archivo de resultados y el nombre del modelo.
 Usa datos ficticios para que ninguna captura exponga información del conductor
@@ -10,10 +10,10 @@ o credenciales. Mantén el `.env` fuera de las capturas.
 
 ## Demostración en seis pasos
 
-1. **Tutor de SQL.** Abre el ejercicio 1, pregunta cómo consultar una tabla,
+1. **Tutor de SQL.** Abre el ejercicio 1 en localhost:8011, pregunta cómo consultar una tabla,
    realiza una segunda pregunta y pulsa Resumen de mi historial. Explica el
    cambio de mensaje `system` respecto al tutor de IA original.
-2. **MongoDB y camiones.** Abre el ejercicio 2 en modo MongoDB; verifica conexión,
+2. **MongoDB y camiones.** Abre el ejercicio 2 en localhost:8012 en modo MongoDB; verifica conexión,
    registra o consulta CAM-102 y enseña la misma colección en Compass.
 3. **Reglas de acceso.** Busca la placa de CAM-102. Activa P/S/R, desactiva Q y
    mantén H verdadero/T falso: A y E son verdaderos, pero la decisión final es

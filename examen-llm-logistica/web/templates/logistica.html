@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% set script = 'logistica.js' %}
+{% set inicio = 'panel' %}
+{% block title %}LogiSmart{% endblock %}
+{% block sidebar %}
+<div class="nav-label">OPERACIÓN</div>
+<nav aria-label="Navegación de LogiSmart">
+  <a href="#panel" data-page="panel"><span data-icon="grid"></span>Panel de control</a>
+  <a href="#camiones" data-page="camiones"><span data-icon="truck"></span>Camiones</a>
+  <a href="#accesos" data-page="accesos"><span data-icon="gate"></span>Control de acceso</a>
+  <a href="#incidentes" data-page="incidentes"><span data-icon="mail"></span>Incidentes</a>
+  <a href="#asistente" data-page="asistente"><span data-icon="spark"></span>Asistente con fuentes</a>
+  <div class="nav-label">ANÁLISIS Y EVIDENCIA</div>
+  <a href="#tablas" data-page="tablas"><span data-icon="branches"></span>Tablas de verdad</a>
+  <a href="#riesgos_eticos" data-page="riesgos_eticos"><span data-icon="shield"></span>Riesgos éticos</a>
+  <a href="#evaluaciones_llm" data-page="evaluaciones_llm"><span data-icon="pulse"></span>Evaluaciones LLM</a>
+  <a href="#experimento" data-page="experimento"><span data-icon="flask"></span>Experimento</a>
+  <a href="#reportes" data-page="reportes"><span data-icon="download"></span>Reportes</a>
+  <a href="#configuracion" data-page="configuracion"><span data-icon="settings"></span>Configuración</a>
+</nav>
+<div class="sidebar-note"><span data-icon="shield"></span><p>Decisiones con evidencia.<small>La supervisión humana siempre está presente.</small></p></div>
+{% endblock %}

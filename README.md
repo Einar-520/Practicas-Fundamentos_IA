@@ -135,7 +135,7 @@ Añade `--terminal` al comando para ver las rutas sin abrir la ventana.
 
 Los ejercicios del examen se encuentran en [examen-llm-logistica](examen-llm-logistica/README.md),
 como aplicaciones independientes de las once prácticas. Primero se ejecuta el
-**tutor de SQL con Ollama**; después, **LogiSmart**, con Tkinter, Matplotlib, MongoDB,
+**tutor de SQL con Ollama**; después, **LogiSmart**, con interfaz web HTML/CSS/JavaScript, MongoDB,
 reglas proposicionales, clasificación híbrida y asistente con fuentes.
 
 Incluye datos ficticios, revisión manual de 30 correos, pruebas, exportación de
@@ -149,3 +149,5 @@ bash examen-llm-logistica/ejecutar.sh 2 --demo --cargar-demo
 ```
 
 Consulta primero la instalación de dependencias, Ollama y MongoDB en el README del examen.
+
+El tutor abre en `http://localhost:8011` y LogiSmart en `http://localhost:8012`.
