@@ -20,6 +20,7 @@ CARPETAS = (
     'practica-08-conexion-mongodb',
     'practica-09-conexion-mongodb-atlas',
     'practica-10-agente-climatizacion',
+    'practica-11-arbol-binario',
 )
 ANTIGUOS = (
     'practicas_revision.zip', 'practicas_con_interfaz.zip',
@@ -79,8 +80,9 @@ def comprobar_proyecto(raiz):
     archivos = set(git(raiz, 'ls-tree', '-r', '--name-only', destino, '--', PRACTICAS).stdout.splitlines())
     esperados = {f'{PRACTICAS}/{carpeta}/templates/index.html' for carpeta in CARPETAS[:9]}
     esperados.add(f'{PRACTICAS}/practica-10-agente-climatizacion/10_agente_climatizacion.py')
+    esperados.add(f'{PRACTICAS}/practica-11-arbol-binario/11_arbol_binario.py')
     if not esperados.issubset(archivos):
-        raise RuntimeError('origin/main no contiene las diez prácticas completas. Ejecuta git fetch origin main.')
+        raise RuntimeError('origin/main no contiene las once prácticas completas. Ejecuta git fetch origin main.')
     if any(Path(ruta).name == '.env' for ruta in archivos):
         raise RuntimeError('La versión remota contiene un .env versionado. No se reemplazará tu configuración.')
     for relativo in ALCANCE:
@@ -169,10 +171,11 @@ def sincronizar(raiz):
         else:
             print('Git avanzó, pero faltó completar la configuración local. Tu respaldo permanece en:', respaldo)
         raise
-    print(f'Actualizado a {destino[:12]}. Las diez prácticas ya están en las carpetas de VS Code.')
+    print(f'Actualizado a {destino[:12]}. Las once prácticas ya están en las carpetas de VS Code.')
     print('Tu configuración .env se conserva. Las copias anteriores están en el respaldo externo y en el historial de Git.')
     print('Para ejecutar: bash iniciar_practica_web.sh 1 (puedes elegir del 1 al 9).')
     print('Práctica 10: bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh')
+    print('Práctica 11: bash unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/ejecutar.sh')
     return respaldo
 
 

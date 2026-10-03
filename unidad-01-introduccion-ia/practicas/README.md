@@ -16,6 +16,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 8 | [MongoDB local](practica-08-conexion-mongodb/README.md) | http://localhost:5000 |
 | 9 | [MongoDB Atlas](practica-09-conexion-mongodb-atlas/README.md) | http://localhost:5001 o ventana Tkinter |
 | 10 | [Agente de climatización con Streamlit](practica-10-agente-climatizacion/README.md) | http://localhost:8510 |
+| 11 | [Árbol binario: rutas de A a F](practica-11-arbol-binario/README.md) | Terminal |
 
 ## Preparar el entorno
 
@@ -81,3 +82,10 @@ Se ejecuta de forma independiente con ejecutar.sh dentro de
 practica-10-agente-climatizacion y se abre en http://localhost:8510. Su .env
 apunta por defecto a la colección climatizacion de Einar_Ivan_Lazcano_Luna en el
 clúster del profesor. Las consultas y los cambios se limitan al alumno y práctica.
+
+## Práctica 11: árbol binario
+
+A es la raíz; B y D forman la rama izquierda, y C, E y F la derecha.
+La búsqueda en profundidad muestra A → B → D, A → C → E y A → C → F.
+La única ruta de A hasta F es A → C → F. Ejecuta el archivo ejecutar.sh de
+practica-11-arbol-binario para ver los resultados en terminal.
