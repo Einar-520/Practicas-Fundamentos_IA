@@ -4,7 +4,7 @@ Ejercicios de Einar Ivan Lazcano Luna. Las prácticas **1 a 9** se ejecutan como
 aplicaciones web independientes en el navegador, con Python y Flask para las
 reglas y HTML/CSS para la interfaz; las prácticas 1 a 7 y 9 también usan JavaScript.
 La práctica 9 también incluye una ventana de escritorio con Tkinter.
-La práctica 10 usa Streamlit: consultas por acción, gráficas de climatización y CRUD en Atlas.
+La práctica 10 usa Tkinter y Matplotlib: consultas por acción, gráficas y CRUD en Atlas.
 La práctica 11 busca rutas en un árbol binario y muestra los resultados en terminal.
 
 ## Inicio en WSL
@@ -32,7 +32,7 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 7 | [Sistema experto de salud mejorado](unidad-01-introduccion-ia/practicas/practica-07-sistema-experto-salud-mejorado/README.md) | 5107 |
 | 8 | [Guardar un dato en MongoDB local](unidad-01-introduccion-ia/practicas/practica-08-conexion-mongodb/README.md) | 5000 |
 | 9 | [MongoDB Atlas: web o Tkinter](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md) | Web: 5001; Tkinter: ventana |
-| 10 | [Agente de climatización con Streamlit](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md) | 8510 |
+| 10 | [Agente de climatización con Tkinter y Matplotlib](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
 | 11 | [Árbol binario: rutas de A a F](unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/README.md) | Terminal |
 
 Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
@@ -103,24 +103,21 @@ Se utiliza el mismo .env de Atlas y las mismas reglas que en la interfaz web.
 [Consulta la instalación completa, el uso y los requisitos de WSLg](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md).
 
 
-## Práctica 10: agente de climatización con Streamlit
+## Práctica 10: agente de climatización con Tkinter y Matplotlib
 
-La interfaz se abre en **http://localhost:8510**: selector de acción arriba,
-registros al centro y gráficas de temperatura y humedad abajo. El CRUD está en
-el panel lateral. Se conservan las reglas del profesor y la colección
-climatizacion de tu base personal en Atlas, configurada en su propio .env.
+La ventana integra el selector de acción arriba, los registros al centro y las
+gráficas de Matplotlib abajo. El CRUD se encuentra en el panel lateral. Conserva
+las reglas del profesor y su conexión a Atlas mediante el .env de la práctica.
 
 ```bash
+sudo apt install -y python3-tk
 .venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/requirements.txt
 bash unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/ejecutar.sh
 ```
 
-Las consultas se filtran por acción en MongoDB. La tabla y las gráficas muestran
-los mismos registros de la página seleccionada. El agente recalcula la acción
-al editar una lectura; la eliminación exige confirmación.
-
-[Consulta la instalación, las reglas y el uso del CRUD y las gráficas](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md).
-El lanzador iniciar_practica_web.sh sigue correspondiendo a las interfaces web 1 a 9.
+La tabla y las gráficas muestran los mismos registros de la página seleccionada.
+Requiere soporte gráfico WSLg. [Consulta las instrucciones completas](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md).
+El lanzador iniciar_practica_web.sh corresponde a las interfaces web 1 a 9.
 
 ## Práctica 11: árbol binario
 
