@@ -1,0 +1,1707 @@
+{
+  "experimento": "ace86efbfa0a4a8f90572f04f6bcfea4",
+  "fecha_utc": "2026-10-03T08:07:37.107404+00:00",
+  "modelo_configurado": "llama3.2:3b",
+  "llm_habilitado": false,
+  "sha256_corpus": "73c0efb35bf43f2f4aa943eea5acd6ff50e83485217a05715a574058b6f17744",
+  "correos": 30,
+  "etiquetas_revisadas_por_persona": 0,
+  "estado_etiquetado": "provisional_requiere_revision_humana",
+  "advertencia": "El híbrido usa respaldo por reglas cuando no existe salida LLM válida. No equivale a una medición del LLM. Latencia de pared, incluye carga del modelo y reintento.",
+  "metricas": {
+    "reglas": {
+      "estado": "medido",
+      "n": 30,
+      "exactitud_categoria": 0.7333333333333333,
+      "exactitud_prioridad": 0.7666666666666667,
+      "coincidencia_conjunta": 0.7333333333333333,
+      "respuestas_validas": 30,
+      "cobertura": 1.0,
+      "latencia_ms_media": 0.08219323329588708,
+      "latencia_ms_mediana": 0.038191499925233074,
+      "latencia_ms_p95": 0.07372700019914191,
+      "filas_reales": [
+        "materiales_peligrosos",
+        "sobrepeso",
+        "acceso_no_autorizado",
+        "falla_hardware",
+        "falla_software",
+        "somnolencia_conductor",
+        "otro"
+      ],
+      "columnas_predichas": [
+        "materiales_peligrosos",
+        "sobrepeso",
+        "acceso_no_autorizado",
+        "falla_hardware",
+        "falla_software",
+        "somnolencia_conductor",
+        "otro",
+        "sin_respuesta"
+      ],
+      "matriz_confusion": [
+        [
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          4,
+          0
+        ]
+      ]
+    },
+    "llm": {
+      "estado": "no_ejecutado",
+      "exactitud_categoria": null,
+      "matriz_confusion": null,
+      "latencia_ms_media": null
+    },
+    "hibrido": {
+      "estado": "medido",
+      "n": 30,
+      "exactitud_categoria": 0.7333333333333333,
+      "exactitud_prioridad": 0.7666666666666667,
+      "coincidencia_conjunta": 0.7333333333333333,
+      "respuestas_validas": 30,
+      "cobertura": 1.0,
+      "latencia_ms_media": 0.831419199979185,
+      "latencia_ms_mediana": 0.6563760000517505,
+      "latencia_ms_p95": 1.9617269999798737,
+      "filas_reales": [
+        "materiales_peligrosos",
+        "sobrepeso",
+        "acceso_no_autorizado",
+        "falla_hardware",
+        "falla_software",
+        "somnolencia_conductor",
+        "otro"
+      ],
+      "columnas_predichas": [
+        "materiales_peligrosos",
+        "sobrepeso",
+        "acceso_no_autorizado",
+        "falla_hardware",
+        "falla_software",
+        "somnolencia_conductor",
+        "otro",
+        "sin_respuesta"
+      ],
+      "matriz_confusion": [
+        [
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          3,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          3,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          3,
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          3,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          3,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          4,
+          0
+        ]
+      ]
+    }
+  },
+  "por_registro": {
+    "formal": {
+      "reglas": {
+        "estado": "medido",
+        "n": 16,
+        "exactitud_categoria": 0.875,
+        "exactitud_prioridad": 0.875,
+        "coincidencia_conjunta": 0.875,
+        "respuestas_validas": 16,
+        "cobertura": 1.0,
+        "latencia_ms_media": 0.12204493745571199,
+        "latencia_ms_mediana": 0.038930000073378324,
+        "latencia_ms_p95": 1.2919529999635415,
+        "filas_reales": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro"
+        ],
+        "columnas_predichas": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro",
+          "sin_respuesta"
+        ],
+        "matriz_confusion": [
+          [
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "llm": {
+        "estado": "no_ejecutado",
+        "exactitud_categoria": null,
+        "matriz_confusion": null,
+        "latencia_ms_media": null
+      },
+      "hibrido": {
+        "estado": "medido",
+        "n": 16,
+        "exactitud_categoria": 0.875,
+        "exactitud_prioridad": 0.875,
+        "coincidencia_conjunta": 0.875,
+        "respuestas_validas": 16,
+        "cobertura": 1.0,
+        "latencia_ms_media": 0.9282291874512794,
+        "latencia_ms_mediana": 0.6684329998734029,
+        "latencia_ms_p95": 3.243771999677847,
+        "filas_reales": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro"
+        ],
+        "columnas_predichas": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro",
+          "sin_respuesta"
+        ],
+        "matriz_confusion": [
+          [
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            2,
+            0
+          ]
+        ]
+      }
+    },
+    "informal": {
+      "reglas": {
+        "estado": "medido",
+        "n": 14,
+        "exactitud_categoria": 0.5714285714285714,
+        "exactitud_prioridad": 0.6428571428571429,
+        "coincidencia_conjunta": 0.5714285714285714,
+        "respuestas_validas": 14,
+        "cobertura": 1.0,
+        "latencia_ms_media": 0.03664842854180149,
+        "latencia_ms_mediana": 0.03609999998843705,
+        "latencia_ms_p95": 0.04689600018537021,
+        "filas_reales": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro"
+        ],
+        "columnas_predichas": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro",
+          "sin_respuesta"
+        ],
+        "matriz_confusion": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0
+          ]
+        ]
+      },
+      "llm": {
+        "estado": "no_ejecutado",
+        "exactitud_categoria": null,
+        "matriz_confusion": null,
+        "latencia_ms_media": null
+      },
+      "hibrido": {
+        "estado": "medido",
+        "n": 14,
+        "exactitud_categoria": 0.5714285714285714,
+        "exactitud_prioridad": 0.6428571428571429,
+        "coincidencia_conjunta": 0.5714285714285714,
+        "respuestas_validas": 14,
+        "cobertura": 1.0,
+        "latencia_ms_media": 0.7207792142967914,
+        "latencia_ms_mediana": 0.6445245001032163,
+        "latencia_ms_p95": 1.7192499999509891,
+        "filas_reales": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro"
+        ],
+        "columnas_predichas": [
+          "materiales_peligrosos",
+          "sobrepeso",
+          "acceso_no_autorizado",
+          "falla_hardware",
+          "falla_software",
+          "somnolencia_conductor",
+          "otro",
+          "sin_respuesta"
+        ],
+        "matriz_confusion": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "casos": [
+    {
+      "id": "COR-001",
+      "registro": "formal",
+      "categoria_esperada": "materiales_peligrosos",
+      "prioridad_esperada": "critica",
+      "reglas": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": "ABC-123-D",
+          "camion_id": "CAM-102",
+          "peso_reportado_kg": 48500.0,
+          "ubicacion": "andén 3"
+        },
+        "resumen": "Reglas por palabras clave: derrame, fuga, quimico, inflamable"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": "ABC-123-D",
+          "camion_id": "CAM-102",
+          "peso_reportado_kg": 48500.0,
+          "ubicacion": "andén 3"
+        },
+        "resumen": "Reglas por palabras clave: derrame, fuga, quimico, inflamable"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 1.2919529999635415,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 3.243771999677847,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-002",
+      "registro": "formal",
+      "categoria_esperada": "materiales_peligrosos",
+      "prioridad_esperada": "critica",
+      "reglas": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "puerta b"
+        },
+        "resumen": "Reglas por palabras clave: fuga, toxico"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "puerta b"
+        },
+        "resumen": "Reglas por palabras clave: fuga, toxico"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.056922999647213146,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 1.1069959996348189,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-003",
+      "registro": "informal",
+      "categoria_esperada": "materiales_peligrosos",
+      "prioridad_esperada": "critica",
+      "reglas": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-103",
+          "peso_reportado_kg": null,
+          "ubicacion": "caseta norte"
+        },
+        "resumen": "Reglas por palabras clave: corrosivo"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-103",
+          "peso_reportado_kg": null,
+          "ubicacion": "caseta norte"
+        },
+        "resumen": "Reglas por palabras clave: corrosivo"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.04689600018537021,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6461510001827264,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-004",
+      "registro": "informal",
+      "categoria_esperada": "materiales_peligrosos",
+      "prioridad_esperada": "critica",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "muelle 2"
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "muelle 2"
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.040809999973134836,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6428980000237061,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-005",
+      "registro": "formal",
+      "categoria_esperada": "sobrepeso",
+      "prioridad_esperada": "media",
+      "reglas": {
+        "categoria": "sobrepeso",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-104",
+          "peso_reportado_kg": 52000.0,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sobrepeso, bascula, exceso de peso"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "sobrepeso",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-104",
+          "peso_reportado_kg": 52000.0,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sobrepeso, bascula, exceso de peso"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.04422900019562803,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.5609180002466019,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-006",
+      "registro": "formal",
+      "categoria_esperada": "sobrepeso",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "sobrepeso",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: excede, sobrecarga, urgente"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "sobrepeso",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: excede, sobrecarga, urgente"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03647799985628808,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.767224999890459,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-007",
+      "registro": "informal",
+      "categoria_esperada": "sobrepeso",
+      "prioridad_esperada": "media",
+      "reglas": {
+        "categoria": "sobrepeso",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-105",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sobrepeso, bascula"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "sobrepeso",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-105",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sobrepeso, bascula"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03626299985626247,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.9041769999384996,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-008",
+      "registro": "informal",
+      "categoria_esperada": "sobrepeso",
+      "prioridad_esperada": "media",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": 70000.0,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": 70000.0,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.04252999997333973,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6706789999952889,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-009",
+      "registro": "formal",
+      "categoria_esperada": "acceso_no_autorizado",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "acceso_no_autorizado",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-106",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin autorizacion"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "acceso_no_autorizado",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-106",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin autorizacion"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.07372700019914191,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6126980001681659,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-010",
+      "registro": "formal",
+      "categoria_esperada": "acceso_no_autorizado",
+      "prioridad_esperada": "critica",
+      "reglas": {
+        "categoria": "acceso_no_autorizado",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "caseta\nemergencia"
+        },
+        "resumen": "Reglas por palabras clave: barrera, intruso, emergencia"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "acceso_no_autorizado",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "caseta\nemergencia"
+        },
+        "resumen": "Reglas por palabras clave: barrera, intruso, emergencia"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03715599996212404,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6421379998755583,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-011",
+      "registro": "informal",
+      "categoria_esperada": "acceso_no_autorizado",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "acceso_no_autorizado",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-107",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: no autorizado, acceso denegado"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "acceso_no_autorizado",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-107",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: no autorizado, acceso denegado"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03593700012061163,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.7663580004191317,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-012",
+      "registro": "informal",
+      "categoria_esperada": "acceso_no_autorizado",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "puerta b"
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "puerta b"
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03767299995161011,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.5679799996869406,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-013",
+      "registro": "formal",
+      "categoria_esperada": "falla_hardware",
+      "prioridad_esperada": "media",
+      "reglas": {
+        "categoria": "falla_hardware",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "caseta norte"
+        },
+        "resumen": "Reglas por palabras clave: lector, rfid, no enciende"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "falla_hardware",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": "caseta norte"
+        },
+        "resumen": "Reglas por palabras clave: lector, rfid, no enciende"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03334599978188635,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6544220000250789,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-014",
+      "registro": "formal",
+      "categoria_esperada": "falla_hardware",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "falla_hardware",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: camara, sensor, danado, urgente"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "falla_hardware",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: camara, sensor, danado, urgente"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.038145999951666454,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.5597190001935815,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-015",
+      "registro": "informal",
+      "categoria_esperada": "falla_hardware",
+      "prioridad_esperada": "media",
+      "reglas": {
+        "categoria": "falla_hardware",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: camara, no enciende"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "falla_hardware",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: camara, no enciende"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.030511000204569427,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.658330000078422,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-016",
+      "registro": "informal",
+      "categoria_esperada": "falla_hardware",
+      "prioridad_esperada": "media",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03423899988774792,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.5744079999203677,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-017",
+      "registro": "formal",
+      "categoria_esperada": "falla_software",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "falla_software",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sistema, error, lento, software, aplicacion"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "falla_software",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sistema, error, lento, software, aplicacion"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03878400002577109,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 1.9617269999798737,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-018",
+      "registro": "formal",
+      "categoria_esperada": "falla_software",
+      "prioridad_esperada": "media",
+      "reglas": {
+        "categoria": "falla_software",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sistema, caido, no carga, aplicacion, urgente"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "falla_software",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sistema, caido, no carga, aplicacion, urgente"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.05612699987977976,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6760639998901752,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-019",
+      "registro": "informal",
+      "categoria_esperada": "falla_software",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "falla_software",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: error, pantalla, no carga, aplicacion"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "falla_software",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: error, pantalla, no carga, aplicacion"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03338599981361767,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6702010000481096,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-020",
+      "registro": "informal",
+      "categoria_esperada": "falla_software",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03462099994067103,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.5946599999333557,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-021",
+      "registro": "formal",
+      "categoria_esperada": "somnolencia_conductor",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "somnolencia_conductor",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-108",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: somnolencia, cansancio, fatiga"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "somnolencia_conductor",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": "CAM-108",
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: somnolencia, cansancio, fatiga"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03864599966618698,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6778949996260053,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-022",
+      "registro": "formal",
+      "categoria_esperada": "somnolencia_conductor",
+      "prioridad_esperada": "critica",
+      "reglas": {
+        "categoria": "somnolencia_conductor",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: dormido, urgente"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "somnolencia_conductor",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: dormido, urgente"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.0387780000892235,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6273130002227845,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-023",
+      "registro": "informal",
+      "categoria_esperada": "somnolencia_conductor",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "somnolencia_conductor",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: fatiga, sueno"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "somnolencia_conductor",
+        "prioridad": "alta",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: fatiga, sueno"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03795299971898203,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.5505919998540776,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-024",
+      "registro": "informal",
+      "categoria_esperada": "somnolencia_conductor",
+      "prioridad_esperada": "alta",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03451199972914765,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 1.7192499999509891,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-025",
+      "registro": "formal",
+      "categoria_esperada": "otro",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.05132000023877481,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6608019998566306,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-026",
+      "registro": "formal",
+      "categoria_esperada": "otro",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.039076000120985555,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.8019420001801336,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-027",
+      "registro": "informal",
+      "categoria_esperada": "otro",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.036316000205260934,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.5674819999512692,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-028",
+      "registro": "formal",
+      "categoria_esperada": "otro",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: derrame, fuga"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "materiales_peligrosos",
+        "prioridad": "critica",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: derrame, fuga"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.038236999898799695,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.6797010000809678,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-029",
+      "registro": "formal",
+      "categoria_esperada": "otro",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "falla_hardware",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sensor"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "falla_hardware",
+        "prioridad": "media",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sensor"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.03979299981438089,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.618334999671788,
+      "requiere_revision_humana": true,
+      "intentos": []
+    },
+    {
+      "id": "COR-030",
+      "registro": "informal",
+      "categoria_esperada": "otro",
+      "prioridad_esperada": "baja",
+      "reglas": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm": null,
+      "hibrido": {
+        "categoria": "otro",
+        "prioridad": "baja",
+        "entidades": {
+          "placa": null,
+          "camion_id": null,
+          "peso_reportado_kg": null,
+          "ubicacion": null
+        },
+        "resumen": "Reglas por palabras clave: sin coincidencias; revisión recomendada"
+      },
+      "llm_ejecutado": false,
+      "latencia_reglas_ms": 0.031431000024895184,
+      "latencia_llm_ms": null,
+      "latencia_hibrido_ms": 0.557743000172195,
+      "requiere_revision_humana": true,
+      "intentos": []
+    }
+  ]
+}

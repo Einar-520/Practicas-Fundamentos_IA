@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.venv/
+.datos/
+__pycache__/
+*.py[cod]
+reportes/
+correos_revisados.json

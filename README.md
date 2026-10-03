@@ -130,3 +130,22 @@ bash unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/ejecutar.sh
 
 Añade `--terminal` al comando para ver las rutas sin abrir la ventana.
 [Consulta la instalación y el uso](unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/README.md).
+
+## Examen: tutor LLM y LogiSmart
+
+Los ejercicios del examen se encuentran en [examen-llm-logistica](examen-llm-logistica/README.md),
+como aplicaciones independientes de las once prácticas. Primero se ejecuta el
+**tutor de SQL con Ollama**; después, **LogiSmart**, con Tkinter, Matplotlib, MongoDB,
+reglas proposicionales, clasificación híbrida y asistente con fuentes.
+
+Incluye datos ficticios, revisión manual de 30 correos, pruebas, exportación de
+reportes, [informe técnico](examen-llm-logistica/docs/INFORME_TECNICO.md) y
+[guion para exponer](examen-llm-logistica/docs/EXPOSICION.md). La evaluación real con
+Ollama y la confirmación de etiquetas deben completarse antes de la entrega final.
+
+```bash
+bash examen-llm-logistica/ejecutar.sh 1
+bash examen-llm-logistica/ejecutar.sh 2 --demo --cargar-demo
+```
+
+Consulta primero la instalación de dependencias, Ollama y MongoDB en el README del examen.
