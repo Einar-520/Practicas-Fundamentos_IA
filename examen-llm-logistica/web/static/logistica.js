@@ -111,11 +111,13 @@ function donut(distribution) {
   });
   const entries = Object.entries(distribution).map(([key, count]) => {
     const percent = total ? (count / total) * 100 : 0;
+    const percentText = `${percentage.format(percent)}%`;
     return {
       key,
       count,
       percent,
-      info: `${label(key)}: ${percentage.format(percent)}% · ${count} de ${total} accesos`,
+      percentText,
+      info: `${label(key)}: ${percentText} · ${count} de ${total} accesos`,
     };
   });
   let offset = 0;
@@ -127,13 +129,19 @@ function donut(distribution) {
       offset += percent;
       const end = ((offset * 3.6 - 90) * Math.PI) / 180;
       if (percent === 100)
-        return `<circle ${attributes} cx="80" cy="80" r="57"/>`;
+        return `<circle ${attributes} cx="80" cy="80" r="57"><title>${esc(info)}</title></circle>`;
       const point = (angle) =>
         `${80 + 57 * Math.cos(angle)} ${80 + 57 * Math.sin(angle)}`;
-      return `<path ${attributes} d="M ${point(start)} A 57 57 0 ${percent > 50 ? 1 : 0} 1 ${point(end)}"/>`;
+      return `<path ${attributes} d="M ${point(start)} A 57 57 0 ${percent > 50 ? 1 : 0} 1 ${point(end)}"><title>${esc(info)}</title></path>`;
     })
     .join("");
-  return `<div class="donut-wrap"><svg class="donut" viewBox="0 0 160 160" role="group" aria-label="${total} accesos en el período"><circle cx="80" cy="80" r="57" fill="none" stroke="#edf3ee" stroke-width="16"/>${paths}<text x="80" y="79" text-anchor="middle" font-size="28" fill="#244934" font-family="inherit">${total}</text><text x="80" y="98" text-anchor="middle" font-size="9" fill="#96a598">ACCESOS</text></svg><div class="donut-labels">${entries.map(({ key, count, info }) => `<div data-donut-info="${esc(info)}" tabindex="0" aria-label="${esc(info)}"><span class="dot" style="color:${colors[key]}"></span>${esc(label(key))}<b>${count}</b></div>`).join("")}</div><div class="donut-tooltip" role="tooltip" hidden></div></div>`;
+  const labels = entries
+    .map(
+      ({ key, count, percentText, info }) =>
+        `<div data-donut-info="${esc(info)}" tabindex="0" aria-label="${esc(info)}" title="${esc(info)}"><span class="dot" style="color:${colors[key]}"></span><span class="donut-label-detail">${esc(label(key))}<small>${count} de ${total} accesos</small></span><b class="donut-percent">${percentText}</b></div>`,
+    )
+    .join("");
+  return `<div class="donut-wrap"><svg class="donut" viewBox="0 0 160 160" role="group" aria-label="${total} accesos en el período"><circle cx="80" cy="80" r="57" fill="none" stroke="#edf3ee" stroke-width="16"/>${paths}<text x="80" y="79" text-anchor="middle" font-size="28" fill="#244934" font-family="inherit">${total}</text><text x="80" y="98" text-anchor="middle" font-size="9" fill="#96a598">ACCESOS</text></svg><div class="donut-labels">${labels}</div><div class="donut-tooltip" role="tooltip" hidden></div></div>`;
 }
 
 function wireDonut() {

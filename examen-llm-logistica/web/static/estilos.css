@@ -700,6 +700,7 @@ main > * {
 }
 .donut-labels {
   flex: 1;
+  min-width: 0;
 }
 .donut-labels > div {
   display: flex;
@@ -709,11 +710,23 @@ main > * {
   margin: 16px 0;
   color: var(--muted);
 }
-.donut-labels b {
+.donut-label-detail {
+  min-width: 0;
+  color: var(--ink);
+}
+.donut-label-detail small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.donut-percent {
   margin-left: auto;
   color: var(--ink);
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .mini-list .mini-item {
   padding: 14px 0;

@@ -61,8 +61,18 @@ try {
     await shot("01_panel");
   });
   await check(
-    "Porcentajes al pasar el mouse por la dona y su leyenda",
+    "Porcentajes visibles y detalle al pasar el mouse por la dona",
     async () => {
+      const percentages = page.locator(".donut-percent");
+      assert.deepEqual(await percentages.allTextContents(), [
+        "25%",
+        "50%",
+        "25%",
+        "0%",
+      ]);
+      for (const percentage of await percentages.all()) {
+        assert.equal(await percentage.isVisible(), true);
+      }
       const box = await page.locator(".donut").boundingBox();
       const tooltip = page.getByRole("tooltip");
       for (const [degrees, expected] of [
@@ -91,6 +101,7 @@ try {
       assert.match(await tooltip.textContent(), /Autorizado: 25%/);
       await page.keyboard.press("Escape");
       await tooltip.waitFor({ state: "hidden" });
+      assert.equal(await percentages.first().isVisible(), true);
     },
   );
   await check("CRUD de camiones y texto sin ejecución de HTML", async () => {
