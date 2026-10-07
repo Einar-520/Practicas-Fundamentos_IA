@@ -1,6 +1,6 @@
 /** Pruebas de navegación y formularios reales. Requiere servidores_web.py activo. */
 import { createRequire } from "node:module";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
 const require = createRequire(import.meta.url);
@@ -186,6 +186,63 @@ try {
       /accesos:/,
     );
   });
+  await check(
+    "Informe de rechazados en el chat, descargas e historial",
+    async () => {
+      await page
+        .getByLabel("Pregunta al asistente")
+        .fill(
+          "Genera un informe de los camiones que fueron rechazados y los motivos del por que",
+        );
+      await page
+        .getByRole("button", { name: "Enviar pregunta", exact: true })
+        .click();
+      await page.locator(".assistant-report").waitFor();
+      assert.match(
+        await page.locator(".assistant-report").textContent(),
+        /2 accesos · 2 camiones únicos/,
+      );
+      assert.match(
+        await page.locator("#messages").textContent(),
+        /Falta de autorización previa/,
+      );
+      assert.match(
+        await page.locator("#messages").textContent(),
+        /Certificación del conductor no vigente/,
+      );
+      for (const format of ["pdf", "csv", "json"]) {
+        const pending = page.waitForEvent("download");
+        await page
+          .getByRole("button", {
+            name: "Descargar " + format.toUpperCase(),
+            exact: true,
+          })
+          .click();
+        const downloaded = await pending;
+        await downloaded.saveAs(
+          resolve(output, "informe_rechazados." + format),
+        );
+      }
+      const report = JSON.parse(
+        await readFile(resolve(output, "informe_rechazados.json"), "utf8"),
+      );
+      assert.equal(report.total_accesos, 2);
+      assert.deepEqual(report.registros.map((r) => r.camion_id).sort(), [
+        "CAM-103",
+        "CAM-104",
+      ]);
+      await page.reload();
+      await section("Asistente con fuentes");
+      await page
+        .getByRole("button", { name: "Descargar PDF", exact: true })
+        .waitFor();
+      await page.locator("#messages").evaluate((e) => {
+        e.style.scrollBehavior = "auto";
+        e.scrollTop = e.scrollHeight;
+      });
+      await shot("08_informe_asistente");
+    },
+  );
   await check("Riesgos y evaluación con revisión individual", async () => {
     await section("Riesgos éticos");
     assert.equal(await page.locator(".risk-row").count(), 6);
@@ -217,12 +274,21 @@ try {
   });
   await check("Reportes y configuración", async () => {
     await section("Reportes");
+    await page.getByLabel("Resultado del acceso").selectOption("denegado");
+    await shot("09_informe_filtros");
     const pendingDownload = page.waitForEvent("download");
     await page
       .getByRole("button", { name: "Descargar reporte", exact: true })
       .click();
     const downloaded = await pendingDownload;
     assert.equal(downloaded.suggestedFilename(), "LogiSmart_accesos.pdf");
+    await page
+      .getByLabel("Información que quieres exportar")
+      .selectOption("camiones");
+    assert.equal(
+      await page.getByLabel("Resultado del acceso").isVisible(),
+      false,
+    );
     await section("Configuración");
     await page.getByLabel("Nombre del operador").fill("Revisor web");
     await page
@@ -306,6 +372,22 @@ try {
       ),
       true,
     );
+    await page
+      .getByRole("button", { name: "Abrir navegación", exact: true })
+      .click();
+    await section("Asistente con fuentes");
+    await page.locator(".assistant-report").waitFor();
+    await page.locator("#messages").evaluate((e) => {
+      e.style.scrollBehavior = "auto";
+      e.scrollTop = e.scrollHeight;
+    });
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+    );
+    await shot("10_informe_movil");
     await page.goto("http://127.0.0.1:9161");
     await page.getByLabel("Pregunta para el tutor de SQL").waitFor();
     assert.equal(

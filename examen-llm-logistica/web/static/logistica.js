@@ -814,20 +814,75 @@ function truthPage() {
   paint();
 }
 
+function assistantReply(r) {
+  const report = r.informe && r._id;
+  return (
+    chatMessage("assistant", r.respuesta_mostrada, r.fuentes || []) +
+    `<small class="muted">${esc(label(r.estado))}</small>` +
+    (report
+      ? `<section class="assistant-report" aria-label="Descargar informe">
+      <strong>${icon("file")} ${esc(r.informe.titulo)}</strong>
+      <p>${esc(r.informe.total_accesos)} accesos · ${esc(r.informe.camiones_unicos)} camiones únicos</p>
+      <div class="actions">${["pdf", "csv", "json"]
+        .map(
+          (format) =>
+            `<button type="button" class="button secondary" data-report-id="${esc(r._id)}" data-report-format="${format}">${icon("download")} Descargar ${format.toUpperCase()}</button>`,
+        )
+        .join("")}</div>
+      <small>Copia guardada al generar el informe. Incluye todos los registros consultados.</small>
+    </section>`
+      : "")
+  );
+}
+
 function assistantPage(history) {
+  const suggestions = [
+    "Genera un informe de los camiones rechazados y sus motivos",
+    "Informe de camiones retenidos hoy",
+    "¿Por qué CAM-102 fue enviado a inspección?",
+  ];
   main.innerHTML =
     pageHead(
       "Pregunta. Recupera. Comprueba.",
-      "Respuestas respaldadas por los registros de tu operación.",
+      "Explicaciones e informes respaldados por los registros de tu operación.",
       "",
       "LOGISMART / ASISTENTE",
     ) +
-    `<div class="chat-layout"><section class="chat-card"><div class="chat-header"><div class="assistant-avatar">${icon("spark")}</div><div><strong>Asistente de LogiSmart</strong><small>Primero los datos, después la respuesta</small></div><span class="badge green">Con fuentes</span></div><div class="messages" id="messages">${history.length ? history.map((r) => chatMessage("user", r.pregunta) + chatMessage("assistant", r.respuesta_mostrada, r.fuentes || []) + `<small class="muted">${esc(label(r.estado))}</small>`).join("") : `<div class="chat-welcome"><div class="welcome-symbol">${icon("search")}</div><h2>¿Qué decisión quieres entender?</h2><p>Pregunta por un camión o una placa. Consultaré su historial y te mostraré la evidencia disponible.</p><button class="suggestion" id="suggest-question">${icon("truck")}¿Por qué CAM-102 fue enviado a inspección?</button></div>`}</div><form class="chat-form" id="assistant-form"><div class="composer"><textarea name="pregunta" id="question" rows="2" required minlength="3" maxlength="1500" placeholder="Pregunta por CAM-102 o por una placa…" aria-label="Pregunta al asistente"></textarea><button type="submit" aria-label="Enviar pregunta">${icon("send")}</button></div><div class="composer-note"><span>Cada respuesta incluye su fuente cuando hay datos.</span><span>Ctrl + Enter para enviar</span></div><div class="form-error" role="alert"></div></form></section><aside class="chat-side"><section class="card card-pad"><span class="eyebrow">CÓMO FUNCIONA</span><h2>Evidencia a la vista.</h2><div class="lesson-item"><span class="lesson-number">01</span><div><strong>Identifica la unidad</strong><small>Usa CAM-102 o su placa.</small></div></div><div class="lesson-item"><span class="lesson-number">02</span><div><strong>Recupera sus registros</strong><small>Busca accesos y autorización.</small></div></div><div class="lesson-item"><span class="lesson-number">03</span><div><strong>Comprueba la fuente</strong><small>Lee el registro citado.</small></div></div></section><section class="card card-pad"><span class="eyebrow">ESTADO DEL MODELO</span><h3>${meta.config.usar_llm ? "Ollama habilitado" : "Modo extractivo"}</h3><p style="margin-top:10px">${meta.config.usar_llm ? "El modelo selecciona fuentes. La aplicación presenta hechos recuperados y validados." : "El LLM está deshabilitado. Se muestran hechos de los registros sin generar una respuesta del modelo."}</p></section></aside></div>`;
-  if ($("#suggest-question"))
-    $("#suggest-question").onclick = () => {
-      $("#question").value = "¿Por qué CAM-102 fue enviado a inspección?";
-      $("#question").focus();
-    };
+    `<div class="chat-layout"><section class="chat-card">
+    <div class="chat-header"><div class="assistant-avatar">${icon("spark")}</div><div><strong>Asistente de LogiSmart</strong><small>Primero los datos, después la respuesta</small></div><span class="badge green">Con fuentes</span></div>
+    <div class="messages" id="messages">${
+      history.length
+        ? history
+            .map((r) => chatMessage("user", r.pregunta) + assistantReply(r))
+            .join("")
+        : `<div class="chat-welcome"><div class="welcome-symbol">${icon("search")}</div><h2>¿Qué necesitas consultar?</h2><p>Pregunta por un camión o solicita un informe de accesos rechazados, retenidos, autorizados o en inspección.</p></div>`
+    }</div>
+    <form class="chat-form" id="assistant-form"><div class="composer"><textarea name="pregunta" id="question" rows="2" required minlength="3" maxlength="1500" placeholder="Ejemplo: informe de camiones rechazados y sus motivos…" aria-label="Pregunta al asistente"></textarea><button type="submit" aria-label="Enviar pregunta">${icon("send")}</button></div><div class="composer-note"><span>Informes con fuentes y descarga PDF, CSV o JSON.</span><span>Ctrl + Enter para enviar</span></div><div class="form-error" role="alert"></div></form>
+    </section><aside class="chat-side"><section class="card card-pad"><span class="eyebrow">CONSULTAS RÁPIDAS</span><h2>De la pregunta al informe.</h2>
+    <div class="report-suggestions">${suggestions.map((prompt) => `<button type="button" class="suggestion" data-prompt="${esc(prompt)}">${icon("chat")}${esc(prompt)}</button>`).join("")}</div>
+    <p>Filtra por un resultado y, si lo necesitas, por camión o placa. Para fechas usa <strong>hoy</strong>, <strong>ayer</strong>, <strong>esta semana</strong>, <strong>este mes</strong> o <strong>desde 2026-10-01 hasta 2026-10-07</strong>.</p>
+    <p>Las fechas se consultan en UTC. Sin fechas se incluyen todos los registros activos. “Rechazados” corresponde al resultado denegado; las retenciones tienen su propio informe.</p>
+    </section><section class="card card-pad"><span class="eyebrow">ESTADO DEL MODELO</span><h3>${meta.config.usar_llm ? "Ollama habilitado" : "Modo extractivo"}</h3><p style="margin-top:10px">${meta.config.usar_llm ? "El modelo selecciona fuentes para las preguntas individuales." : "El LLM está deshabilitado. Se muestran hechos de los registros."} Los informes se calculan directamente con los datos guardados y funcionan también sin Ollama.</p></section></aside></div>`;
+  $$("[data-prompt]").forEach(
+    (b) =>
+      (b.onclick = () => {
+        $("#question").value = b.dataset.prompt;
+        $("#question").focus();
+      }),
+  );
+  $("#messages").onclick = guarded(async (event) => {
+    const b = event.target.closest("[data-report-id]");
+    if (!b) return;
+    b.disabled = true;
+    try {
+      await download(
+        `/asistente/informes/${encodeURIComponent(b.dataset.reportId)}/${b.dataset.reportFormat}`,
+        `LogiSmart_informe.${b.dataset.reportFormat}`,
+      );
+    } finally {
+      b.disabled = false;
+    }
+  });
   const form = $("#assistant-form");
   wireForm(form, async (d) => {
     const r = await job("/asistente", d);
@@ -839,9 +894,7 @@ function assistantPage(history) {
     if ($(".chat-welcome", messages)) messages.innerHTML = "";
     messages.insertAdjacentHTML(
       "beforeend",
-      chatMessage("user", d.pregunta) +
-        chatMessage("assistant", r.respuesta_mostrada, r.fuentes || []) +
-        `<small class="muted">${esc(label(r.estado))}</small>`,
+      chatMessage("user", d.pregunta) + assistantReply(r),
     );
     $("#question").value = "";
     messages.scrollTop = messages.scrollHeight;
@@ -901,7 +954,22 @@ function reportsPage() {
       "",
       "LOGISMART / REPORTES",
     ) +
-    `<div class="settings-grid"><section class="card card-pad"><h2>Crear un reporte</h2><form id="report-form" style="margin-top:23px"><div class="form-grid">${field("coleccion", "Información que quieres exportar", "select", "accesos", { full: true, options: crud })}${field("desde", "Desde (UTC)", "date", "", { optional: true })}${field("hasta", "Hasta (UTC)", "date", "", { optional: true })}</div><div class="report-options" aria-label="Formato de descarga">${[
+    `<div class="settings-grid"><section class="card card-pad"><h2>Crear un reporte</h2><form id="report-form" style="margin-top:23px"><div class="form-grid">${field("coleccion", "Información que quieres exportar", "select", "accesos", { full: true, options: crud })}${field(
+      "resultado",
+      "Resultado del acceso",
+      "select",
+      "todos",
+      {
+        full: true,
+        options: [
+          ["todos", "Todos los accesos"],
+          ["denegado", "Rechazados (denegados)"],
+          ["retenido", "Retenidos"],
+          ["inspeccion", "En inspección"],
+          ["autorizado", "Autorizados"],
+        ],
+      },
+    )}${field("desde", "Desde (UTC)", "date", "", { optional: true })}${field("hasta", "Hasta (UTC)", "date", "", { optional: true })}</div><div class="report-options" aria-label="Formato de descarga">${[
       ["pdf", "PDF", "Para presentar o imprimir"],
       ["csv", "CSV", "Para analizar en una hoja"],
       ["json", "JSON", "Para conservar la estructura"],
@@ -912,7 +980,7 @@ function reportsPage() {
       )
       .join(
         "",
-      )}</div><div class="form-error" role="alert"></div>${submit("Descargar reporte")}</form></section><aside class="card card-pad"><span class="eyebrow">TRAZABILIDAD</span><h2>Un registro, su contexto.</h2><p class="muted" style="font-size:12px;line-height:1.9;margin:14px 0 20px">Se incluyen los registros activos del período, sus decisiones y el historial de cambios. Deja las fechas vacías para incluir todo.</p>${notice("Los correos y prompts pueden contener datos personales. Comparte únicamente la información necesaria.", "warning")}</aside></div>`;
+      )}</div><div class="form-error" role="alert"></div>${submit("Descargar reporte")}</form></section><aside class="card card-pad"><span class="eyebrow">TRAZABILIDAD</span><h2>Un registro, su contexto.</h2><p class="muted" style="font-size:12px;line-height:1.9;margin:14px 0 20px">El informe de accesos incluye totales, camiones únicos, motivos y fuentes. Las demás colecciones incluyen los registros activos y sus historiales. Deja las fechas vacías para incluir todo.</p>${notice("Los correos y prompts pueden contener datos personales. Comparte únicamente la información necesaria.", "warning")}</aside></div>`;
   let format = "pdf";
   $$("[data-format]").forEach(
     (b) =>
@@ -924,14 +992,21 @@ function reportsPage() {
         });
       }),
   );
+  const collection = $("#report-form [name=coleccion]");
+  const result = $("#report-form [name=resultado]");
+  collection.onchange = () => {
+    result.disabled = collection.value !== "accesos";
+    result.closest(".field").hidden = result.disabled;
+  };
   wireForm($("#report-form"), async (d) => {
+    const access = d.coleccion === "accesos";
+    const query = { desde: d.desde, hasta: d.hasta };
+    if (access) query.resultado = d.resultado;
     await download(
-      "/exportar/" +
-        d.coleccion +
-        "/" +
+      (access ? "/informes/accesos/" : "/exportar/" + d.coleccion + "/") +
         format +
         "?" +
-        new URLSearchParams({ desde: d.desde, hasta: d.hasta }),
+        new URLSearchParams(query),
       `LogiSmart_${d.coleccion}.${format}`,
     );
   });

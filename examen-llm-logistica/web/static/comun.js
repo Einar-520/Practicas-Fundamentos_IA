@@ -93,6 +93,7 @@ export const labels = {
   reglas: "Reglas",
   llm: "LLM",
   sin_respuesta: "Sin respuesta",
+  informe_registros: "Informe generado con registros guardados",
 };
 export const label = (value) =>
   labels[value] || String(value ?? "").replaceAll("_", " ");

@@ -1,5 +1,7 @@
 """Flujos HTTP reales con persistencia temporal y un sustituto explícito de Ollama."""
 import json
+import csv
+import io
 import re
 import tempfile
 import threading
@@ -138,6 +140,43 @@ class TestWebLogistica(ClienteWeb, unittest.TestCase):
             self.assertIn('attachment', r.headers['Content-Disposition'])
         self.assertEqual(self.api('/registros/usuarios').status_code, 400)
         self.assertEqual(self.api('/exportar/accesos/py').status_code, 400)
+
+    def test_informe_asistente_descargas_e_historial_persistente(self):
+        r = self.terminar(self.api('/asistente', 'POST', {
+            'pregunta': 'Genera un informe de los camiones que fueron rechazados y sus motivos'}))
+        ruta = '/asistente/informes/' + r['_id'] + '/'
+        informe = self.api(ruta + 'json').json
+        self.assertEqual(informe['total_accesos'], 2)
+        self.assertEqual({a['camion_id'] for a in informe['registros']}, {'CAM-103', 'CAM-104'})
+        self.assertEqual(self.api('/asistente/historial').json['registros'][0]['informe'], informe)
+        csv_reporte = self.api(ruta + 'csv')
+        filas = list(csv.DictReader(io.StringIO(csv_reporte.data.decode('utf-8-sig'))))
+        self.assertEqual(len(filas), 2)
+        self.assertTrue(all(a['fuente'].startswith('accesos:') for a in filas))
+        self.assertTrue(self.api(ruta + 'pdf').data.startswith(b'%PDF'))
+        self.assertEqual(self.api(ruta + 'py').status_code, 400)
+        # Una baja posterior no cambia la evidencia de la copia guardada en el chat.
+        acceso = self.repo.listar('accesos', {'resultado': 'denegado'})[0]
+        self.repo.eliminar('accesos', acceso['_id'], 'Prueba', acceso['version'])
+        self.assertEqual(self.api(ruta + 'json').json, informe)
+        self.assertEqual(self.api('/informes/accesos/json?resultado=denegado').json['total_accesos'], 1)
+        self.llm.chat.assert_not_called()
+
+    def test_informe_filtrado_desde_pantalla_reportes(self):
+        r = self.api('/informes/accesos/json?resultado=inspeccion')
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json['total_accesos'], 1)
+        self.assertEqual(r.json['registros'][0]['camion_id'], 'CAM-102')
+        vacio = self.api('/informes/accesos/json?resultado=denegado&desde=2000-01-01&hasta=2001-01-01')
+        self.assertEqual(vacio.json['total_accesos'], 0)
+        for consulta in ['resultado=inventado', 'desde=texto', 'desde=2030-01-01&hasta=2020-01-01']:
+            self.assertEqual(self.api('/informes/accesos/json?' + consulta).status_code, 400)
+        for extension in ('csv', 'pdf'):
+            self.assertEqual(self.api('/informes/accesos/' + extension + '?resultado=retenido').status_code, 200)
+
+    def test_solo_las_respuestas_con_informe_tienen_descarga(self):
+        r = self.terminar(self.api('/asistente', 'POST', {'pregunta': '¿Por qué CAM-102 fue a inspección?'}))
+        self.assertEqual(self.api('/asistente/informes/' + r['_id'] + '/pdf').status_code, 400)
 
     def test_revision_individual_sin_marcar_los_demas(self):
         corpus = self.api('/corpus').json

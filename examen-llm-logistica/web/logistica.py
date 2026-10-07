@@ -13,6 +13,7 @@ from logismart.dominio.reglas import decidir, tablas
 from logismart.infraestructura.configuracion import RAIZ, guardar_configuracion
 from logismart.infraestructura.repositorio import COLECCIONES
 from logismart.servicios.asistente import responder
+from logismart.servicios.informes_accesos import construir_informe
 from logismart.servicios.clasificador import ClasificadorHibrido
 from logismart.servicios.demostracion import cargar_demo
 from logismart.servicios.evaluacion import cargar_corpus, evaluar_corpus
@@ -129,6 +130,19 @@ def crear_app(servicio, directorio=None, guardar_preferencias=guardar_configurac
     @app.get('/api/asistente/historial')
     def historial_asistente():
         return {'registros': list(reversed(servicio.repo.listar('evaluaciones_llm', {'tipo': 'asistente'})))}
+
+    @app.get('/api/asistente/informes/<identificador>/<extension>')
+    def informe_asistente(identificador, extension):
+        registro = servicio.repo.obtener('evaluaciones_llm', identificador)
+        informe = registro.get('informe')
+        if registro.get('tipo') != 'asistente' or not isinstance(informe, dict) or informe.get('tipo') != 'informe_accesos':
+            raise ValueError('Esta respuesta no contiene un informe descargable.')
+        return descargar(informe, extension, f"LogiSmart_{informe['filtros']['resultado']}")
+
+    @app.get('/api/informes/accesos/<extension>')
+    def informe_accesos(extension):
+        informe = construir_informe(servicio.repo, resultado=request.args.get('resultado', 'todos'), **rango())
+        return descargar(informe, extension, f"LogiSmart_{informe['filtros']['resultado']}")
 
     @app.post('/api/configuracion')
     @exclusivo(trabajos)

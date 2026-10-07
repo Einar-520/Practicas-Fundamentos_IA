@@ -1568,6 +1568,36 @@ progress::-webkit-progress-value {
 .chat-side .card {
   margin-bottom: 18px;
 }
+.assistant-report {
+  margin: 12px 0 24px 44px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  overflow-wrap: anywhere;
+}
+.assistant-report strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.assistant-report p,
+.assistant-report .actions {
+  margin: 10px 0;
+}
+.assistant-report small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.report-suggestions {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0;
+}
+.report-suggestions .suggestion {
+  width: 100%;
+  text-align: left;
+}
 .chat-side p {
   font-size: 11px;
   color: var(--muted);

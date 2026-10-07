@@ -25,7 +25,10 @@ o credenciales. Mantén el `.env` fuera de las capturas.
    señala errores y latencias, incluyendo el grupo con escritura informal.
 5. **Asistente con evidencia.** Pregunta «¿por qué CAM-102 fue enviado a inspección?».
    Abre el acceso citado. Pregunta después por CAM-999 sin registros y muestra
-   «No tengo información». Explica que las respuestas no deciden el acceso.
+   «No tengo información». Después pide «Genera un informe de los camiones que
+   fueron rechazados y sus motivos». Muestra el total de accesos, camiones únicos,
+   motivos y fuentes; descarga el PDF desde el chat. Explica que estos informes se
+   calculan con los registros guardados, funcionan sin Ollama y no cambian accesos.
 6. **Ética y reportes.** Muestra riesgos de alucinación, sesgo, privacidad y
    automatización, con puntajes antes/después. Exporta un PDF y el JSON de un
    reporte. Cierra mostrando el enlace al repositorio y la arquitectura por capas.

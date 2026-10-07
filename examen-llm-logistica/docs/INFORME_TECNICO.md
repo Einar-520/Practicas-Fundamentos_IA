@@ -266,7 +266,27 @@ corrección respetuosa. Se guarda el historial completo localmente y se envían 
 alcance y el total de consultas guardadas. Un fallo de red no agrega un turno
 incompleto al historial.
 
-### Segundo ejercicio: RAG extractivo
+### Segundo ejercicio: RAG extractivo e informes de accesos
+
+El asistente admite dos rutas. Para un informe general (por ejemplo, «camiones
+rechazados y sus motivos»), `logismart/servicios/informes_accesos.py` interpreta
+filtros permitidos de resultado, fechas UTC y unidad. Consulta todos los accesos
+activos coincidentes del ámbito del alumno y desglosa motivos a partir de las
+premisas y explicaciones almacenadas. No recalcula decisiones históricas ni envía
+consultas generadas por el LLM a MongoDB. Los rechazos (`denegado`) se separan de
+las retenciones (`retenido`). Se cuentan accesos y camiones únicos por separado.
+
+El informe se guarda en `evaluaciones_llm` como respuesta del asistente, con
+`estado: informe_registros`, `llm_consultado: false` y una copia `informe` de filtros,
+totales, motivos y registros con fuente y versión. El chat permite descargar esa
+misma copia como PDF, CSV o JSON aun después de editar los accesos originales.
+El servidor ofrece `/api/asistente/informes/<id>/<extension>` para esa copia y
+`/api/informes/accesos/<extension>` para generar una consulta actual desde Reportes.
+Se aplican los controles existentes de origen local, CSRF y ámbito de repositorio.
+El chat presenta hasta 20 registros; los archivos incluyen todos los consultados.
+Más de 1000 accesos exige acotar fechas, sin truncar silenciosamente el informe.
+
+Para las preguntas individuales se conserva el siguiente flujo RAG:
 
 1. Extraer CAM-número o placa de la pregunta.
 2. Consultar accesos del ámbito en MongoDB; recuperar hasta cinco decisiones
@@ -384,11 +404,11 @@ definirse antes de usar datos reales.
 
 ## 11. Verificación realizada
 
-- 54 pruebas automatizadas aprobadas: 39 de dominio y servicios y 15 de los
+- 67 pruebas automatizadas aprobadas: 49 de dominio y servicios y 18 de los
   flujos HTTP del tutor y LogiSmart, sin omisiones.
-- 11 recorridos aprobados en Chromium: panel, CRUD de camiones, acceso y búsqueda,
+- 12 recorridos aprobados en Chromium: panel, CRUD de camiones, acceso y búsqueda,
   incidente y revisión, simulador, asistente, riesgo/experimento, reportes y
-  configuración, baja, tutor y diseño móvil. No se registraron errores JavaScript.
+  configuración, informes desde el chat, baja, tutor y diseño móvil. No se registraron errores JavaScript.
 - Las 16 combinaciones originales, las reglas adicionales y el solapamiento A=E=V
   se contrastan con resultados esperados. La interfaz llama al motor de Python.
 - Se comprueban JSON estricto, reintento y respaldo; fuentes inventadas o ausentes;
@@ -397,8 +417,10 @@ definirse antes de usar datos reales.
   rechazan escrituras simultáneas y mantienen disponibles las consultas.
 - En el navegador se comprobó que un texto con etiquetas HTML se muestra como
   texto y no ejecuta JavaScript, tanto en datos de camiones como en el chat.
-- Se descargó un PDF desde el navegador; las pruebas HTTP verifican también CSV y
-  JSON. El corpus provisional se evaluó realmente con el clasificador por reglas.
+- Se descargaron PDF, CSV y JSON del informe de camiones rechazados desde el chat.
+  Se verificaron sus motivos, totales, filtros y disponibilidad tras recargar; la
+  copia permanece igual después de modificar o dar de baja un acceso. El PDF se
+  revisó visualmente. El corpus provisional se evaluó con el clasificador por reglas.
 
 Las pruebas usan almacenamiento temporal; PyMongo se comprueba con mongomock y
 la agregación se verifica mediante un sustituto controlado. Las respuestas del

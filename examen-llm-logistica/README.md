@@ -153,11 +153,11 @@ La aplicación no cambia silenciosamente a almacenamiento local si falla MongoDB
 | Control de acceso | Crear una decisión, buscar por placa para cargar P/S, confirmar Q/R/H/T y observar semáforo y explicación. Las correcciones exigen motivo. |
 | Tablas de verdad | Cambiar seis interruptores y ver A/E/B/F en vivo; consultar las tablas completas. No guarda accesos. |
 | Incidentes | Pegar correo y clasificar; editar categoría, prioridad, entidades y estado; consultar historial. |
-| Asistente con fuentes | Preguntar por CAM-102 o una placa; ver explicación y registros citados. El historial persistido se carga al entrar. |
+| Asistente con fuentes | Preguntar por un camión o generar informes de rechazados, retenidos, autorizados o inspección, con motivos, fuentes y descarga PDF/CSV/JSON. El historial persistido se carga al entrar. |
 | Riesgos éticos | CRUD, evidencia, probabilidad/impacto iniciales y residuales, gráfica comparativa. |
 | Evaluaciones LLM | Ver prompts, respuestas, intentos, modelo, latencia y coincidencia; las altas o correcciones manuales se identifican como tales. |
 | Experimento | Revisar etiquetas una a una, ejecutar comparación y exportar métricas. |
-| Reportes | Exportar los registros consultados, con historial, a PDF/CSV/JSON. |
+| Reportes | Filtrar accesos por resultado y fecha; descargar totales, motivos y evidencia en PDF/CSV/JSON. Las demás colecciones conservan su exportación con historial. |
 | Configuración | Elegir modelo, tiempos de espera, operador, umbral de riesgo, horario y simulación de correo. |
 
 Las tablas se cargan al entrar a cada pantalla. Usa la búsqueda, el filtro de
@@ -169,6 +169,31 @@ Si otro operador modificó el registro, actualiza la lista antes de corregirlo.
 Las notificaciones de soporte son simuladas por defecto. Desactivar la simulación
 no envía nada automáticamente: se necesitan variables SMTP en `.env`, pulsar
 **Notificar a soporte** y confirmar el envío. El programa no controla una barrera real.
+
+### Informes desde el asistente
+
+Escribe, por ejemplo: **«Genera un informe de los camiones que fueron rechazados
+y sus motivos»**. No necesitas indicar un CAM individual. Cada informe contiene
+accesos, camiones únicos, fechas, motivos, premisas, explicación y referencias a
+los registros consultados. «Rechazados» filtra el resultado `denegado`; las
+retenciones se consultan por separado para conservar el significado de las reglas.
+
+Puedes pedir autorizados, retenidos, inspección o todos los accesos. Se admite un
+camión o placa, y fechas como `desde 2026-10-01 hasta 2026-10-07`, `hoy`, `ayer`,
+`esta semana` o `este mes` (UTC). Sin fechas se incluyen todos los registros activos.
+Los períodos no reconocidos muestran un mensaje para aclararlos; no se interpretan
+como consultas sin filtro. Para elegir los filtros con controles, usa **Reportes**.
+
+Debajo de la respuesta aparecen **Descargar PDF**, **Descargar CSV** y **Descargar
+JSON**. El historial conserva una copia de los datos al generar el informe: editar
+un acceso después no cambia esa descarga. Solicita otro informe para consultar
+los datos actualizados. La vista del chat muestra hasta 20 accesos; las descargas
+incluyen el conjunto completo. Si hay más de 1000, se pide reducir el período.
+
+Los totales y motivos se calculan directamente sobre el almacenamiento activo
+(MongoDB, o JSON si abriste `--demo`), sin depender de Ollama. La evaluación queda
+identificada como `informe_registros` y `llm_consultado: false`; no representa una
+inferencia del modelo. Las preguntas individuales conservan su RAG extractivo.
 
 ## 7. Evaluación de al menos 30 correos
 

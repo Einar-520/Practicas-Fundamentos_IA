@@ -5,6 +5,9 @@ from time import perf_counter
 from pydantic import ValidationError
 from comun.ollama_local import ErrorLLM
 from logismart.dominio.modelos import SeleccionFuentes
+from logismart.servicios.informes_accesos import (
+    filtros_desde_pregunta, construir_informe, texto_informe, MAX_VISTA_CHAT,
+)
 
 PROMPT_ASISTENTE = '''Eres un asistente de logística con acceso únicamente al contexto
 recuperado. Elige los identificadores de las fuentes que contestan la pregunta.
@@ -37,14 +40,28 @@ def recuperar(repo, pregunta):
 def responder(repo, cliente, pregunta, operador, usar_llm=True):
     pregunta = pregunta.strip()
     if not 3 <= len(pregunta) <= 1500:
-        raise ValueError('Escribe una pregunta de 3 a 1500 caracteres, indicando CAM-102 o la placa.')
-    fuentes = recuperar(repo, pregunta)  # Consulta primero, contexto después.
+        raise ValueError('Escribe una pregunta de 3 a 1500 caracteres.')
     inicio = perf_counter()
+    filtros = filtros_desde_pregunta(pregunta)
+    if filtros is not None:
+        informe = construir_informe(repo, **filtros)
+        fuentes = [r['fuente'] for r in informe['registros']]
+        registro = {
+            'tipo': 'asistente', 'pregunta': pregunta, 'prompt': '', 'respuesta': '',
+            'respuesta_mostrada': texto_informe(informe), 'informe': informe,
+            'modelo': 'no_aplica_informe_por_registros', 'llm_consultado': False,
+            'latencia_ms': (perf_counter() - inicio) * 1000, 'coincidio_reglas': None,
+            'estado': 'informe_registros', 'fuentes': fuentes[:MAX_VISTA_CHAT],
+            'fuentes_consultadas': fuentes,
+        }
+        return repo.crear('evaluaciones_llm', registro, operador)
+    fuentes = recuperar(repo, pregunta)  # Consulta primero, contexto después.
     salida, estado = '', 'sin_datos'
     prompt = ''
     seleccionadas = []
     if not fuentes:
-        respuesta = 'No tengo información. Indica un identificador como CAM-102 o una placa registrada.'
+        respuesta = ('No tengo información para esa consulta. Indica un camión o una placa registrada, '
+                     'o solicita un informe de camiones rechazados, retenidos, autorizados o en inspección.')
     else:
         seleccionadas = fuentes[:1]
         estado = 'extractivo_reglas'
@@ -69,5 +86,4 @@ def responder(repo, cliente, pregunta, operador, usar_llm=True):
                 'coincidio_reglas': None, 'estado': estado,
                 'fuentes': [f['fuente'] for f in seleccionadas],
                 'fuentes_consultadas': [f['fuente'] for f in fuentes]}
-    repo.crear('evaluaciones_llm', registro, operador)
-    return registro
+    return repo.crear('evaluaciones_llm', registro, operador)
