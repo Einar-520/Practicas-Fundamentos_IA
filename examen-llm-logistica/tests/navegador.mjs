@@ -60,6 +60,39 @@ try {
     );
     await shot("01_panel");
   });
+  await check(
+    "Porcentajes al pasar el mouse por la dona y su leyenda",
+    async () => {
+      const box = await page.locator(".donut").boundingBox();
+      const tooltip = page.getByRole("tooltip");
+      for (const [degrees, expected] of [
+        [-45, "Autorizado: 25%"],
+        [90, "Denegado: 50%"],
+        [225, "Inspección: 25%"],
+      ]) {
+        const angle = (degrees * Math.PI) / 180;
+        await page.mouse.move(
+          box.x + ((80 + 57 * Math.cos(angle)) * box.width) / 160,
+          box.y + ((80 + 57 * Math.sin(angle)) * box.height) / 160,
+        );
+        await tooltip.waitFor();
+        assert.ok((await tooltip.textContent()).includes(expected));
+      }
+      await shot("13_dona_porcentaje");
+      await page
+        .locator(".donut-labels > div")
+        .filter({ hasText: "Retenido" })
+        .hover();
+      assert.match(await tooltip.textContent(), /Retenido: 0%/);
+      await page.mouse.move(10, 10);
+      await tooltip.waitFor({ state: "hidden" });
+      await page.locator('[data-donut-key="autorizado"]').focus();
+      await tooltip.waitFor();
+      assert.match(await tooltip.textContent(), /Autorizado: 25%/);
+      await page.keyboard.press("Escape");
+      await tooltip.waitFor({ state: "hidden" });
+    },
+  );
   await check("CRUD de camiones y texto sin ejecución de HTML", async () => {
     await section("Camiones");
     await page
@@ -175,6 +208,14 @@ try {
   await check("Asistente con fuentes recuperadas", async () => {
     await section("Asistente con fuentes");
     await page
+      .locator("#assistant-data")
+      .getByText("Demostración local consultada", { exact: true })
+      .waitFor();
+    assert.match(
+      await page.locator("#assistant-data").textContent(),
+      /Accesos guardados/,
+    );
+    await page
       .getByLabel("Pregunta al asistente")
       .fill("¿Por qué CAM-102 fue a inspección?");
     await page
@@ -241,6 +282,64 @@ try {
         e.scrollTop = e.scrollHeight;
       });
       await shot("08_informe_asistente");
+    },
+  );
+  await check(
+    "Detección del servidor antiguo y recuperación tras actualizar",
+    async () => {
+      let enviados = 0;
+      const count = (request) => {
+        if (
+          request.method() === "POST" &&
+          request.url().endsWith("/api/asistente")
+        )
+          enviados++;
+      };
+      page.on("request", count);
+      await page.route("**/api/estado", async (route) => {
+        const response = await route.fetch();
+        const data = await response.json();
+        delete data.capacidades;
+        delete data.version_servidor;
+        await route.fulfill({ response, json: data });
+      });
+      await page.reload();
+      await page
+        .getByText("Servidor pendiente de reinicio", { exact: true })
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Enviar pregunta", exact: true })
+          .isDisabled(),
+        true,
+      );
+      assert.equal(enviados, 0);
+      await shot("11_servidor_antiguo");
+      await section("Reportes");
+      await page
+        .getByText("Servidor pendiente de reinicio", { exact: true })
+        .waitFor();
+      await page.unroute("**/api/estado");
+      await section("Asistente con fuentes");
+      await page
+        .locator("#assistant-data")
+        .getByText("Demostración local consultada", { exact: true })
+        .waitFor();
+      assert.equal(
+        await page
+          .getByRole("button", { name: "Enviar pregunta", exact: true })
+          .isEnabled(),
+        true,
+      );
+      await page
+        .getByRole("button", { name: "Consultar datos ahora", exact: true })
+        .click();
+      await page
+        .locator("#assistant-data")
+        .getByText("Demostración local consultada", { exact: true })
+        .waitFor();
+      await shot("12_datos_consultados");
+      page.off("request", count);
     },
   );
   await check("Riesgos y evaluación con revisión individual", async () => {

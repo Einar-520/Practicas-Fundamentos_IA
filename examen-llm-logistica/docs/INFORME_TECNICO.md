@@ -286,6 +286,14 @@ Se aplican los controles existentes de origen local, CSRF y ámbito de repositor
 El chat presenta hasta 20 registros; los archivos incluyen todos los consultados.
 Más de 1000 accesos exige acotar fechas, sin truncar silenciosamente el informe.
 
+La interfaz comprueba las capacidades que devuelve `/api/estado`. Si se actualizó
+JavaScript pero Python sigue ejecutando la versión anterior, bloquea el envío de
+consultas y muestra una instrucción de reinicio. `/api/asistente/datos` informa
+el origen sin credenciales y vuelve a contar los documentos activos del ámbito,
+por colección y resultado. Los informes conservan también la base y servidor de
+origen. El arranque opcional `--atlas` exige el destino SRV de Atlas y comprueba
+su conexión antes de servir la página.
+
 Para las preguntas individuales se conserva el siguiente flujo RAG:
 
 1. Extraer CAM-número o placa de la pregunta.
@@ -404,17 +412,22 @@ definirse antes de usar datos reales.
 
 ## 11. Verificación realizada
 
-- 67 pruebas automatizadas aprobadas: 49 de dominio y servicios y 18 de los
+- 74 pruebas automatizadas aprobadas: 52 de dominio, servicios y configuración y 22 de los
   flujos HTTP del tutor y LogiSmart, sin omisiones.
-- 12 recorridos aprobados en Chromium: panel, CRUD de camiones, acceso y búsqueda,
+- 14 recorridos aprobados en Chromium: panel, porcentajes de la dona, CRUD de camiones, acceso y búsqueda,
   incidente y revisión, simulador, asistente, riesgo/experimento, reportes y
-  configuración, informes desde el chat, baja, tutor y diseño móvil. No se registraron errores JavaScript.
+  configuración, informes desde el chat, detección de servidor antiguo, baja, tutor y diseño móvil.
+  No se registraron errores JavaScript.
 - Las 16 combinaciones originales, las reglas adicionales y el solapamiento A=E=V
   se contrastan con resultados esperados. La interfaz llama al motor de Python.
 - Se comprueban JSON estricto, reintento y respaldo; fuentes inventadas o ausentes;
   entidades; historial, ámbito, baja lógica, versión concurrente y fechas.
 - Las rutas web comprueban token y host, bloquean solicitudes de otro sitio,
   rechazan escrituras simultáneas y mantienen disponibles las consultas.
+- Se comprobó con el adaptador MongoDB y mongomock que guardar un acceso lo hace
+  consultable, que una solicitud posterior incluye las nuevas escrituras y que
+  el informe queda persistido en la misma base. Los conteos excluyen otros
+  alumnos, proyectos y bajas. Se prueban fallos de conexión y metadatos sin claves.
 - En el navegador se comprobó que un texto con etiquetas HTML se muestra como
   texto y no ejecuta JavaScript, tanto en datos de camiones como en el chat.
 - Se descargaron PDF, CSV y JSON del informe de camiones rechazados desde el chat.

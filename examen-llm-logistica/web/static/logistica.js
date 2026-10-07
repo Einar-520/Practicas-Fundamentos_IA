@@ -106,23 +106,71 @@ function weeklyChart(rows) {
 }
 function donut(distribution) {
   const total = Object.values(distribution).reduce((a, b) => a + b, 0);
+  const percentage = new Intl.NumberFormat("es-MX", {
+    maximumFractionDigits: 1,
+  });
+  const entries = Object.entries(distribution).map(([key, count]) => {
+    const percent = total ? (count / total) * 100 : 0;
+    return {
+      key,
+      count,
+      percent,
+      info: `${label(key)}: ${percentage.format(percent)}% · ${count} de ${total} accesos`,
+    };
+  });
   let offset = 0;
-  const paths = Object.entries(distribution)
-    .map(([k, v]) => {
-      const n = total ? (v / total) * 100 : 0;
-      const markup = `<circle cx="80" cy="80" r="57" pathLength="100" fill="none" stroke="${colors[k]}" stroke-width="16" stroke-dasharray="${n} ${100 - n}" stroke-dashoffset="${-offset}" transform="rotate(-90 80 80)"/>`;
-      offset += n;
-      return markup;
+  const paths = entries
+    .map(({ key, percent, info }) => {
+      if (!percent) return "";
+      const attributes = `class="donut-segment" data-donut-key="${esc(key)}" data-donut-info="${esc(info)}" tabindex="0" role="img" aria-label="${esc(info)}" fill="none" stroke="${colors[key]}" stroke-width="16"`;
+      const start = ((offset * 3.6 - 90) * Math.PI) / 180;
+      offset += percent;
+      const end = ((offset * 3.6 - 90) * Math.PI) / 180;
+      if (percent === 100)
+        return `<circle ${attributes} cx="80" cy="80" r="57"/>`;
+      const point = (angle) =>
+        `${80 + 57 * Math.cos(angle)} ${80 + 57 * Math.sin(angle)}`;
+      return `<path ${attributes} d="M ${point(start)} A 57 57 0 ${percent > 50 ? 1 : 0} 1 ${point(end)}"/>`;
     })
     .join("");
-  return `<div class="donut-wrap"><svg class="donut" viewBox="0 0 160 160" role="img" aria-label="${total} accesos en el período"><circle cx="80" cy="80" r="57" fill="none" stroke="#edf3ee" stroke-width="16"/>${paths}<text x="80" y="79" text-anchor="middle" font-size="28" fill="#244934" font-family="inherit">${total}</text><text x="80" y="98" text-anchor="middle" font-size="9" fill="#96a598">ACCESOS</text></svg><div class="donut-labels">${Object.entries(
-    distribution,
-  )
-    .map(
-      ([k, v]) =>
-        `<div><span class="dot" style="color:${colors[k]}"></span>${esc(label(k))}<b>${v}</b></div>`,
-    )
-    .join("")}</div></div>`;
+  return `<div class="donut-wrap"><svg class="donut" viewBox="0 0 160 160" role="group" aria-label="${total} accesos en el período"><circle cx="80" cy="80" r="57" fill="none" stroke="#edf3ee" stroke-width="16"/>${paths}<text x="80" y="79" text-anchor="middle" font-size="28" fill="#244934" font-family="inherit">${total}</text><text x="80" y="98" text-anchor="middle" font-size="9" fill="#96a598">ACCESOS</text></svg><div class="donut-labels">${entries.map(({ key, count, info }) => `<div data-donut-info="${esc(info)}" tabindex="0" aria-label="${esc(info)}"><span class="dot" style="color:${colors[key]}"></span>${esc(label(key))}<b>${count}</b></div>`).join("")}</div><div class="donut-tooltip" role="tooltip" hidden></div></div>`;
+}
+
+function wireDonut() {
+  const chart = $(".donut-wrap");
+  if (!chart) return;
+  const tooltip = $(".donut-tooltip", chart);
+  const hide = () => {
+    tooltip.hidden = true;
+  };
+  const show = (target, event) => {
+    tooltip.textContent = target.dataset.donutInfo;
+    tooltip.hidden = false;
+    const bounds = chart.getBoundingClientRect();
+    const item = target.getBoundingClientRect();
+    const x = event?.clientX ?? item.x + item.width / 2;
+    const y = event?.clientY ?? item.y + item.height / 2;
+    tooltip.style.left =
+      Math.max(
+        0,
+        Math.min(x - bounds.x + 12, bounds.width - tooltip.offsetWidth),
+      ) + "px";
+    tooltip.style.top =
+      Math.max(
+        0,
+        Math.min(y - bounds.y + 12, bounds.height - tooltip.offsetHeight),
+      ) + "px";
+  };
+  $$("[data-donut-info]", chart).forEach((target) => {
+    target.addEventListener("pointerenter", (event) => show(target, event));
+    target.addEventListener("pointermove", (event) => show(target, event));
+    target.addEventListener("pointerleave", hide);
+    target.addEventListener("focus", () => show(target));
+    target.addEventListener("blur", hide);
+  });
+  chart.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") hide();
+  });
 }
 
 function dashboard(data) {
@@ -152,6 +200,7 @@ function dashboard(data) {
         .join("") ||
       empty("Todo está al día", "No hay incidentes abiertos.", "check")
     }</div></section></div>`;
+  wireDonut();
   bindPeriod(() => navigate("panel"));
   $("#new-access").onclick = () => editRecord("accesos");
 }
@@ -818,7 +867,7 @@ function assistantReply(r) {
   const report = r.informe && r._id;
   return (
     chatMessage("assistant", r.respuesta_mostrada, r.fuentes || []) +
-    `<small class="muted">${esc(label(r.estado))}</small>` +
+    `<small class="muted">${r.creado_en ? esc(date(r.creado_en)) + " · " : ""}${esc(label(r.estado))}</small>` +
     (report
       ? `<section class="assistant-report" aria-label="Descargar informe">
       <strong>${icon("file")} ${esc(r.informe.titulo)}</strong>
@@ -835,7 +884,36 @@ function assistantReply(r) {
   );
 }
 
+function reportsReady() {
+  return (
+    meta.capacidades?.includes("informes_accesos_v1") &&
+    meta.capacidades?.includes("consulta_datos_v1")
+  );
+}
+
+function serverWarning() {
+  return `<div class="server-warning" role="alert"><strong>Servidor pendiente de reinicio</strong><p>La página se actualizó, pero el servidor sigue ejecutando una versión anterior. Detén LogiSmart con Ctrl+C en su terminal, vuelve a iniciarlo y abre la dirección que indique. Después recarga esta página.</p>${button("Volver a comprobar", "check-server", "refresh", false)}</div>`;
+}
+
+function dataSummary(data) {
+  const origin = data.origen;
+  return `<strong>${origin.tipo === "mongodb" ? "MongoDB consultado" : "Demostración local consultada"}</strong>
+    <p>Base: <b>${esc(origin.base)}</b><br>Servidor: ${esc(origin.servidor)}</p>
+    <dl class="data-counts"><div><dt>Camiones guardados</dt><dd>${esc(data.colecciones.camiones)}</dd></div><div><dt>Accesos guardados</dt><dd>${esc(data.colecciones.accesos)}</dd></div>${Object.entries(
+      data.resultados,
+    )
+      .map(
+        ([state, count]) =>
+          `<div><dt>${state === "denegado" ? "Rechazados" : esc(label(state))}</dt><dd>${esc(count)}</dd></div>`,
+      )
+      .join("")}</dl>
+    <p>${origin.tipo === "demo" ? "Estás usando un archivo local. Para guardar en el clúster del profesor, inicia LogiSmart con --atlas." : "Cada informe vuelve a consultar los accesos de este proyecto y guarda su copia en evaluaciones_llm."}</p>
+    ${data.colecciones.accesos === 0 ? notice("No hay accesos guardados en esta base. Registra una decisión en Control de acceso para generar el informe.", "warning") : ""}
+    <p>Última lectura: ${esc(date(data.consultado_en))}.</p>`;
+}
+
 function assistantPage(history) {
+  const ready = reportsReady();
   const suggestions = [
     "Genera un informe de los camiones rechazados y sus motivos",
     "Informe de camiones retenidos hoy",
@@ -848,6 +926,7 @@ function assistantPage(history) {
       "",
       "LOGISMART / ASISTENTE",
     ) +
+    (ready ? "" : serverWarning()) +
     `<div class="chat-layout"><section class="chat-card">
     <div class="chat-header"><div class="assistant-avatar">${icon("spark")}</div><div><strong>Asistente de LogiSmart</strong><small>Primero los datos, después la respuesta</small></div><span class="badge green">Con fuentes</span></div>
     <div class="messages" id="messages">${
@@ -858,7 +937,7 @@ function assistantPage(history) {
         : `<div class="chat-welcome"><div class="welcome-symbol">${icon("search")}</div><h2>¿Qué necesitas consultar?</h2><p>Pregunta por un camión o solicita un informe de accesos rechazados, retenidos, autorizados o en inspección.</p></div>`
     }</div>
     <form class="chat-form" id="assistant-form"><div class="composer"><textarea name="pregunta" id="question" rows="2" required minlength="3" maxlength="1500" placeholder="Ejemplo: informe de camiones rechazados y sus motivos…" aria-label="Pregunta al asistente"></textarea><button type="submit" aria-label="Enviar pregunta">${icon("send")}</button></div><div class="composer-note"><span>Informes con fuentes y descarga PDF, CSV o JSON.</span><span>Ctrl + Enter para enviar</span></div><div class="form-error" role="alert"></div></form>
-    </section><aside class="chat-side"><section class="card card-pad"><span class="eyebrow">CONSULTAS RÁPIDAS</span><h2>De la pregunta al informe.</h2>
+    </section><aside class="chat-side"><section class="card card-pad"><span class="eyebrow">DATOS DEL INFORME</span><h2>Base de datos consultada</h2><div id="assistant-data" class="assistant-data" role="status" aria-live="polite"></div>${button("Consultar datos ahora", "refresh-assistant-data", "refresh", false)}<p>Versión del servidor: ${esc(meta.version_servidor || "anterior a informes")}.</p></section><section class="card card-pad"><span class="eyebrow">CONSULTAS RÁPIDAS</span><h2>De la pregunta al informe.</h2>
     <div class="report-suggestions">${suggestions.map((prompt) => `<button type="button" class="suggestion" data-prompt="${esc(prompt)}">${icon("chat")}${esc(prompt)}</button>`).join("")}</div>
     <p>Filtra por un resultado y, si lo necesitas, por camión o placa. Para fechas usa <strong>hoy</strong>, <strong>ayer</strong>, <strong>esta semana</strong>, <strong>este mes</strong> o <strong>desde 2026-10-01 hasta 2026-10-07</strong>.</p>
     <p>Las fechas se consultan en UTC. Sin fechas se incluyen todos los registros activos. “Rechazados” corresponde al resultado denegado; las retenciones tienen su propio informe.</p>
@@ -884,6 +963,33 @@ function assistantPage(history) {
     }
   });
   const form = $("#assistant-form");
+  const dataContainer = $("#assistant-data");
+  const refreshData = $("#refresh-assistant-data");
+  const readData = async () => {
+    refreshData.disabled = true;
+    dataContainer.textContent = "Consultando registros guardados…";
+    try {
+      const data = await api("/asistente/datos");
+      if (dataContainer.isConnected)
+        dataContainer.innerHTML = dataSummary(data);
+    } catch (error) {
+      if (dataContainer.isConnected)
+        dataContainer.innerHTML = notice(error.message, "error");
+    } finally {
+      refreshData.disabled = false;
+    }
+  };
+  if (!ready) {
+    dataContainer.textContent =
+      "Reinicia el servidor para consultar los datos y generar informes.";
+    $$(
+      "#assistant-form textarea, #assistant-form button, [data-prompt], [data-report-id], #refresh-assistant-data",
+    ).forEach((e) => (e.disabled = true));
+    $("#check-server").onclick = () => navigate("asistente");
+    return;
+  }
+  refreshData.onclick = readData;
+  void readData();
   wireForm(form, async (d) => {
     const r = await job("/asistente", d);
     if (!form.isConnected) {
@@ -898,6 +1004,7 @@ function assistantPage(history) {
     );
     $("#question").value = "";
     messages.scrollTop = messages.scrollHeight;
+    void readData();
   });
   $("#question").onkeydown = (e) => {
     if (e.ctrlKey && e.key === "Enter") {
@@ -947,6 +1054,13 @@ function configPage() {
 }
 
 function reportsPage() {
+  if (!reportsReady()) {
+    main.innerHTML =
+      pageHead("Reportes", "Actualiza el servidor para consultar tus datos.") +
+      serverWarning();
+    $("#check-server").onclick = () => navigate("reportes");
+    return;
+  }
   main.innerHTML =
     pageHead(
       "La evidencia, lista para compartir.",

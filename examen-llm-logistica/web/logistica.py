@@ -13,12 +13,15 @@ from logismart.dominio.reglas import decidir, tablas
 from logismart.infraestructura.configuracion import RAIZ, guardar_configuracion
 from logismart.infraestructura.repositorio import COLECCIONES
 from logismart.servicios.asistente import responder
-from logismart.servicios.informes_accesos import construir_informe
+from logismart.servicios.informes_accesos import construir_informe, mapear_datos
 from logismart.servicios.clasificador import ClasificadorHibrido
 from logismart.servicios.demostracion import cargar_demo
 from logismart.servicios.evaluacion import cargar_corpus, evaluar_corpus
 from logismart.servicios.notificaciones import notificar
 from web.base import crear_base, cuerpo, texto, descargar, exclusivo
+
+VERSION_SERVIDOR = '2026.10.07.2'
+CAPACIDADES = ['informes_accesos_v1', 'consulta_datos_v1']
 
 
 def guardar_json(ruta, datos):
@@ -63,6 +66,8 @@ def crear_app(servicio, directorio=None, guardar_preferencias=guardar_configurac
     def estado():
         hora = datetime.now(ZoneInfo('America/Mexico_City')).hour
         return {'modo': servicio.repo.modo, 'config': servicio.config.model_dump(),
+                'version_servidor': VERSION_SERVIDOR, 'capacidades': CAPACIDADES,
+                'origen': servicio.repo.origen,
                 'categorias': CATEGORIAS, 'prioridades': PRIORIDADES, 'estados': ESTADOS,
                 'categorias_eticas': CATEGORIAS_ETICAS, 'tablas': tablas(),
                 'horario_permitido': servicio.config.hora_inicio <= hora < servicio.config.hora_fin,
@@ -130,6 +135,10 @@ def crear_app(servicio, directorio=None, guardar_preferencias=guardar_configurac
     @app.get('/api/asistente/historial')
     def historial_asistente():
         return {'registros': list(reversed(servicio.repo.listar('evaluaciones_llm', {'tipo': 'asistente'})))}
+
+    @app.get('/api/asistente/datos')
+    def datos_asistente():
+        return mapear_datos(servicio.repo)
 
     @app.get('/api/asistente/informes/<identificador>/<extension>')
     def informe_asistente(identificador, extension):

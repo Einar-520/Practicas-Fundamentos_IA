@@ -144,11 +144,42 @@ En **Configuración**, comprueba la conexión. Si deseas insertar datos ficticio
 en la base real, pulsa **Cargar datos de demostración** y confirma el destino.
 La aplicación no cambia silenciosamente a almacenamiento local si falla MongoDB.
 
+Para exigir el clúster de Atlas, ejecuta `bash examen-llm-logistica/ejecutar.sh 2 --atlas`.
+Este modo valida que el destino sea una URL SRV de Atlas y comprueba la conexión
+antes de abrir la interfaz. Si `MONGO_URI` todavía apunta a localhost, muestra
+cómo corregir `.env` y detiene el arranque. No imprime las credenciales.
+
+### Después de actualizar el código
+
+La interfaz puede cargar archivos JavaScript nuevos mientras un proceso anterior
+de Python sigue abierto. Si el chat devuelve el mensaje antiguo «Indica un
+identificador como CAM-102», reinicia el servidor. Las versiones nuevas detectan
+esa combinación y muestran **Servidor pendiente de reinicio**.
+
+Detén LogiSmart con **Ctrl+C** en su terminal y ejecuta desde la raíz del proyecto:
+
+```bash
+git pull --ff-only origin main &&
+bash examen-llm-logistica/ejecutar.sh 2 --atlas --puerto 8013
+```
+
+Abre **http://localhost:8013**. Usar otro puerto permite identificar el proceso
+nuevo si quedó una ventana antigua abierta. El archivo `.env` debe conservar
+las variables del clúster del profesor y la base autorizada para el examen.
+
+En **Asistente con fuentes → Base de datos consultada**, verás la base, el servidor,
+el total de camiones y los accesos por resultado. **Consultar datos ahora** vuelve
+a leer MongoDB; no reutiliza un conteo guardado. Un error de conexión se presenta
+como error, no como cero registros. Si no hay accesos, guarda una decisión en
+**Control de acceso**. Cada nueva solicitud de informe recupera los accesos actuales
+y guarda su copia en `evaluaciones_llm` de la misma base. La versión del servidor
+aparece en este panel y en la terminal.
+
 ## 6. Operación desde la interfaz
 
 | Pantalla | Uso |
 | --- | --- |
-| Panel de control | Filtrar por fechas de creación UTC y ver camiones únicos atendidos, accesos, incidentes abiertos, riesgos residuales críticos y agregación por semana ISO. |
+| Panel de control | Filtrar por fechas UTC y ver indicadores y agregación por semana ISO. Pasar el mouse por una sección de la dona o su leyenda muestra porcentaje y cantidad; también funciona con el foco del teclado. |
 | Camiones | Alta, consulta, edición y baja lógica; placa e identificador únicos. |
 | Control de acceso | Crear una decisión, buscar por placa para cargar P/S, confirmar Q/R/H/T y observar semáforo y explicación. Las correcciones exigen motivo. |
 | Tablas de verdad | Cambiar seis interruptores y ver A/E/B/F en vivo; consultar las tablas completas. No guarda accesos. |

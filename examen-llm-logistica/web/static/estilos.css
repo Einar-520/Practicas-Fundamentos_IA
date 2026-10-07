@@ -662,6 +662,7 @@ main > * {
   display: block;
 }
 .donut-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 15px;
@@ -669,6 +670,33 @@ main > * {
 .donut {
   width: 150px;
   flex-shrink: 0;
+}
+.donut-segment {
+  pointer-events: stroke;
+  transition: stroke-width 120ms ease;
+}
+.donut-segment:hover,
+.donut-segment:focus {
+  stroke-width: 20;
+  outline: none;
+}
+.donut-labels > div:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.donut-tooltip {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  max-width: min(270px, 100%);
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: var(--nav);
+  color: white;
+  box-shadow: 0 4px 14px #162d2930;
+  font-size: 12px;
+  line-height: 1.5;
 }
 .donut-labels {
   flex: 1;
@@ -1593,6 +1621,34 @@ progress::-webkit-progress-value {
   display: grid;
   gap: 10px;
   margin: 20px 0;
+}
+.server-warning {
+  padding: 20px;
+  margin-bottom: 22px;
+  border: 1px solid #e8c17d;
+  border-radius: 12px;
+  background: #fff7e8;
+  color: #6a4a17;
+}
+.server-warning p {
+  margin: 8px 0 16px;
+}
+.assistant-data {
+  margin: 18px 0;
+  overflow-wrap: anywhere;
+}
+.data-counts {
+  margin: 12px 0;
+  font-size: 12px;
+}
+.data-counts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+}
+.data-counts dd {
+  font-weight: 700;
 }
 .report-suggestions .suggestion {
   width: 100%;

@@ -2,7 +2,7 @@
 import json
 import os
 from pathlib import Path
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlsplit
 from dotenv import load_dotenv
 from logismart.dominio.modelos import Configuracion, validar
 
@@ -29,7 +29,7 @@ def guardar_configuracion(config):
     temporal.replace(ruta)
 
 
-def datos_mongo():
+def datos_mongo(exigir_atlas=False):
     load_dotenv(RAIZ / '.env', override=False)
     uri = os.getenv('MONGO_URI', '').strip()
     if not uri:
@@ -45,4 +45,10 @@ def datos_mongo():
     base = os.getenv('Mongo_DB', 'Einar_Ivan_Lazcano_Luna_Examen').strip()
     if not base or any(c in base for c in ' /\\.\"$*<>:|?'):
         raise ValueError('Mongo_DB debe ser un nombre sin espacios ni caracteres especiales; usa guiones bajos.')
+    if exigir_atlas:
+        destino = urlsplit(uri)
+        if destino.scheme != 'mongodb+srv' or not (destino.hostname or '').endswith('.mongodb.net'):
+            raise ValueError('El modo --atlas requiere la conexión del clúster en examen-llm-logistica/.env. '
+                             'Deja MONGO_URI vacío y completa Mongo_User, Mongo_Password, Mongo_Cluster y Mongo_DB, '
+                             'o utiliza una MONGO_URI de Atlas con mongodb+srv://. No se inició MongoDB local.')
     return uri, base

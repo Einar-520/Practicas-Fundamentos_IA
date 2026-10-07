@@ -6,6 +6,7 @@ from collections import Counter
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from uuid import uuid4
+from urllib.parse import urlsplit
 from pymongo import MongoClient, ReturnDocument
 from pymongo.errors import PyMongoError, DuplicateKeyError
 
@@ -65,6 +66,8 @@ class MongoRepositorio:
                 uri, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000,
                 socketTimeoutMS=15000, tz_aware=True, appname='ExamenLogiSmart')
             self.db = self.cliente[base]
+            self.origen = {'tipo': 'mongodb', 'base': base,
+                           'servidor': urlsplit(uri).hostname or 'MongoDB'}
         except PyMongoError:
             raise ErrorDatos('Configuración de MongoDB inválida. Revisa el archivo .env.') from None
 
@@ -102,6 +105,13 @@ class MongoRepositorio:
         if not datos:
             raise ErrorDatos('El registro ya no está disponible. Actualiza la lista.')
         return datos[0]
+
+    def contar(self, nombre, filtro=None):
+        """Cuenta solamente los documentos activos de este alumno y proyecto."""
+        try:
+            return self._coleccion(nombre).count_documents({**(filtro or {}), **AMBITO, 'eliminado': False})
+        except PyMongoError:
+            raise ErrorDatos('No se pudieron consultar los registros. Revisa la conexión y los permisos de MongoDB.') from None
 
     def crear(self, nombre, datos, operador):
         datos, evento = preparar(datos, operador)
@@ -175,6 +185,7 @@ class DemoRepositorio:
 
     def __init__(self, ruta: Path):
         self.ruta, self.lock = ruta, threading.RLock()
+        self.origen = {'tipo': 'demo', 'base': ruta.name, 'servidor': 'Archivo local'}
         self.datos = {c: [] for c in COLECCIONES}
         if ruta.exists():
             try:
@@ -193,6 +204,9 @@ class DemoRepositorio:
 
     def comprobar(self):
         return 'Modo de demostración local. MongoDB no está conectado.'
+
+    def contar(self, nombre, filtro=None):
+        return len(self.listar(nombre, filtro))
 
     def listar(self, nombre, filtro=None, desde='', hasta=''):
         inicio, fin = rango_fechas(desde, hasta)

@@ -17,6 +17,18 @@ MAX_REGISTROS = 1000
 MAX_VISTA_CHAT = 20
 
 
+def mapear_datos(repo):
+    """Lee el almacenamiento configurado en cada llamada, sin datos de otros alumnos."""
+    return {
+        'origen': dict(repo.origen),
+        'consultado_en': datetime.now(timezone.utc).isoformat(),
+        'colecciones': {nombre: repo.contar(nombre) for nombre in ('camiones', 'accesos')},
+        'resultados': {resultado: repo.contar('accesos', {'resultado': resultado})
+                       for resultado in RESULTADOS if resultado != 'todos'},
+        'informes_guardados_en': 'evaluaciones_llm',
+    }
+
+
 def filtros_desde_pregunta(pregunta):
     """Devuelve None para preguntas individuales; nunca ejecuta consultas del LLM."""
     texto = normalizar(pregunta)
@@ -133,6 +145,7 @@ def construir_informe(repo, resultado='todos', desde='', hasta='', camion_id='',
     return {
         'tipo': 'informe_accesos', 'titulo': RESULTADOS[resultado],
         'generado_en': datetime.now(timezone.utc).isoformat(), 'almacenamiento': repo.modo,
+        'origen': dict(repo.origen),
         'filtros': {'resultado': resultado, 'desde': desde, 'hasta': hasta,
                     'camion_id': camion_id, 'placa': placa, 'zona_horaria': 'UTC'},
         'total_accesos': len(registros),
@@ -151,6 +164,8 @@ def texto_informe(informe):
     lineas = [informe['titulo'], periodo_informe(informe),
               f"Almacenamiento: {informe['almacenamiento']}.",
               f"Accesos: {informe['total_accesos']}. Camiones únicos: {informe['camiones_unicos']}."]
+    if informe.get('origen'):
+        lineas.append(f"Base consultada: {informe['origen']['base']} · Servidor: {informe['origen']['servidor']}.")
     for clave in ('camion_id', 'placa'):
         if informe['filtros'][clave]:
             lineas.append(f"Unidad consultada: {informe['filtros'][clave]}.")
