@@ -17,6 +17,8 @@ propias reglas, plantillas, estilos y JavaScript.
 | 9 | [MongoDB Atlas](practica-09-conexion-mongodb-atlas/README.md) | http://localhost:5001 o ventana Tkinter |
 | 10 | [Agente de climatización con Tkinter y Matplotlib](practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
 | 11 | [Árbol binario: rutas de A a F](practica-11-arbol-binario/README.md) | Ventana Tkinter o terminal |
+| 12 | [Gráficas de ventas y paletas](practica-12-grafica-matplotlib/README.md) | Ventana Matplotlib o PNG |
+| 13 | [Búsquedas BFS y DFS](practica-13-busquedas-bfs-dfs/README.md) | Ventana Tkinter o terminal |
 
 ## Preparar el entorno
 
@@ -91,3 +93,18 @@ La única ruta de A hasta F es A → C → F. Ejecuta el archivo ejecutar.sh de
 practica-11-arbol-binario para abrir la ventana Tkinter: dibuja el árbol, muestra
 las rutas y permite resaltar el camino a F. Añade --terminal para ver únicamente
 la salida de terminal. Requiere Tkinter y soporte gráfico para abrir la ventana.
+
+## Práctica 12: gráficas de ventas y paletas
+
+Desarrolla los ejemplos `graficas1.py` y `graficas3.py`: ventas simuladas de
+EcoMart con promedio y máximo, y comparación de quince paletas con los mismos
+datos y escala. Cada programa exporta un PNG a 300 dpi. El lanzador abre ventas;
+con `--paletas` abre la galería. Ambos admiten `--sin-ventana`.
+
+## Práctica 13: BFS y DFS
+
+Desarrolla `p11problema_busqueda.py` y `p21busquedaciegadfs.py` conservando sus
+grafos diferentes. La ventana Tkinter permite elegir inicio y objetivo, ver los
+pasos, animar y consultar la ruta. Usa `--terminal --algoritmo bfs` o
+`--terminal --algoritmo dfs` para trabajar sin interfaz. La lógica valida el grafo,
+evita ciclos y distingue el orden de visita del camino solución.

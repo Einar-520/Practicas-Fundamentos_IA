@@ -6,6 +6,8 @@ reglas y HTML/CSS para la interfaz; las prácticas 1 a 7 y 9 también usan JavaS
 La práctica 9 también incluye una ventana de escritorio con Tkinter.
 La práctica 10 usa Tkinter y Matplotlib: consultas por acción, gráficas y CRUD en Atlas.
 La práctica 11 dibuja un árbol binario con Tkinter, resalta la ruta a F y conserva la salida en terminal.
+La práctica 12 genera gráficas de ventas y paletas con Matplotlib y Seaborn.
+La práctica 13 permite seguir las búsquedas BFS y DFS con Tkinter o en terminal.
 
 ## Inicio en WSL
 
@@ -34,6 +36,8 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 9 | [MongoDB Atlas: web o Tkinter](unidad-01-introduccion-ia/practicas/practica-09-conexion-mongodb-atlas/README.md) | Web: 5001; Tkinter: ventana |
 | 10 | [Agente de climatización con Tkinter y Matplotlib](unidad-01-introduccion-ia/practicas/practica-10-agente-climatizacion/README.md) | Ventana Tkinter |
 | 11 | [Árbol binario: rutas de A a F](unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/README.md) | Ventana Tkinter o terminal |
+| 12 | [Gráficas de ventas y paletas](unidad-01-introduccion-ia/practicas/practica-12-grafica-matplotlib/README.md) | Ventana Matplotlib o PNG |
+| 13 | [Búsquedas BFS y DFS](unidad-01-introduccion-ia/practicas/practica-13-busquedas-bfs-dfs/README.md) | Ventana Tkinter o terminal |
 
 Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
@@ -53,7 +57,7 @@ selecciona el intérprete .venv/bin/python del proyecto.
 
 ## Una versión por práctica
 
-Las once carpetas contienen las prácticas vigentes. Las versiones anteriores
+Las trece carpetas contienen las prácticas vigentes. Las versiones anteriores
 se consultan en el historial de Git; los ZIP e instaladores antiguos se retiraron.
 Los archivos Python contienen el programa de cada práctica y se conservan.
 
@@ -131,10 +135,34 @@ bash unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/ejecutar.sh
 Añade `--terminal` al comando para ver las rutas sin abrir la ventana.
 [Consulta la instalación y el uso](unidad-01-introduccion-ia/practicas/practica-11-arbol-binario/README.md).
 
+## Prácticas 12 y 13: gráficas y búsquedas
+
+La práctica 12 conserva las ventas simuladas de EcoMart y mejora su presentación,
+con promedio, máximo y exportación PNG a 300 dpi. Incluye un segundo programa
+para comparar las quince paletas del archivo `busquedas.rar`.
+
+```bash
+.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-12-grafica-matplotlib/requirements.txt
+bash unidad-01-introduccion-ia/practicas/practica-12-grafica-matplotlib/ejecutar.sh
+bash unidad-01-introduccion-ia/practicas/practica-12-grafica-matplotlib/ejecutar.sh --paletas
+```
+
+La práctica 13 conserva los dos grafos originales de los ejemplos BFS y DFS.
+Permite elegir inicio y meta, seguir cada paso, animar y consultar la ruta final.
+
+```bash
+bash unidad-01-introduccion-ia/practicas/practica-13-busquedas-bfs-dfs/ejecutar.sh
+```
+
+Las instrucciones completas están en el README de cada práctica. Añade
+`--sin-ventana` a los gráficos para guardar el PNG sin interfaz, o
+`--terminal --algoritmo dfs` a las búsquedas para ver DFS en terminal. Ambas son independientes
+y no requieren MongoDB ni Ollama.
+
 ## Examen: tutor LLM y LogiSmart
 
 Los ejercicios del examen se encuentran en [examen-llm-logistica](examen-llm-logistica/README.md),
-como aplicaciones independientes de las once prácticas. Primero se ejecuta el
+como aplicaciones independientes de las trece prácticas. Primero se ejecuta el
 **tutor de SQL con Ollama**; después, **LogiSmart**, con interfaz web HTML/CSS/JavaScript, MongoDB,
 reglas proposicionales, clasificación híbrida y asistente con fuentes.
 
