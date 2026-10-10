@@ -1,15 +1,13 @@
-"""Búsquedas sin heurística sobre los dos grafos originales del profesor."""
+"""BFS y DFS sobre el árbol de la clase, con profundidad y retrocesos."""
 from collections import deque
 from dataclasses import dataclass
 
 
-GRAFO_BFS = {
-    "A": ["B", "D"], "B": ["A", "C"], "C": ["B", "F"],
-    "D": ["A", "E"], "E": ["D", "F"], "F": ["C", "E"],
-}
-GRAFO_DFS = {
+# Árbol de la imagen: A → B/C, B → D/E, C → F y E → G/H.
+# Ambos algoritmos usan las mismas aristas dirigidas de padre a hijo.
+GRAFO = {
     "A": ["B", "C"], "B": ["D", "E"], "C": ["F"],
-    "D": [], "E": [], "F": [],
+    "D": [], "E": ["G", "H"], "F": [], "G": [], "H": [],
 }
 
 
@@ -22,6 +20,11 @@ class Paso:
     pendientes: tuple[str, ...]
     mensaje: str
 
+    @property
+    def profundidad(self):
+        """Número de aristas desde el inicio; sin camino no hay profundidad actual."""
+        return len(self.camino) - 1 if self.camino else None
+
 
 @dataclass(frozen=True)
 class Resultado:
@@ -33,6 +36,16 @@ class Resultado:
     def costo(self):
         """Cada arista cuesta una unidad; visitar el inicio no es un movimiento."""
         return None if self.ruta is None else len(self.ruta) - 1
+
+    @property
+    def profundidad_maxima(self):
+        """Mayor profundidad explorada antes de terminar la búsqueda."""
+        return max((paso.profundidad or 0 for paso in self.pasos), default=0)
+
+    @property
+    def retrocesos(self):
+        """Cuenta regresos de un hijo a su padre durante la búsqueda DFS."""
+        return sum(paso.evento == "Retroceso" for paso in self.pasos)
 
 
 def validar_problema(grafo, inicio, objetivo):
@@ -97,9 +110,10 @@ def dfs(grafo, inicio="A", objetivo="F"):
                 if ruta is not None:
                     return ruta
         camino.pop()
-        pasos.append(Paso("Retroceso", camino[-1] if camino else None,
-                          tuple(camino), tuple(orden), tuple(camino),
-                          f"Se abandona la rama de {actual}: no lleva a la meta."))
+        if camino:
+            pasos.append(Paso("Retroceso", camino[-1], tuple(camino),
+                              tuple(orden), tuple(camino),
+                              f"Retroceso de {actual} a {camino[-1]}: la rama no lleva a la meta."))
         return None
 
     ruta = visitar(inicio)

@@ -1,23 +1,48 @@
 """Regresiones de rutas, ciclos, retrocesos y validación de búsquedas."""
 import unittest
 
-from busquedas import GRAFO_BFS, GRAFO_DFS, bfs, dfs
+from busquedas import GRAFO, bfs, dfs
 
 
 class PruebasBusqueda(unittest.TestCase):
-    def test_bfs_original(self):
-        resultado = bfs(GRAFO_BFS)
-        self.assertEqual(resultado.ruta, ("A", "B", "C", "F"))
-        self.assertEqual(resultado.orden, ("A", "B", "D", "C", "E", "F"))
-        self.assertEqual(resultado.costo, 3)
-
-    def test_dfs_original_y_retroceso(self):
-        resultado = dfs(GRAFO_DFS)
+    def test_bfs_arbol_de_clase(self):
+        resultado = bfs(GRAFO)
         self.assertEqual(resultado.ruta, ("A", "C", "F"))
-        self.assertEqual(resultado.orden, ("A", "B", "D", "E", "C", "F"))
+        self.assertEqual(resultado.orden, ("A", "B", "C", "D", "E", "F"))
         self.assertEqual(resultado.costo, 2)
+        self.assertEqual(resultado.profundidad_maxima, 2)
+        self.assertEqual(resultado.retrocesos, 0)
+
+    def test_dfs_arbol_de_clase_y_retroceso(self):
+        resultado = dfs(GRAFO)
+        self.assertEqual(resultado.ruta, ("A", "C", "F"))
+        self.assertEqual(resultado.orden, ("A", "B", "D", "E", "G", "H", "C", "F"))
+        self.assertEqual(resultado.costo, 2)
+        self.assertEqual(resultado.profundidad_maxima, 3)
+        self.assertEqual(resultado.retrocesos, 5)
         self.assertEqual([p.camino for p in resultado.pasos if p.evento == "Retroceso"],
-                         [("A", "B"), ("A", "B"), ("A",)])
+                         [("A", "B"), ("A", "B", "E"), ("A", "B", "E"), ("A", "B"), ("A",)])
+        self.assertEqual([p.profundidad for p in resultado.pasos if p.evento == "Retroceso"],
+                         [1, 2, 2, 1, 0])
+
+    def test_nuevos_destinos_g_y_h(self):
+        for buscar in (bfs, dfs):
+            for destino in ("G", "H"):
+                with self.subTest(algoritmo=buscar.__name__, destino=destino):
+                    resultado = buscar(GRAFO, "A", destino)
+                    self.assertEqual(resultado.ruta, ("A", "B", "E", destino))
+                    self.assertEqual(resultado.costo, 3)
+                    self.assertEqual(resultado.profundidad_maxima, 3)
+                    esperados = 0 if buscar is bfs else (1 if destino == "G" else 2)
+                    self.assertEqual(resultado.retrocesos, esperados)
+
+    def test_sin_ruta_no_cuenta_regreso_fuera_de_la_raiz(self):
+        for buscar in (bfs, dfs):
+            resultado = buscar(GRAFO, "G", "A")
+            self.assertIsNone(resultado.ruta)
+            self.assertEqual(resultado.profundidad_maxima, 0)
+            self.assertEqual(resultado.retrocesos, 0)
+            self.assertIsNone(resultado.pasos[-1].profundidad)
 
     def test_bfs_corto_dfs_primera_rama_en_mismo_grafo(self):
         grafo = {"S": ["A", "T"], "A": ["B"], "B": ["T"], "T": []}
@@ -37,22 +62,24 @@ class PruebasBusqueda(unittest.TestCase):
 
     def test_inicio_es_meta(self):
         for buscar in (bfs, dfs):
-            resultado = buscar(GRAFO_BFS, "A", "A")
-            self.assertEqual(resultado.ruta, ("A",))
+            resultado = buscar(GRAFO, "H", "H")
+            self.assertEqual(resultado.ruta, ("H",))
             self.assertEqual(resultado.costo, 0)
-            self.assertEqual(resultado.orden, ("A",))
+            self.assertEqual(resultado.orden, ("H",))
+            self.assertEqual(resultado.profundidad_maxima, 0)
+            self.assertEqual(resultado.retrocesos, 0)
 
     def test_entradas_invalidas(self):
         for buscar in (bfs, dfs):
-            for grafo, inicio, meta in (({}, "A", "A"), (GRAFO_BFS, "Z", "F"),
-                                        (GRAFO_DFS, "A", "Z"), ({"A": ["Z"]}, "A", "A"),
+            for grafo, inicio, meta in (({}, "A", "A"), (GRAFO, "Z", "F"),
+                                        (GRAFO, "A", "Z"), ({"A": ["Z"]}, "A", "A"),
                                         ({"A": {"A"}}, "A", "A")):
                 with self.subTest(buscar=buscar.__name__, grafo=grafo, inicio=inicio, meta=meta):
                     with self.assertRaises(ValueError):
                         buscar(grafo, inicio, meta)
 
     def test_repetir_no_contamina_estado(self):
-        for buscar, grafo in ((bfs, GRAFO_BFS), (dfs, GRAFO_DFS)):
+        for buscar, grafo in ((bfs, GRAFO), (dfs, GRAFO)):
             copia = {nodo: vecinos[:] for nodo, vecinos in grafo.items()}
             primero = buscar(grafo)
             buscar(grafo, "F", "A")

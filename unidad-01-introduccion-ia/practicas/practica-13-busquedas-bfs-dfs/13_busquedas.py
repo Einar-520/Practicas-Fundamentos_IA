@@ -2,15 +2,14 @@
 import argparse
 import math
 
-from busquedas import GRAFO_BFS, GRAFO_DFS, bfs, dfs
+from busquedas import GRAFO, bfs, dfs
 
 
-EJERCICIOS = {"BFS": (GRAFO_BFS, bfs), "DFS": (GRAFO_DFS, dfs)}
+EJERCICIOS = {"BFS": (GRAFO, bfs), "DFS": (GRAFO, dfs)}
 POSICIONES = {
-    "BFS": {"A": (.18, .24), "B": (.50, .24), "C": (.82, .24),
-            "D": (.18, .70), "E": (.50, .70), "F": (.82, .70)},
-    "DFS": {"A": (.50, .15), "B": (.27, .43), "C": (.77, .43),
-            "D": (.13, .78), "E": (.42, .78), "F": (.77, .78)},
+    "A": (.50, .12), "B": (.28, .35), "C": (.78, .35),
+    "D": (.13, .58), "E": (.44, .58), "F": (.78, .58),
+    "G": (.30, .82), "H": (.59, .82),
 }
 
 
@@ -20,14 +19,20 @@ def texto_ruta(nodos):
 
 def imprimir_resultado(algoritmo, inicio, objetivo, resultado):
     print(f"\n{algoritmo} | Inicio: {inicio} | Objetivo: {objetivo}")
+    retrocesos = 0
     for paso in resultado.pasos:
-        print(f"{paso.evento}: {paso.mensaje}")
+        retrocesos += paso.evento == "Retroceso"
+        profundidad = paso.profundidad if paso.profundidad is not None else "—"
+        print(f"{paso.evento}: {paso.mensaje} | Profundidad: {profundidad} | Retrocesos: {retrocesos}")
     print("Orden de visita:", texto_ruta(resultado.orden))
     if resultado.ruta is None:
         print("No existe una ruta entre los estados seleccionados.")
     else:
         print("Ruta encontrada:", texto_ruta(resultado.ruta))
         print(f"Costo: {resultado.costo} movimiento(s).")
+        print(f"Profundidad de la solución: {resultado.costo}")
+    print(f"Profundidad máxima explorada: {resultado.profundidad_maxima}")
+    print(f"Retrocesos realizados: {resultado.retrocesos}")
 
 
 def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
@@ -50,9 +55,12 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             self.resumen = tk.StringVar(value="La ruta aparecerá al terminar el recorrido.")
             self.tipo_pendientes = tk.StringVar()
             self.descripcion = tk.StringVar()
+            self.profundidad = tk.StringVar(value="—")
+            self.profundidad_maxima = tk.StringVar(value="—")
+            self.retrocesos = tk.StringVar(value="0")
             raiz.title("Práctica 13 · Búsquedas BFS y DFS")
-            raiz.geometry("1100x730")
-            raiz.minsize(980, 680)
+            raiz.geometry("1100x820")
+            raiz.minsize(1000, 760)
             raiz.configure(bg="#f5f8f7")
             estilo = ttk.Style(raiz)
             estilo.theme_use("clam")
@@ -73,8 +81,8 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             controles.pack(fill="x", pady=20)
             for etiqueta, variable, opciones, ancho in (
                 ("Ejercicio", self.algoritmo, ["BFS", "DFS"], 9),
-                ("Inicio", self.inicio, list(GRAFO_BFS), 5),
-                ("Objetivo", self.objetivo, list(GRAFO_BFS), 5),
+                ("Inicio", self.inicio, list(GRAFO), 5),
+                ("Objetivo", self.objetivo, list(GRAFO), 5),
             ):
                 bloque = ttk.Frame(controles)
                 bloque.pack(side="left", padx=(0, 16))
@@ -91,6 +99,17 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             self.boton_resultado = ttk.Button(controles, text="Ver resultado", command=self.ver_resultado)
             self.boton_resultado.pack(side="left", anchor="s")
 
+            indicadores = ttk.Frame(principal)
+            indicadores.pack(fill="x", pady=(0, 16))
+            for titulo, variable in (("PROFUNDIDAD ACTUAL", self.profundidad),
+                                     ("MÁXIMA EXPLORADA", self.profundidad_maxima),
+                                     ("RETROCESOS", self.retrocesos)):
+                bloque = ttk.Frame(indicadores)
+                bloque.pack(side="left", padx=(0, 32))
+                ttk.Label(bloque, text=titulo).pack(anchor="w")
+                ttk.Label(bloque, textvariable=variable, style="Dato.TLabel").pack(anchor="w", pady=(3, 0))
+            ttk.Label(indicadores, text="Inicio = profundidad 0\nRetroceso = regreso al padre").pack(side="right", anchor="s")
+
             cuerpo = ttk.Frame(principal)
             cuerpo.pack(fill="both", expand=True)
             cuerpo.columnconfigure(0, weight=1)
@@ -99,7 +118,7 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             dibujo = ttk.Frame(cuerpo)
             dibujo.grid(row=0, column=0, sticky="nsew", padx=(0, 24))
             self.canvas = tk.Canvas(dibujo, background="white", highlightthickness=1,
-                                    highlightbackground="#dce6e1", width=530, height=340)
+                                    highlightbackground="#dce6e1", width=530, height=380)
             self.canvas.pack(fill="both", expand=True)
             self.canvas.bind("<Configure>", lambda evento: self.dibujar())
             ttk.Label(dibujo, text="Verde: camino actual · Ámbar: nodo actual\nGris: visitado fuera del camino",
@@ -116,9 +135,10 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             ttk.Label(lateral, text="El orden de visita no es la ruta solución.", wraplength=350).pack(anchor="w", pady=(0, 10))
             tabla = ttk.Frame(lateral)
             tabla.pack(fill="both", expand=True)
-            self.traza = ttk.Treeview(tabla, columns=("paso", "evento", "nodo"), show="headings", height=5)
-            for nombre, ancho in (("paso", 50), ("evento", 160), ("nodo", 70)):
-                self.traza.heading(nombre, text=nombre.capitalize())
+            self.traza = ttk.Treeview(tabla, columns=("paso", "evento", "nodo", "prof", "retr"), show="headings", height=5)
+            for nombre, titulo, ancho in (("paso", "Paso", 50), ("evento", "Evento", 115),
+                                          ("nodo", "Nodo", 45), ("prof", "Prof.", 50), ("retr", "Retr.", 50)):
+                self.traza.heading(nombre, text=titulo)
                 self.traza.column(nombre, width=ancho, stretch=nombre == "evento", anchor="w")
             barra = ttk.Scrollbar(tabla, orient="vertical", command=self.traza.yview)
             self.traza.configure(yscrollcommand=barra.set)
@@ -141,12 +161,15 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             self.resultado = None
             self.indice = 0
             es_bfs = self.algoritmo.get() == "BFS"
-            self.descripcion.set("BFS · Grafo no dirigido · Explora por niveles con una cola." if es_bfs else
-                                 "DFS · Árbol dirigido · Profundiza y retrocede con llamadas recursivas.")
+            self.descripcion.set("BFS · Árbol de A a H · Explora por niveles con una cola." if es_bfs else
+                                 "DFS · Árbol de A a H · Profundiza y retrocede con llamadas recursivas.")
             self.tipo_pendientes.set("COLA · PRIMERO A LA IZQUIERDA" if es_bfs else "PILA DE LLAMADAS · CIMA A LA DERECHA")
             for variable in (self.orden, self.camino, self.pendientes):
                 variable.set("—")
-            self.estado.set("Cada ejercicio conserva su grafo original. Pulsa Calcular para comenzar.")
+            self.profundidad.set("—")
+            self.profundidad_maxima.set("—")
+            self.retrocesos.set("0")
+            self.estado.set("G y H son hijos de E. Ambos algoritmos recorren el mismo árbol. Pulsa Calcular.")
             self.resumen.set("La ruta aparecerá al terminar el recorrido.")
             self.traza.delete(*self.traza.get_children())
             self.actualizar_botones()
@@ -167,6 +190,10 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
 
         def mostrar_paso(self):
             paso = self.resultado.pasos[self.indice]
+            pasos_visibles = self.resultado.pasos[:self.indice + 1]
+            self.profundidad.set(str(paso.profundidad) if paso.profundidad is not None else "—")
+            self.profundidad_maxima.set(str(max(registro.profundidad or 0 for registro in pasos_visibles)))
+            self.retrocesos.set(str(sum(registro.evento == "Retroceso" for registro in pasos_visibles)))
             self.orden.set(texto_ruta(paso.visitados))
             self.camino.set(texto_ruta(paso.camino))
             self.pendientes.set(" · ".join(paso.pendientes) or "Vacía")
@@ -181,8 +208,11 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             else:
                 self.resumen.set("Recorrido en curso; la ruta solución se mostrará al llegar a la meta.")
             self.traza.delete(*self.traza.get_children())
-            for numero, registro in enumerate(self.resultado.pasos[:self.indice + 1], 1):
-                ultimo = self.traza.insert("", "end", values=(numero, registro.evento, registro.actual or "—"))
+            retrocesos = 0
+            for numero, registro in enumerate(pasos_visibles, 1):
+                retrocesos += registro.evento == "Retroceso"
+                profundidad = registro.profundidad if registro.profundidad is not None else "—"
+                ultimo = self.traza.insert("", "end", values=(numero, registro.evento, registro.actual or "—", profundidad, retrocesos))
             self.traza.see(ultimo)
             self.actualizar_botones()
             self.dibujar()
@@ -219,25 +249,21 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
             algoritmo = self.algoritmo.get()
             grafo, _ = EJERCICIOS[algoritmo]
             ancho, alto = self.canvas.winfo_width(), self.canvas.winfo_height()
-            posiciones = {nodo: (x * ancho, y * alto) for nodo, (x, y) in POSICIONES[algoritmo].items()}
+            posiciones = {nodo: (x * ancho, y * alto) for nodo, (x, y) in POSICIONES.items()}
             paso = self.resultado.pasos[self.indice] if self.resultado else None
             camino = paso.camino if paso else ()
             aristas_camino = set(zip(camino, camino[1:]))
-            trazadas = set()
             for origen, vecinos in grafo.items():
                 for destino in vecinos:
-                    if algoritmo == "BFS" and (destino, origen) in trazadas:
-                        continue
-                    trazadas.add((origen, destino))
                     x1, y1 = posiciones[origen]
                     x2, y2 = posiciones[destino]
                     distancia = math.hypot(x2 - x1, y2 - y1) or 1
                     dx, dy = (x2 - x1) / distancia * 25, (y2 - y1) / distancia * 25
-                    activo = (origen, destino) in aristas_camino or (algoritmo == "BFS" and (destino, origen) in aristas_camino)
+                    activo = (origen, destino) in aristas_camino
                     self.canvas.create_line(x1 + dx, y1 + dy, x2 - dx, y2 - dy,
                                             fill="#207f6a" if activo else "#c5d5cf",
                                             width=4 if activo else 2,
-                                            arrow="last" if algoritmo == "DFS" else "none", arrowshape=(12, 14, 5))
+                                            arrow="last", arrowshape=(12, 14, 5))
             for nodo, (x, y) in posiciones.items():
                 color = "#e7edea" if paso and nodo in paso.visitados else "white"
                 color = "#b9e1d3" if nodo in camino else color
@@ -261,11 +287,11 @@ def crear_interfaz(raiz, algoritmo="BFS", inicio="A", objetivo="F"):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Búsquedas BFS y DFS del profesor, con interfaz o terminal.")
+    parser = argparse.ArgumentParser(description="Búsquedas BFS y DFS en el árbol de A a H, con interfaz o terminal.")
     parser.add_argument("--terminal", action="store_true", help="mostrar los pasos sin abrir una ventana")
     parser.add_argument("--algoritmo", type=str.upper, choices=EJERCICIOS, default="BFS")
-    parser.add_argument("--inicio", type=str.upper, choices=GRAFO_BFS, default="A")
-    parser.add_argument("--objetivo", type=str.upper, choices=GRAFO_BFS, default="F")
+    parser.add_argument("--inicio", type=str.upper, choices=GRAFO, default="A")
+    parser.add_argument("--objetivo", type=str.upper, choices=GRAFO, default="F")
     args = parser.parse_args()
     if args.terminal:
         grafo, buscar = EJERCICIOS[args.algoritmo]

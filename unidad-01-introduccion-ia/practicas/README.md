@@ -103,8 +103,9 @@ con `--paletas` abre la galería. Ambos admiten `--sin-ventana`.
 
 ## Práctica 13: BFS y DFS
 
-Desarrolla `p11problema_busqueda.py` y `p21busquedaciegadfs.py` conservando sus
-grafos diferentes. La ventana Tkinter permite elegir inicio y objetivo, ver los
-pasos, animar y consultar la ruta. Usa `--terminal --algoritmo bfs` o
+Desarrolla `p11problema_busqueda.py` y `p21busquedaciegadfs.py` sobre el mismo
+árbol de la imagen de clase: A a H, con G y H como hijos de E. La ventana Tkinter
+permite elegir inicio y objetivo, animar, consultar la ruta y ver profundidad
+actual, máxima explorada y retrocesos. Usa `--terminal --algoritmo bfs` o
 `--terminal --algoritmo dfs` para trabajar sin interfaz. La lógica valida el grafo,
 evita ciclos y distingue el orden de visita del camino solución.

@@ -5,9 +5,11 @@ un problema de búsqueda y encontrar una ruta mediante BFS y DFS, explicando
 el orden de exploración, el uso de la memoria y el costo del camino.
 
 Se desarrollan los ejemplos `p11problema_busqueda.py` y
-`p21busquedaciegadfs.py` del archivo `busquedas.rar`. Los ejercicios conservan
-sus grafos y el orden de vecinos originales. Las dos gráficas del mismo archivo
-están en la [práctica 12](../practica-12-grafica-matplotlib/README.md).
+`p21busquedaciegadfs.py` del archivo `busquedas.rar`. La ampliación utiliza
+**el mismo árbol de la imagen de clase para ambos algoritmos**, con G y H
+como hijos de E. Las versiones anteriores se conservan en el historial de Git.
+Las dos gráficas del archivo están en la
+[práctica 12](../practica-12-grafica-matplotlib/README.md).
 
 ## Ejecutar en VS Code y WSL
 
@@ -40,16 +42,17 @@ bash unidad-01-introduccion-ia/practicas/practica-13-busquedas-bfs-dfs/ejecutar.
 ```
 
 Puedes elegir otros estados, por ejemplo `--inicio F --objetivo A`. El programa
-valida que existan; en DFS esa consulta no tiene ruta porque las aristas van de
+valida que existan; esa consulta no tiene ruta porque las aristas van de
 padres a hijos. Usa `--help` para consultar los parámetros.
 
 ## Uso de la interfaz
 
-1. Selecciona **BFS** o **DFS**. El dibujo cambia al grafo original de ese ejercicio.
+1. Selecciona **BFS** o **DFS**. Ambos recorren el mismo árbol, siguiendo el orden de hijos de izquierda a derecha.
 2. Elige el inicio y la meta; de forma predeterminada son A y F.
 3. Pulsa **Calcular**. Se muestra el primer paso y se imprime el recorrido en terminal.
 4. Usa **Paso siguiente** o **Animar**; puedes pausar la animación. El panel
-   muestra orden de visita, camino actual y cola o pila de llamadas.
+   muestra orden de visita, camino actual y cola o pila de llamadas. Arriba se
+   actualizan profundidad actual, máxima explorada y retrocesos acumulados.
 5. Pulsa **Ver resultado** para saltar al final. Se muestran ruta y costo,
    o un mensaje claro cuando no existe un camino.
 
@@ -61,67 +64,96 @@ seguir el recorrido sin depender exclusivamente de los colores.
 
 | Elemento | Representación |
 | --- | --- |
-| S: estados | A, B, C, D, E y F |
+| S: estados | A, B, C, D, E, F, G y H |
 | A: acciones | Moverse a un vecino del diccionario de adyacencias |
 | s0: estado inicial | A por defecto; seleccionable |
 | G: prueba de meta | El estado actual coincide con el objetivo, F por defecto |
 | C: costo | Una unidad por arista recorrida |
 
-### BFS: grafo no dirigido
+### Árbol compartido: conexiones de la imagen
 
-| Estado | Vecinos, en orden |
-| --- | --- |
-| A | B, D |
-| B | A, C |
-| C | B, F |
-| D | A, E |
-| E | D, F |
-| F | C, E |
+| Estado | Hijos, en orden | Profundidad desde A |
+| --- | --- | ---: |
+| A | B, C | 0 |
+| B | D, E | 1 |
+| C | F | 1 |
+| D | Sin hijos | 2 |
+| E | G, H | 2 |
+| F | Sin hijos | 2 |
+| G | Sin hijos | 3 |
+| H | Sin hijos | 3 |
+
+Las aristas son dirigidas de padre a hijo. G y H pueden elegirse como inicio o
+meta, tanto en la ventana como en los argumentos de terminal.
+
+### BFS: búsqueda en anchura
 
 BFS usa una cola FIFO: el primero en entrar es el primero en salir.
 `deque.popleft()` retira el primer camino. Se marcan los nodos al encolarlos
 para evitar duplicados y ciclos. Con todas las aristas de costo 1, la primera
 ruta encontrada tiene el menor número de movimientos.
 
-### DFS: árbol dirigido
-
-| Estado | Hijos, en orden |
-| --- | --- |
-| A | B, C |
-| B | D, E |
-| C | F |
-| D, E, F | Sin hijos |
+### DFS: búsqueda en profundidad
 
 DFS utiliza recursión: profundiza primero por B y retrocede cuando una rama no
 alcanza la meta. Se mantiene un conjunto de visitados y una copia independiente
 del camino encontrado. Devuelve la primera ruta según el orden de vecinos;
 en un grafo general no garantiza la ruta más corta. La versión recursiva es
-adecuada para estos seis nodos; un grafo muy profundo necesitaría una pila
+adecuada para estos ocho nodos; un grafo muy profundo necesitaría una pila
 explícita para evitar el límite de recursión de Python.
 
-## Resultados con inicio A y objetivo F
+## Profundidad y retrocesos
 
-| Ejercicio | Orden de visita | Ruta encontrada | Costo |
-| --- | --- | --- | ---: |
-| BFS | A → B → D → C → E → F | A → B → C → F | 3 |
-| DFS | A → B → D → E → C → F | A → C → F | 2 |
+- **Profundidad actual:** número de aristas del camino actual desde el inicio
+  seleccionado. El inicio tiene profundidad 0. Durante un retroceso se muestra
+  la profundidad del padre al que se regresa; si ya no hay camino se muestra «—».
+- **Máxima explorada:** mayor profundidad visitada hasta el paso que se está
+  mostrando. Puede superar la profundidad de la solución porque DFS puede
+  explorar otras ramas antes de encontrar la meta.
+- **Retrocesos:** regresos efectivos de un hijo a su padre cuando esa rama no
+  contiene la meta. Cada arista recorrida de regreso suma uno. No se cuenta
+  salir de la raíz ni el retorno de funciones después de encontrar la solución.
+  BFS muestra 0 porque extrae caminos de una cola, sin retroceder por el árbol.
 
-**Orden de visita y ruta solución son diferentes.** BFS también podría llegar
-por A → D → E → F con costo 3; la primera solución es la rama de B por el orden
-de vecinos. Los ejemplos devuelven una ruta, no enumeran todas las rutas.
+La tabla de pasos incluye las columnas **Prof.** y **Retr.**, y la terminal
+imprime las mismas métricas. Al cambiar inicio, objetivo o algoritmo se reinician
+los indicadores. La máxima se calcula sobre los nodos explorados, no los que
+solamente se han añadido a la cola.
 
-Los costos de la tabla no comparan la eficiencia de los algoritmos: los grafos
-originales son distintos. El árbol DFS de esta práctica coloca E bajo B,
-tal como el código recibido; el árbol de la práctica 11 permanece independiente.
+## Resultados con inicio A
+
+| Algoritmo | Meta | Ruta | Profundidad de la solución | Máxima explorada | Retrocesos |
+| --- | --- | --- | ---: | ---: | ---: |
+| BFS | F | A → C → F | 2 | 2 | 0 |
+| DFS | F | A → C → F | 2 | 3 | 5 |
+| BFS | G | A → B → E → G | 3 | 3 | 0 |
+| DFS | G | A → B → E → G | 3 | 3 | 1 |
+| BFS | H | A → B → E → H | 3 | 3 | 0 |
+| DFS | H | A → B → E → H | 3 | 3 | 2 |
+
+Para buscar F, BFS visita **A → B → C → D → E → F**; DFS visita
+**A → B → D → E → G → H → C → F**. El orden de visita no es la ruta solución.
+Los cinco retrocesos de DFS son D → B, G → E, H → E, E → B y B → A.
+
+Por ejemplo, para buscar H y ver las métricas en terminal:
+
+```bash
+bash unidad-01-introduccion-ia/practicas/practica-13-busquedas-bfs-dfs/ejecutar.sh --terminal --algoritmo dfs --objetivo H
+```
+
+Si el inicio también es la meta, la profundidad y el costo son 0. Los programas
+devuelven una ruta; no enumeran todas las rutas. Esta práctica es independiente
+del árbol de la práctica 11.
 
 ## Archivos y mejoras
 
-- `busquedas.py`: grafos, validación, algoritmos, costo y pasos inmutables.
+- `busquedas.py`: árbol compartido, validación, algoritmos, costo, profundidad,
+  retrocesos y pasos inmutables.
   Las funciones no dependen de variables globales modificables ni de la interfaz.
 - `13_busquedas.py`: salida de terminal, dibujo y controles de Tkinter.
   Importarlo no abre ventanas ni inicia recorridos.
 - `ejecutar.sh`: selecciona el intérprete del proyecto.
-- `test_busquedas.py`: comprueba rutas originales, ciclos, retroceso,
+- `test_busquedas.py`: comprueba rutas a F/G/H, profundidad, retrocesos, ciclos,
   ausencia de ruta, estado inicial igual a meta y entradas inválidas.
 
 Se reemplaza `pop(0)` por una cola adecuada, se evita repetir estados, se separa

@@ -147,8 +147,9 @@ bash unidad-01-introduccion-ia/practicas/practica-12-grafica-matplotlib/ejecutar
 bash unidad-01-introduccion-ia/practicas/practica-12-grafica-matplotlib/ejecutar.sh --paletas
 ```
 
-La práctica 13 conserva los dos grafos originales de los ejemplos BFS y DFS.
-Permite elegir inicio y meta, seguir cada paso, animar y consultar la ruta final.
+La práctica 13 aplica BFS y DFS al árbol de A a H mostrado en clase, con G y H
+como hijos de E. Permite elegir inicio y meta, animar y consultar la ruta,
+la profundidad actual, la máxima explorada y los retrocesos.
 
 ```bash
 bash unidad-01-introduccion-ia/practicas/practica-13-busquedas-bfs-dfs/ejecutar.sh
