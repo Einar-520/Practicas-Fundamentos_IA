@@ -9,6 +9,7 @@ La práctica 11 dibuja un árbol binario con Tkinter, resalta la ruta a F y cons
 La práctica 12 genera gráficas de ventas y paletas con Matplotlib y Seaborn.
 La práctica 13 permite seguir las búsquedas BFS y DFS con Tkinter o en terminal.
 La práctica 14 usa heapq para buscar el camino de costo mínimo, con cola visible y costos editables.
+La práctica 15 incorpora heurísticas con A*: muestra g(n), h(n) y f(n) en Tkinter y en terminal.
 
 ## Inicio en WSL
 
@@ -40,6 +41,7 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 12 | [Gráficas de ventas y paletas](unidad-01-introduccion-ia/practicas/practica-12-grafica-matplotlib/README.md) | Ventana Matplotlib o PNG |
 | 13 | [Búsquedas BFS y DFS](unidad-01-introduccion-ia/practicas/practica-13-busquedas-bfs-dfs/README.md) | Ventana Tkinter o terminal |
 | 14 | [Búsqueda de costo uniforme (UCS)](unidad-01-introduccion-ia/practicas/practica-14-costo-uniforme/README.md) | Ventana Tkinter o terminal |
+| 15 | [Heurísticas y búsqueda A*](unidad-01-introduccion-ia/practicas/practica-15-busqueda-a-estrella/README.md) | Ventana Tkinter o terminal |
 
 Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
@@ -59,7 +61,7 @@ selecciona el intérprete .venv/bin/python del proyecto.
 
 ## Una versión por práctica
 
-Las catorce carpetas contienen las prácticas vigentes. Las versiones anteriores
+Las quince carpetas contienen las prácticas vigentes. Las versiones anteriores
 se consultan en el historial de Git; los ZIP e instaladores antiguos se retiraron.
 Los archivos Python contienen el programa de cada práctica y se conservan.
 
@@ -177,10 +179,25 @@ Añade `--terminal` para ejecutarla sin ventana. Usa solo la biblioteca estánda
 de Python; la interfaz necesita Tkinter. Consulta el README de la práctica para
 ver el algoritmo, los costos del pizarrón y los ejemplos de ejecución.
 
+## Práctica 15: heurísticas y búsqueda A*
+
+A* prioriza `f(n) = g(n) + h(n)` para ir de A a J. La ventana muestra el grafo
+nuevo de la imagen, las estimaciones del profesor, la frontera y el recorrido
+por pasos. Los costos iniciales son 1 por arista, porque la imagen no indica
+pesos; son editables junto con h(n). La ruta A → C → F → I → J cuesta 4.
+
+```bash
+bash unidad-01-introduccion-ia/practicas/practica-15-busqueda-a-estrella/ejecutar.sh
+```
+
+Añade `--terminal` para ver los cálculos sin ventana. La pestaña Heurísticas
+explica las sobreestimaciones de los valores originales bajo costos unitarios.
+La práctica es independiente y utiliza únicamente Python y Tkinter.
+
 ## Examen: tutor LLM y LogiSmart
 
 Los ejercicios del examen se encuentran en [examen-llm-logistica](examen-llm-logistica/README.md),
-como aplicaciones independientes de las catorce prácticas. Primero se ejecuta el
+como aplicaciones independientes de las quince prácticas. Primero se ejecuta el
 **tutor de SQL con Ollama**; después, **LogiSmart**, con interfaz web HTML/CSS/JavaScript, MongoDB,
 reglas proposicionales, clasificación híbrida y asistente con fuentes.
 

@@ -20,6 +20,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 12 | [Gráficas de ventas y paletas](practica-12-grafica-matplotlib/README.md) | Ventana Matplotlib o PNG |
 | 13 | [Búsquedas BFS y DFS](practica-13-busquedas-bfs-dfs/README.md) | Ventana Tkinter o terminal |
 | 14 | [Búsqueda de costo uniforme (UCS)](practica-14-costo-uniforme/README.md) | Ventana Tkinter o terminal |
+| 15 | [Heurísticas y búsqueda A*](practica-15-busqueda-a-estrella/README.md) | Ventana Tkinter o terminal |
 
 ## Preparar el entorno
 
@@ -121,3 +122,15 @@ y no negativos. La búsqueda también puede ejecutarse con `--terminal`.
 La meta se confirma al extraer el mínimo de la cola. El programa conserva la
 mejor ruta conocida y descarta entradas antiguas. El ejemplo A → C → F → J
 suma 3 + 2 + 3 = 8. Las instrucciones y pruebas están en su propia carpeta.
+
+## Práctica 15: heurísticas y búsqueda A*
+
+Busca de A a J con `f(n) = g(n) + h(n)`. Conserva las h del ejercicio y usa
+el grafo de su imagen: F → I → J. Como no se indicaron pesos, cada movimiento
+cuesta inicialmente 1; la ruta A → C → F → I → J tiene costo 4.
+
+La ventana muestra g, h, f, profundidad, frontera y pasos. Permite animar y
+editar los costos y heurísticas. Incluye una revisión didáctica de h: con
+pesos unitarios, A, C y F sobreestiman el costo real restante. El algoritmo
+mantiene mejores costos, reabre estados y descarta entradas antiguas del heap.
+Se ejecuta con `ejecutar.sh` en su carpeta; `--terminal` evita abrir la ventana.
