@@ -19,6 +19,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 11 | [Árbol binario: rutas de A a F](practica-11-arbol-binario/README.md) | Ventana Tkinter o terminal |
 | 12 | [Gráficas de ventas y paletas](practica-12-grafica-matplotlib/README.md) | Ventana Matplotlib o PNG |
 | 13 | [Búsquedas BFS y DFS](practica-13-busquedas-bfs-dfs/README.md) | Ventana Tkinter o terminal |
+| 14 | [Búsqueda de costo uniforme (UCS)](practica-14-costo-uniforme/README.md) | Ventana Tkinter o terminal |
 
 ## Preparar el entorno
 
@@ -109,3 +110,14 @@ permite elegir inicio y objetivo, animar, consultar la ruta y ver profundidad
 actual, máxima explorada y retrocesos. Usa `--terminal --algoritmo bfs` o
 `--terminal --algoritmo dfs` para trabajar sin interfaz. La lógica valida el grafo,
 evita ciclos y distingue el orden de visita del camino solución.
+
+## Práctica 14: búsqueda de costo uniforme
+
+Utiliza `heapq` y costo acumulado para encontrar una ruta de costo mínimo en
+el grafo de A a J del pizarrón. Tkinter muestra el recorrido, los pesos y la cola
+de prioridad; permite cambiar inicio, meta y costos. Los pesos deben ser finitos
+y no negativos. La búsqueda también puede ejecutarse con `--terminal`.
+
+La meta se confirma al extraer el mínimo de la cola. El programa conserva la
+mejor ruta conocida y descarta entradas antiguas. El ejemplo A → C → F → J
+suma 3 + 2 + 3 = 8. Las instrucciones y pruebas están en su propia carpeta.
