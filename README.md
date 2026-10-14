@@ -10,6 +10,7 @@ La práctica 12 genera gráficas de ventas y paletas con Matplotlib y Seaborn.
 La práctica 13 permite seguir las búsquedas BFS y DFS con Tkinter o en terminal.
 La práctica 14 usa heapq para buscar el camino de costo mínimo, con cola visible y costos editables.
 La práctica 15 incorpora heurísticas con A*: muestra g(n), h(n) y f(n) en Tkinter y en terminal.
+La práctica 16 compara distancias Manhattan y Euclidiana con puntos editables, Tkinter y Matplotlib.
 
 ## Inicio en WSL
 
@@ -42,6 +43,7 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 13 | [Búsquedas BFS y DFS](unidad-01-introduccion-ia/practicas/practica-13-busquedas-bfs-dfs/README.md) | Ventana Tkinter o terminal |
 | 14 | [Búsqueda de costo uniforme (UCS)](unidad-01-introduccion-ia/practicas/practica-14-costo-uniforme/README.md) | Ventana Tkinter o terminal |
 | 15 | [Heurísticas y búsqueda A*](unidad-01-introduccion-ia/practicas/practica-15-busqueda-a-estrella/README.md) | Ventana Tkinter o terminal |
+| 16 | [Distancias Manhattan y Euclidiana](unidad-01-introduccion-ia/practicas/practica-16-distancias-heuristicas/README.md) | Ventana Tkinter o PNG |
 
 Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
@@ -61,7 +63,7 @@ selecciona el intérprete .venv/bin/python del proyecto.
 
 ## Una versión por práctica
 
-Las quince carpetas contienen las prácticas vigentes. Las versiones anteriores
+Las dieciséis carpetas contienen las prácticas vigentes. Las versiones anteriores
 se consultan en el historial de Git; los ZIP e instaladores antiguos se retiraron.
 Los archivos Python contienen el programa de cada práctica y se conservan.
 
@@ -194,10 +196,25 @@ Añade `--terminal` para ver los cálculos sin ventana. La pestaña Heurísticas
 explica las sobreestimaciones de los valores originales bajo costos unitarios.
 La práctica es independiente y utiliza únicamente Python y Tkinter.
 
+## Práctica 16: distancias Manhattan y Euclidiana
+
+Compara el recorrido por ejes con la línea recta entre A=(1,2) y B=(5,5):
+Manhattan=7 y Euclidiana=5 unidades. La interfaz Tkinter permite editar los
+puntos, invertir el orden de los ejes, revisar una tabla de diferencias y
+exportar la gráfica de Matplotlib con la misma escala en X e Y.
+
+```bash
+.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-16-distancias-heuristicas/requirements.txt
+bash unidad-01-introduccion-ia/practicas/practica-16-distancias-heuristicas/ejecutar.sh
+```
+
+Usa `--terminal` para calcular sin librerías gráficas o `--sin-ventana` para
+crear el PNG sin interfaz. Las instrucciones y ejemplos están en su README.
+
 ## Examen: tutor LLM y LogiSmart
 
 Los ejercicios del examen se encuentran en [examen-llm-logistica](examen-llm-logistica/README.md),
-como aplicaciones independientes de las quince prácticas. Primero se ejecuta el
+como aplicaciones independientes de las dieciséis prácticas. Primero se ejecuta el
 **tutor de SQL con Ollama**; después, **LogiSmart**, con interfaz web HTML/CSS/JavaScript, MongoDB,
 reglas proposicionales, clasificación híbrida y asistente con fuentes.
 

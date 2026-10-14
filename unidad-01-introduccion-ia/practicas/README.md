@@ -21,6 +21,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 13 | [Búsquedas BFS y DFS](practica-13-busquedas-bfs-dfs/README.md) | Ventana Tkinter o terminal |
 | 14 | [Búsqueda de costo uniforme (UCS)](practica-14-costo-uniforme/README.md) | Ventana Tkinter o terminal |
 | 15 | [Heurísticas y búsqueda A*](practica-15-busqueda-a-estrella/README.md) | Ventana Tkinter o terminal |
+| 16 | [Distancias Manhattan y Euclidiana](practica-16-distancias-heuristicas/README.md) | Ventana Tkinter o PNG |
 
 ## Preparar el entorno
 
@@ -134,3 +135,12 @@ editar los costos y heurísticas. Incluye una revisión didáctica de h: con
 pesos unitarios, A, C y F sobreestiman el costo real restante. El algoritmo
 mantiene mejores costos, reabre estados y descarta entradas antiguas del heap.
 Se ejecuta con `ejecutar.sh` en su carpeta; `--terminal` evita abrir la ventana.
+
+## Práctica 16: distancias Manhattan y Euclidiana
+
+Calcula `|xB-xA| + |yB-yA|` y `sqrt((xB-xA)² + (yB-yA)²)`, y dibuja ambas
+líneas con Matplotlib dentro de Tkinter. Con A=(1,2) y B=(5,5) obtiene 7 y 5
+unidades. Incluye puntos editables, dos órdenes para el recorrido Manhattan,
+tabla comparativa, validación y exportación PNG. Los puntos iguales o alineados
+se representan sin errores. Usa `--terminal` para calcular o `--sin-ventana`
+para exportar el gráfico sin abrir la interfaz.
