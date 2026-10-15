@@ -12,6 +12,7 @@ La práctica 14 usa heapq para buscar el camino de costo mínimo, con cola visib
 La práctica 15 incorpora heurísticas con A*: muestra g(n), h(n) y f(n) en Tkinter y en terminal.
 La práctica 16 compara distancias Manhattan y Euclidiana con puntos editables, Tkinter y Matplotlib.
 La práctica 17 aplica Hill Climbing a una lista y a productos con presupuesto, con Tkinter y Matplotlib.
+La práctica 18 asigna empleados a turnos con Hill Climbing, dos soluciones óptimas e interfaz Tkinter.
 
 ## Inicio en WSL
 
@@ -46,6 +47,7 @@ La interfaz se sirve desde Python; abre la dirección localhost indicada.
 | 15 | [Heurísticas y búsqueda A*](unidad-01-introduccion-ia/practicas/practica-15-busqueda-a-estrella/README.md) | Ventana Tkinter o terminal |
 | 16 | [Distancias Manhattan y Euclidiana](unidad-01-introduccion-ia/practicas/practica-16-distancias-heuristicas/README.md) | Ventana Tkinter o PNG |
 | 17 | [Hill Climbing: lista y productos](unidad-01-introduccion-ia/practicas/practica-17-hill-climbing/README.md) | Ventana Tkinter, terminal o PNG |
+| 18 | [Asignación de turnos](unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/README.md) | Ventana Tkinter, terminal o PNG |
 
 Las carpetas 1 a 9 incluyen el programa Python, templates/index.html, static/estilos.css,
 requirements.txt, ejecutar.sh y sus instrucciones; las prácticas 1 a 7 y 9 también incluyen static/app.js. La práctica 5
@@ -65,7 +67,7 @@ selecciona el intérprete .venv/bin/python del proyecto.
 
 ## Una versión por práctica
 
-Las diecisiete carpetas contienen las prácticas vigentes. Las versiones anteriores
+Las dieciocho carpetas contienen las prácticas vigentes. Las versiones anteriores
 se consultan en el historial de Git; los ZIP e instaladores antiguos se retiraron.
 Los archivos Python contienen el programa de cada práctica y se conservan.
 
@@ -229,10 +231,26 @@ bash unidad-01-introduccion-ia/practicas/practica-17-hill-climbing/ejecutar.sh
 Usa `--terminal` para calcular sin dependencias gráficas o `--sin-ventana` para
 exportar un PNG. El README incluye ejemplos de máximos locales y las pruebas.
 
+## Práctica 18: asignación de turnos
+
+Asigna Ana, Luis, Carlos y María a Mañana, Tarde, Noche y Mixto, con un empleado
+por turno. Hill Climbing mejora la satisfacción intercambiando horarios. Hay dos
+asignaciones óptimas, con 3 de 4 preferencias cumplidas (75 %): Luis en Tarde,
+Carlos en Noche y Ana/María repartidas entre Mañana y Mixto.
+
+```bash
+.venv/bin/python -m pip install -r unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/requirements.txt
+bash unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/ejecutar.sh
+```
+
+La ventana muestra preferencias, intercambios, resultados y gráficas. Comprueba
+las 24 asignaciones por separado y permite consultar ambos óptimos. Admite
+`--terminal` y `--sin-ventana`; consulta las instrucciones en su README.
+
 ## Examen: tutor LLM y LogiSmart
 
 Los ejercicios del examen se encuentran en [examen-llm-logistica](examen-llm-logistica/README.md),
-como aplicaciones independientes de las diecisiete prácticas. Primero se ejecuta el
+como aplicaciones independientes de las dieciocho prácticas. Primero se ejecuta el
 **tutor de SQL con Ollama**; después, **LogiSmart**, con interfaz web HTML/CSS/JavaScript, MongoDB,
 reglas proposicionales, clasificación híbrida y asistente con fuentes.
 

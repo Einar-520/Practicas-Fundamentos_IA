@@ -23,6 +23,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 15 | [Heurísticas y búsqueda A*](practica-15-busqueda-a-estrella/README.md) | Ventana Tkinter o terminal |
 | 16 | [Distancias Manhattan y Euclidiana](practica-16-distancias-heuristicas/README.md) | Ventana Tkinter o PNG |
 | 17 | [Hill Climbing: lista y productos](practica-17-hill-climbing/README.md) | Ventana Tkinter, terminal o PNG |
+| 18 | [Asignación de turnos](practica-18-asignacion-turnos/README.md) | Ventana Tkinter, terminal o PNG |
 
 ## Preparar el entorno
 
@@ -157,3 +158,14 @@ Matplotlib muestra el recorrido, los productos y la evolución del beneficio.
 La verificación exhaustiva independiente revisa 32 combinaciones y permite ver
 cuándo el algoritmo queda atrapado en un máximo local. Incluye terminal, PNG,
 validación, documentación y pruebas en su propia carpeta.
+
+## Práctica 18: asignación de turnos
+
+Asigna cuatro empleados a cuatro turnos, sin repetir horarios. Cada preferencia
+cumplida suma un punto. Hill Climbing intercambia los turnos de una pareja y
+acepta solo mejoras; una revisión independiente verifica las 24 permutaciones.
+
+Luis recibe Tarde, Carlos recibe Noche y Ana/María se reparten Mañana y Mixto.
+Existen dos soluciones óptimas, ambas con 3 de 4 preferencias cumplidas (75 %).
+La interfaz Tkinter incluye la tabla de preferencias, inicio editable, historial,
+consulta de ambas soluciones y gráficas Matplotlib exportables a PNG.
