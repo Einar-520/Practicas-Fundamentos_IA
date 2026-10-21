@@ -127,13 +127,66 @@ bash unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/ejecutar.
 ventana. Se validan los nombres de los turnos, la cantidad de asignaciones y
 que no existan turnos repetidos. Todos los mensajes están en español.
 
+## Rotar turnos entre periodos
+
+La pestaña **Rotación de turnos** utiliza como primer periodo la asignación
+seleccionada en **Resultado y gráfica**. Permite generar entre **1 y 52 periodos**,
+seleccionar una fila, avanzar con **Rolar al siguiente**, regresar con **Anterior**
+y exportar el calendario CSV o su gráfica PNG. Los periodos son numerados:
+pueden representar días o semanas según lo indique el profesor. No hay cambios
+programados por reloj ni fechas asignadas automáticamente.
+
+| Modo | Qué cambia | Satisfacción |
+| --- | --- | --- |
+| Todos pasan por los cuatro turnos | Cada empleado sigue Mañana → Tarde → Noche → Mixto → Mañana | 25 % en cada ciclo completo de cuatro periodos |
+| Alternar Ana y María | Ana y María intercambian Mañana/Mixto; Luis conserva Tarde y Carlos Noche | 75 % en todos los periodos |
+
+En la rotación completa, cada empleado ocupa cada turno una vez por ciclo.
+En la alternancia por preferencias, Ana y María reciben Mañana la misma cantidad
+de veces si el número de periodos es par; si es impar, quien inicia en Mañana
+lo recibe una vez más. Este segundo modo mantiene las dos asignaciones óptimas,
+pero Luis y Carlos no rotan. Las etiquetas de la interfaz distinguen ambos casos.
+
+Ejemplo de rotación completa desde el resultado inicial de Hill Climbing:
+
+| Periodo | Ana | Luis | Carlos | María | Satisfacción |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Mixto | Tarde | Noche | Mañana | 75 % |
+| 2 | Mañana | Noche | Mixto | Tarde | 25 % |
+| 3 | Tarde | Mixto | Mañana | Noche | 0 % |
+| 4 | Noche | Mañana | Tarde | Mixto | 0 % |
+
+La gráfica izquierda muestra la satisfacción por periodo y resalta el
+seleccionado. La derecha muestra en qué porcentaje de todo el calendario cada
+empleado recibe su preferencia. Cambiar modo o cantidad marca los resultados
+como pendientes y desactiva la navegación y las exportaciones hasta generar.
+Cambiar la asignación inicial requiere pulsar **Asignar turnos** primero.
+
+```bash
+# Abrir directamente la pestaña de rotación.
+bash unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/ejecutar.sh --rotacion completa
+
+# Revisar ocho periodos desde la terminal.
+bash unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/ejecutar.sh --terminal --rotacion completa --periodos 8
+
+# Conservar 75 %, guardar calendario y gráfica sin ventana.
+bash unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/ejecutar.sh --rotacion preferencias --periodos 4 --csv /tmp/rotacion.csv --salida /tmp/rotacion.png
+```
+
+La búsqueda original por intercambios se conserva. La rotación se genera después
+según el modo elegido; no se presenta como una mejora de la puntuación de Hill
+Climbing ni como una planificación de descansos o jornadas.
+
 ## Archivos y pruebas
 
 | Archivo | Función |
 | --- | --- |
 | `asignacion.py` | Datos, reglas, vecinos, Hill Climbing y verificación de las 24 permutaciones |
 | `18_asignacion_turnos.py` | Ventana Tkinter y opciones para terminal |
-| `graficas.py` | Gráficas y exportación PNG |
+| `graficas.py` | Gráficas de la asignación y de la rotación; exportación PNG |
+| `rotacion.py` | Calendarios, validación, métricas y exportación CSV |
+| `interfaz_rotacion.py` | Pestaña Tkinter para generar y recorrer los periodos |
+| `test_rotacion.py` | Pruebas de ciclos, alternancia, límites y CSV |
 | `test_asignacion.py` | Pruebas de los resultados, restricciones y todos los inicios |
 | `ejecutar.sh` | Lanzador que utiliza el entorno virtual de la raíz si existe |
 

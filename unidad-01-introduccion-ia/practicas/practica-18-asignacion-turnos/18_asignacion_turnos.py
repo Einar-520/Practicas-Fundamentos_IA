@@ -6,6 +6,7 @@ from asignacion import (
     EMPLEADOS, TURNOS, PREFERENCIAS, INICIO, descripcion, hill_climbing,
     puntuar, validar_asignacion, verificar_optimas,
 )
+from rotacion import MODOS, generar_rotacion, guardar_csv
 
 
 SALIDA = Path(__file__).resolve().parent / "salidas" / "Asignacion_turnos.png"
@@ -31,12 +32,13 @@ def imprimir(resultado, verificacion):
     print("Mixto no cuenta como coincidencia con Mañana, Tarde o Noche.")
 
 
-def crear_interfaz(raiz, inicio=INICIO):
+def crear_interfaz(raiz, inicio=INICIO, modo_rotacion="completa", periodos=4):
     import tkinter as tk
     from tkinter import ttk, filedialog
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
     from matplotlib.figure import Figure
     from graficas import dibujar, guardar_png
+    from interfaz_rotacion import PanelRotacion
 
     class Aplicacion:
         def __init__(self):
@@ -123,6 +125,8 @@ def crear_interfaz(raiz, inicio=INICIO):
                         ("puntos", "Puntos / 4", 85), ("cambio", "Intercambio", 170))
             self.tabla_pasos = self.tabla(recorrido, columnas, 9, desplazamiento=True)
             ttk.Label(recorrido, text="Cada estado tiene seis vecinos: uno por cada pareja de empleados.\nSe revisan todos y se elige el que más mejora. Si ninguno mejora, la búsqueda termina.\n\nLa revisión de las 24 asignaciones se calcula aparte y no guía los pasos de Hill Climbing.\nEn este ejercicio, ambas asignaciones óptimas valen lo mismo; no se estableció una preferencia entre empleados.", wraplength=720).pack(anchor="w", pady=16)
+            self.rotacion = PanelRotacion(self.pestanas, modo_rotacion, periodos)
+            self.pestanas.add(self.rotacion, text="Rotación de turnos")
             pie = ttk.Frame(principal)
             pie.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(12, 0))
             pie.columnconfigure(0, weight=1)
@@ -130,6 +134,9 @@ def crear_interfaz(raiz, inicio=INICIO):
             self.pie.grid(row=0, column=0, sticky="w", padx=(0, 12))
             self.boton_guardar = ttk.Button(pie, text="Guardar gráfica PNG", command=self.guardar)
             self.boton_guardar.grid(row=0, column=1, sticky="e")
+            self.pestanas.bind("<<NotebookTabChanged>>", lambda _: (
+                self.boton_guardar.grid_remove() if self.pestanas.index("current") == 2
+                else self.boton_guardar.grid()))
             for variable in self.entradas:
                 variable.trace_add("write", self.marcar_pendiente)
             self.calcular()
@@ -155,6 +162,7 @@ def crear_interfaz(raiz, inicio=INICIO):
 
         def marcar_pendiente(self, *_):
             self.pendiente = True
+            self.rotacion.invalidar_base()
             self.boton_guardar.configure(state="disabled")
             self.estado.set("Inicio modificado. Los resultados conservan la última búsqueda; pulsa Asignar turnos para actualizar.")
 
@@ -199,6 +207,8 @@ def crear_interfaz(raiz, inicio=INICIO):
                 self.tabla_resultado.insert("", "end", values=(empleado, preferencia, turno, "Sí" if preferencia == turno else "No"))
             dibujar(self.figura, self.mostrada, self.resultado, self.verificacion)
             self.lienzo.draw_idle()
+            if not self.pendiente:
+                self.rotacion.actualizar_base(self.mostrada)
 
         def restablecer(self):
             for variable, turno in zip(self.entradas, INICIO):
@@ -229,15 +239,33 @@ def main():
     parser.add_argument("--terminal", action="store_true", help="calcular sin dependencias gráficas")
     parser.add_argument("--sin-ventana", action="store_true", help="calcular y guardar PNG sin abrir la interfaz")
     parser.add_argument("--salida", type=Path, help="ruta PNG; activa la exportación sin ventana")
+    parser.add_argument("--rotacion", choices=tuple(MODOS), help="tipo de calendario de turnos")
+    parser.add_argument("--periodos", type=int, default=4, help="cantidad de periodos de 1 a 52")
+    parser.add_argument("--csv", type=Path, help="guardar calendario CSV sin ventana")
     args = parser.parse_args()
     try:
         inicio = validar_asignacion(args.inicio)
+        if not 1 <= args.periodos <= 52:
+            raise ValueError("La cantidad de periodos debe ser un entero entre 1 y 52.")
         resultado, verificacion = hill_climbing(inicio), verificar_optimas()
-        if args.terminal or args.sin_ventana or args.salida:
+        if args.terminal or args.sin_ventana or args.salida or args.csv:
             imprimir(resultado, verificacion)
+            calendario = None
+            if args.rotacion or args.csv:
+                calendario = generar_rotacion(resultado.final.asignacion, args.periodos, args.rotacion or "completa")
+                print("\nROTACIÓN ·", MODOS[calendario.modo])
+                for periodo in calendario.periodos:
+                    print(f"Periodo {periodo.numero}: {descripcion(periodo.asignacion)} · {periodo.satisfaccion}/4")
+                print(f"Satisfacción media del calendario: {calendario.porcentaje:.1f} %")
+                if args.csv:
+                    print("Calendario guardado:", guardar_csv(calendario, args.csv))
             if args.sin_ventana or args.salida:
-                from graficas import guardar_png
-                print("Gráfica guardada:", guardar_png(args.salida or SALIDA, resultado.final.asignacion, resultado, verificacion))
+                from graficas import guardar_png, guardar_rotacion_png
+                if calendario:
+                    ruta = guardar_rotacion_png(args.salida or SALIDA.with_name("Rotacion_turnos.png"), calendario)
+                else:
+                    ruta = guardar_png(args.salida or SALIDA, resultado.final.asignacion, resultado, verificacion)
+                print("Gráfica guardada:", ruta)
             return
         import tkinter as tk
         try:
@@ -245,7 +273,9 @@ def main():
         except tk.TclError:
             parser.exit(1, "No se pudo abrir la ventana. Revisa WSLg o usa --terminal o --sin-ventana.\n")
         try:
-            crear_interfaz(raiz, inicio)
+            aplicacion = crear_interfaz(raiz, inicio, args.rotacion or "completa", args.periodos)
+            if args.rotacion:
+                aplicacion.pestanas.select(aplicacion.rotacion)
         except ImportError:
             raiz.destroy()
             raise

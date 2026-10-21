@@ -12,7 +12,7 @@ La práctica 14 usa heapq para buscar el camino de costo mínimo, con cola visib
 La práctica 15 incorpora heurísticas con A*: muestra g(n), h(n) y f(n) en Tkinter y en terminal.
 La práctica 16 compara distancias Manhattan y Euclidiana con puntos editables, Tkinter y Matplotlib.
 La práctica 17 aplica Hill Climbing a una lista y a productos con presupuesto, con Tkinter y Matplotlib.
-La práctica 18 asigna empleados a turnos con Hill Climbing, dos soluciones óptimas e interfaz Tkinter.
+La práctica 18 asigna empleados a turnos con Hill Climbing e incluye rotación, calendario CSV y gráficas Tkinter.
 
 ## Inicio en WSL
 
@@ -245,7 +245,9 @@ bash unidad-01-introduccion-ia/practicas/practica-18-asignacion-turnos/ejecutar.
 
 La ventana muestra preferencias, intercambios, resultados y gráficas. Comprueba
 las 24 asignaciones por separado y permite consultar ambos óptimos. Admite
-`--terminal` y `--sin-ventana`; consulta las instrucciones en su README.
+`--terminal` y `--sin-ventana`. La pestaña Rotación de turnos genera de 1 a 52
+periodos: todos rotan, o Ana y María alternan conservando el 75 %. Incluye
+navegación, gráficas del calendario y exportación CSV/PNG. Consulta su README.
 
 ## Examen: tutor LLM y LogiSmart
 

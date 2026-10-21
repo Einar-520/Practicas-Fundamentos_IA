@@ -169,3 +169,7 @@ Luis recibe Tarde, Carlos recibe Noche y Ana/María se reparten Mañana y Mixto.
 Existen dos soluciones óptimas, ambas con 3 de 4 preferencias cumplidas (75 %).
 La interfaz Tkinter incluye la tabla de preferencias, inicio editable, historial,
 consulta de ambas soluciones y gráficas Matplotlib exportables a PNG.
+
+La pestaña Rotación de turnos permite que todos pasen por los cuatro horarios
+o que Ana y María alternen Mañana/Mixto conservando el 75 %. Genera de 1 a 52
+periodos, permite recorrerlos y exporta el calendario CSV y sus gráficas PNG.
