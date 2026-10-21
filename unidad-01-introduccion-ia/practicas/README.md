@@ -24,6 +24,7 @@ propias reglas, plantillas, estilos y JavaScript.
 | 16 | [Distancias Manhattan y Euclidiana](practica-16-distancias-heuristicas/README.md) | Ventana Tkinter o PNG |
 | 17 | [Hill Climbing: lista y productos](practica-17-hill-climbing/README.md) | Ventana Tkinter, terminal o PNG |
 | 18 | [Asignación de turnos](practica-18-asignacion-turnos/README.md) | Ventana Tkinter, terminal o PNG |
+| 19 | [Catálogo de 24 gráficas y paletas](practica-19-catalogo-graficas/README.md) | Ventana Matplotlib o PNG |
 
 ## Preparar el entorno
 
@@ -173,3 +174,14 @@ consulta de ambas soluciones y gráficas Matplotlib exportables a PNG.
 La pestaña Rotación de turnos permite que todos pasen por los cuatro horarios
 o que Ana y María alternen Mañana/Mixto conservando el 75 %. Genera de 1 a 52
 periodos, permite recorrerlos y exporta el calendario CSV y sus gráficas PNG.
+
+## Práctica 19: catálogo de gráficas y paletas
+
+Incluye los 24 ejemplos del archivo de clase: líneas, barras, proporciones,
+distribuciones, relaciones, superficies y coordenadas polares. Genera PNG y
+permite elegir tres paletas con los mismos datos ficticios. Las gráficas son
+funciones independientes; se puede ejecutar una, varias o todo el catálogo.
+
+`bash practica-19-catalogo-graficas/ejecutar.sh` genera todas las imágenes.
+Añade `--grafica 10 --paleta oceano --mostrar` para abrir la dona, o `--listar`
+para consultar los tipos. El README incluye ejercicios, dependencias y pruebas.
